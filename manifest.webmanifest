@@ -1,7 +1,7 @@
 {
- "name": "Test Atölyesi",
- "short_name": "Test Atölyesi",
- "description": "Kendi kitaplığın, kendi ritmin — test çözme, sesli okuma, Google Drive senkronu.",
+ "name": "Eğitim Atölyesi",
+ "short_name": "Eğitim Atölyesi",
+ "description": "Öğren, uygula, takip et — konu anlatımı, test çözme, program takip, notlar ve Google Drive senkronu.",
  "lang": "tr",
  "start_url": "./",
  "scope": "./",
