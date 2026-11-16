@@ -1073,18 +1073,19 @@ function selInfo(){
   if(t.length<2||t.length>300)return null;
   const node=sel.anchorNode?.nodeType===1?sel.anchorNode:sel.anchorNode?.parentElement;
   if(!node)return null;
-  let r=sel.getRangeAt(0).getBoundingClientRect();
+  const range=sel.getRangeAt(0).cloneRange();
+  let r=range.getBoundingClientRect();
   if(!r||(r.width===0&&r.height===0))r=node.getBoundingClientRect();
   const eduArt=node.closest?.('.course-article');
   if(eduArt&&view==='course'){
-    return{scope:'edu',t,cid:eduArt.dataset.cid,sid:eduArt.dataset.sid,r};
+    return{scope:'edu',t,cid:eduArt.dataset.cid,sid:eduArt.dataset.sid,r,range};
   }
   if(view==='study'){
     const area=node.closest?.('.question-body');
     if(!area)return null;
     const opt=node.closest('[data-id].option');
     const w=opt?opt.dataset.id:node.closest('.solution')?'açıklama':node.closest('.passage')?'parça':'soru';
-    return{scope:'study',t,w,r};
+    return{scope:'study',t,w,r,range};
   }
   return null;
 }
@@ -1181,17 +1182,24 @@ function legacyCopy(t){
   }catch(e){}
 }
 
-function renderSystemMenuContent(m){
-  if(!m||!m._info)return;
-  m.dataset.mode='sys';
-  const canShare=typeof navigator.share==='function';
-  m.innerHTML=`<div class="sys-menu-head">Sistem Menüsü</div>
-  <button type="button" data-act="sysCopy">📋 Kopyala</button>
-  <button type="button" data-act="sysSearch">🔍 Google'da Ara</button>
-  <button type="button" data-act="sysSpeak">🔊 Sesli Oku</button>
-  ${canShare?'<button type="button" data-act="sysShare">📤 Paylaş</button>':''}
-  <button type="button" data-act="sysPrint">🖨️ Yazdır...</button>`;
-  positionFloating(m,parseFloat(m.style.left)||8,parseFloat(m.style.top)||8);
+let allowNativeContextMenu=false;
+let nativeBypassText='';
+
+function triggerNativeSystemMenu(m){
+  const info=m?._info;
+  allowNativeContextMenu=true;
+  nativeBypassText=info?.t||'';
+  hideUnkMenu();
+  if(info?.range){
+    try{
+      const sel=window.getSelection();
+      sel.removeAllRanges();
+      sel.addRange(info.range);
+    }catch(e){}
+  }
+  if(!isCoarsePointer()){
+    toast('Tarayıcı sistem menüsü için şimdi sağ tıklayın.');
+  }
 }
 
 // Tek tip metin bazlı sağ tık / seçim menüsü (Windows & Android tutarlı)
@@ -1250,12 +1258,12 @@ function showHlPopover(hl,ctx,targetEl){
 const isCoarsePointer=()=>matchMedia('(pointer:coarse)').matches;
 let selTimer=null;
 document.addEventListener('contextmenu',e=>{
+  if(allowNativeContextMenu){allowNativeContextMenu=false;return;}
   const info=selInfo();
   if(!info)return;
   e.preventDefault();
   clearTimeout(selTimer);
-  const cur=$('#unkMenu');
-  if(isCoarsePointer()&&cur?.dataset.mode==='sys')return;
+  nativeBypassText='';
   showUnkMenu(info,e.clientX||info.r.left,e.clientY||(info.r.bottom+10));
 });
 
@@ -1264,9 +1272,10 @@ document.addEventListener('selectionchange',()=>{
   selTimer=setTimeout(()=>{
     if(!isCoarsePointer())return;
     const cur=$('#unkMenu');
-    if(cur?.dataset.mode==='sys')return;
     const info=selInfo();
-    if(!info){if(cur&&!cur.matches(':hover'))hideUnkMenu();return;}
+    if(!info){nativeBypassText='';if(cur&&!cur.matches(':hover'))hideUnkMenu();return;}
+    if(nativeBypassText&&info.t===nativeBypassText)return;
+    nativeBypassText='';
     if(cur?._info&&cur._info.t===info.t&&cur._info.scope===info.scope)return;
     const y=info.r.bottom+10+180<=innerHeight?info.r.bottom+10:Math.max(8,info.r.top-185);
     showUnkMenu(info,info.r.left,y);
@@ -1300,7 +1309,7 @@ document.addEventListener('click',e=>{
   if(a==='eduSelVocab'){e.stopPropagation();addEduVocab($('#unkMenu')?._info);return;}
   if(a==='eduSelHl'){e.stopPropagation();addEduHighlight($('#unkMenu')?._info);return;}
   if(a==='eduSelSpeak'){e.stopPropagation();const info=$('#unkMenu')?._info;hideUnkMenu();if(info&&typeof eduSpeakText==='function')eduSpeakText(info.t,'en','sel');return;}
-  if(a==='showSysMenu'){e.stopPropagation();renderSystemMenuContent($('#unkMenu'));return;}
+  if(a==='showSysMenu'){e.stopPropagation();triggerNativeSystemMenu($('#unkMenu'));return;}
   if(a==='sysCopy'){e.stopPropagation();copyTextFallback($('#unkMenu')?._info?.t||'');hideUnkMenu();return;}
   if(a==='sysSearch'){e.stopPropagation();const t=$('#unkMenu')?._info?.t||'';if(t)window.open('https://www.google.com/search?q='+encodeURIComponent(t),'_blank');hideUnkMenu();return;}
   if(a==='sysSpeak'){e.stopPropagation();const t=$('#unkMenu')?._info?.t||'';if(t){if(window.ttsSpeak)ttsSpeak(t);else{const u=new SpeechSynthesisUtterance(t);u.lang='tr-TR';window.speechSynthesis?.speak(u);}}hideUnkMenu();return;}
