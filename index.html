@@ -264,6 +264,7 @@ html[data-theme="love"] .bar i{background:linear-gradient(90deg,#e48ab5,#a978d3)
 .unk-chips{display:flex;flex-wrap:wrap;gap:6px;align-items:center;margin:0 0 12px;font-size:12px;color:var(--muted)}
 .unk-chip{font-size:12px;padding:4px 8px;border-radius:999px;border:1px solid #7b5ea7;background:color-mix(in srgb,#7b5ea7 10%,var(--paper));color:var(--ink);font-weight:600}
 .unk-chip small{margin-left:5px;color:var(--muted);font-weight:400}
+::highlight(ta-sel){background:#3b82f644;color:inherit}
 .unk-menu{position:fixed;z-index:200;display:flex;flex-direction:column;min-width:195px;max-width:calc(100vw - 16px);background:var(--paper);border:1px solid var(--line);border-radius:10px;box-shadow:0 10px 30px #0003;overflow:hidden;user-select:none;-webkit-user-select:none}
 .unk-menu button{border:0;border-radius:0;text-align:left;padding:9px 14px;font-size:13px;background:transparent}
 .unk-menu button:hover{background:var(--light)}
@@ -1228,7 +1229,7 @@ document.addEventListener('input',e=>{if(e.target.id==='focusVol')focusSetVol(Nu
 //   st.hl[soru]      → vurgulanan ifadeler [{id, t:'metin', w, color:'#fff59d', style:'highlight'|'underline', at:1731500000000}]
 //   st.oops[soru]    → true: kontrol sonrası "dikkatsizlik / sehven hata" beyanı
 //   st.trail[soru]   → soruda sırayla seçilen şıklar (ör. ['B','D','B']); kararsızlığı gösterir
-const APP_VERSION='6.6';
+const APP_VERSION='6.7';
 const HL_THEME='color-mix(in srgb,var(--note-accent,var(--green)) 32%,transparent)';
 const HL_COLORS=[HL_THEME,'#fff59d','#c8e6c9','#bbdefb','#ffe0b2','#f8bbd0'];
 function getLastHlColor(){try{return localStorage.getItem('test-atolyesi:lastHlColor')||HL_COLORS[0];}catch(e){return HL_COLORS[0];}}
@@ -1251,7 +1252,7 @@ function selInfo(){
   const sel=window.getSelection();
   if(!sel||sel.isCollapsed||!sel.rangeCount)return null;
   const t=sel.toString().replace(/\s+/g,' ').trim();
-  if(t.length<2||t.length>300)return null;
+  if(t.length<2||t.length>4000)return null;
   const node=sel.anchorNode?.nodeType===1?sel.anchorNode:sel.anchorNode?.parentElement;
   if(!node)return null;
   const range=sel.getRangeAt(0).cloneRange();
@@ -1337,7 +1338,7 @@ function addEduHighlight(info){
   toast('Ders metni vurgulandı.');
 }
 
-function hideUnkMenu(){$('#unkMenu')?.remove();}
+function hideUnkMenu(){$('#unkMenu')?.remove();try{window.CSS?.highlights?.delete('ta-sel');}catch(e){}}
 function hideHlPopover(){$('#hlPopover')?.remove();}
 
 function positionFloating(el,x,y){
@@ -1368,6 +1369,10 @@ function legacyCopy(t){
 
 let allowNativeContextMenu=false;
 let nativeBypassText='';
+let suppressSelChange=false;
+let lastPointerType='';
+document.addEventListener('pointerdown',e=>{if(e.pointerType)lastPointerType=e.pointerType;},true);
+const isTouchOrPen=()=>lastPointerType==='touch'||lastPointerType==='pen'||matchMedia('(pointer:coarse)').matches||(/Android|iPhone|iPad|iPod/i.test(navigator.userAgent)&&navigator.maxTouchPoints>0);
 
 function triggerNativeSystemMenu(m){
   const info=m?._info;
@@ -1376,12 +1381,17 @@ function triggerNativeSystemMenu(m){
   hideUnkMenu();
   if(info?.range){
     try{
+      suppressSelChange=true;
       const sel=window.getSelection();
       sel.removeAllRanges();
       sel.addRange(info.range);
-    }catch(e){}
+      setTimeout(()=>{suppressSelChange=false;},250);
+    }catch(e){suppressSelChange=false;}
   }
-  if(!isCoarsePointer()){
+  if(window.AndroidHost&&typeof window.AndroidHost.openSystemTextMenu==='function'){
+    try{window.AndroidHost.openSystemTextMenu(info?.t||'');return;}catch(e){}
+  }
+  if(!isTouchOrPen()){
     toast('Tarayıcı sistem menüsü için şimdi sağ tıklayın.');
   }
 }
@@ -1412,6 +1422,18 @@ function showUnkMenu(info,x,y){
   m.addEventListener('mousedown',ev=>ev.preventDefault());
   document.body.append(m);
   positionFloating(m,x,y);
+  // Dokunmatik / kalem cihazlarda yerel sistem barının aynı anda açılmasını engellemek için
+  // seçimi CSS Custom Highlight ile görsel olarak koruyup native selection'ı temizle.
+  if(isTouchOrPen()&&info.range){
+    try{
+      if(window.CSS?.highlights&&typeof Highlight==='function'){
+        window.CSS.highlights.set('ta-sel',new Highlight(info.range));
+      }
+      suppressSelChange=true;
+      window.getSelection()?.removeAllRanges();
+      setTimeout(()=>{suppressSelChange=false;},200);
+    }catch(e){suppressSelChange=false;}
+  }
 }
 
 function showHlPopover(hl,ctx,targetEl){
@@ -1440,11 +1462,11 @@ function showHlPopover(hl,ctx,targetEl){
   p.style.top=top+'px';
 }
 
-// Sağ tık (masaüstü) ve metin seçimi (dokunmatik cihazlar: Android/iOS) mantığı
-const isCoarsePointer=()=>matchMedia('(pointer:coarse)').matches;
+// Sağ tık (masaüstü) ve metin seçimi (dokunmatik / kalem cihazlar: Android/iOS) mantığı
 let selTimer=null;
 document.addEventListener('contextmenu',e=>{
   if(allowNativeContextMenu){allowNativeContextMenu=false;return;}
+  if(isTouchOrPen()&&$('#unkMenu')){e.preventDefault();return;}
   const info=selInfo();
   if(!info)return;
   e.preventDefault();
@@ -1454,18 +1476,22 @@ document.addEventListener('contextmenu',e=>{
 });
 
 document.addEventListener('selectionchange',()=>{
+  if(suppressSelChange)return;
   clearTimeout(selTimer);
   selTimer=setTimeout(()=>{
-    if(!isCoarsePointer())return;
+    if(suppressSelChange||!isTouchOrPen())return;
     const cur=$('#unkMenu');
     const info=selInfo();
-    if(!info){nativeBypassText='';if(cur&&!cur.matches(':hover'))hideUnkMenu();return;}
+    if(!info){
+      nativeBypassText='';
+      return;
+    }
     if(nativeBypassText&&info.t===nativeBypassText)return;
     nativeBypassText='';
     if(cur?._info&&cur._info.t===info.t&&cur._info.scope===info.scope)return;
-    const y=info.r.bottom+10+180<=innerHeight?info.r.bottom+10:Math.max(8,info.r.top-185);
+    const y=info.r.bottom+10+210<=innerHeight?info.r.bottom+10:Math.max(8,info.r.top-215);
     showUnkMenu(info,info.r.left,y);
-  },300);
+  },420);
 });
 
 function saveHlChange(ctx){
@@ -2273,6 +2299,8 @@ function mergeEduState(rawA, rawB) {
     hlCats: eduMergeArrayById(a.hlCats, b.hlCats),
     hlCatMap: eduMergeStampMap(a.hlCatMap, b.hlCatMap),
     hlCatsSyncedOnce: !!(a.hlCatsSyncedOnce || b.hlCatsSyncedOnce),
+    libCfg: (Number(b.libCfg?.t) || 0) >= (Number(a.libCfg?.t) || 0) ? (b.libCfg || a.libCfg) : a.libCfg,
+    favs: Array.isArray(newer.favs) ? newer.favs : (a.favs || b.favs || []),
     stamp: Math.max(sa, sb)
   };
 }
@@ -6109,6 +6137,256 @@ document.addEventListener('change', e => {
     toast('Vurgu kategorisi güncellendi.');
   }
 });
+// ── Eğitim & Konu Anlatımı Kütüphaneleri, Favoriler ve Son Kullanılanlar ─────
+function eduLibCur() {
+  const e = ensureEduState(state);
+  if (e.libCfg && Array.isArray(e.libCfg.libs)) return e.libCfg;
+  const defs = [];
+  for (const c of allCourses()) {
+    if (c.library && c.library !== DIGER && !defs.includes(c.library)) defs.push(c.library);
+  }
+  e.libCfg = { libs: defs, assign: {}, closed: {}, views: {}, t: 0 };
+  return e.libCfg;
+}
+
+function eduLibSave() {
+  const c = eduLibCur();
+  c.t = Date.now();
+  eduTouch(true);
+  render();
+}
+
+function eduLibOf(c) {
+  const cfg = eduLibCur();
+  const a = cfg.assign[c.id];
+  if (a) return a;
+  if (a === undefined && c.library) return c.library;
+  return DIGER;
+}
+
+function eduLibList() {
+  const out = eduLibCur().libs.filter(l => l !== DIGER);
+  const courses = allCourses();
+  for (const c of courses) {
+    const l = eduLibOf(c);
+    if (l !== DIGER && !out.includes(l)) out.push(l);
+  }
+  if (!out.length || courses.some(c => eduLibOf(c) === DIGER)) out.push(DIGER);
+  return out;
+}
+
+function eduIsFav(cid) {
+  const e = ensureEduState(state);
+  return Array.isArray(e.favs) && e.favs.includes(cid);
+}
+
+function eduToggleFav(cid) {
+  const e = ensureEduState(state);
+  e.favs = Array.isArray(e.favs) ? e.favs : [];
+  e.favs = eduIsFav(cid) ? e.favs.filter(x => x !== cid) : [...e.favs, cid];
+  eduTouch(true);
+  render();
+}
+
+function eduCourseProgress(c) {
+  const done = c.sections.filter(s => isSecDone(c.id, s.id)).length;
+  const total = c.sections.length || 0;
+  const pct = total ? Math.round((done / total) * 100) : 0;
+  return { done, total, pct };
+}
+
+function eduCourseActivity(c) {
+  const e = ensureEduState(state);
+  let ts = e.activeCourseId === c.id ? 2 : 0;
+  for (const s of c.sections) {
+    const k = c.id + '/' + s.id;
+    ts = Math.max(ts, Number(e.completed?.[k]?.at) || 0, Number(e.notes?.[k]?.at) || 0);
+    for (const h of e.hl?.[k] || []) ts = Math.max(ts, Number(h.at) || 0);
+  }
+  return ts;
+}
+
+function eduRecentCourses() {
+  return allCourses()
+    .map(c => [c, eduCourseActivity(c)])
+    .filter(([, t]) => t > 0)
+    .sort((a, b) => b[1] - a[1])
+    .slice(0, 3)
+    .map(([c]) => c);
+}
+
+function eduMiniCourse(c) {
+  const { done, total, pct } = eduCourseProgress(c);
+  return `<button class="mini-book" data-act="openCourse" data-cid="${esc(c.id)}">` +
+    `<span class="mini-cover">${esc((c.shortTitle || c.title).slice(0, 14))}</span>` +
+    `<span class="mini-info"><b>${esc(c.title)}</b><small>${esc(eduLibOf(c))} · ${done} / ${total} bölüm</small>` +
+    `<span class="bar"><i style="width:${pct}%"></i></span></span>` +
+    `<span class="mini-star" data-act="eduFav" data-cid="${esc(c.id)}" title="${eduIsFav(c.id) ? 'Favorilerden çıkar' : 'Favorilere ekle'}">${eduIsFav(c.id) ? '★' : '☆'}</span></button>`;
+}
+
+function eduCourseRow(c) {
+  const { done, total, pct } = eduCourseProgress(c);
+  return `<div class="lib-row"><button class="lib-row-main" data-act="openCourse" data-cid="${esc(c.id)}"><b>${esc(c.title)}</b><small>${esc(c.author || '')} · ${total} bölüm · ${done}/${total} tamamlandı</small><span class="bar"><i style="width:${pct}%"></i></span></button>` +
+    `<span class="mini-star" data-act="eduFav" data-cid="${esc(c.id)}" title="${eduIsFav(c.id) ? 'Favorilerden çıkar' : 'Favorilere ekle'}">${eduIsFav(c.id) ? '★' : '☆'}</span>` +
+    `<button class="tag lib-tag" data-act="eduLibMove" data-cid="${esc(c.id)}" title="Kütüphaneyi değiştir">✎</button></div>`;
+}
+
+function eduCourseCard(c) {
+  const { done, total, pct } = eduCourseProgress(c);
+  const bPaired = books.find(x => x.id === c.pairedBookId);
+  let bAns = 0, bTot = 0;
+  if (bPaired) {
+    for (const t of bPaired.tests) {
+      bTot += t.questionCount ?? t.questions.length;
+      bAns += Object.keys(state.tests?.[bPaired.id + '/' + t.id]?.answers || {}).length;
+    }
+  }
+  const libName = eduLibOf(c);
+  return `<article class="book-card edu-course-card"><div class="cover edu-cover"><small>EĞİTİM MODÜLÜ · ${esc(c.year || 2026)}</small><strong>${esc(libName)}</strong><span>${esc(total + ' Bölüm')}</span></div>` +
+    `<div class="book-content"><div class="row" style="justify-content:space-between"><div class="row"><span class="tag">${c.id === 'fen-3-oyun-atolyesi-2026' ? '🎮 ' : '📘 '}${esc(libName)}</span>${c.pairedBookId ? `<span class="tag">⚡ Eşlikçi Test: ${esc(c.pairedBookId)} (${bAns}/${bTot || 120})</span>` : '<span class="tag">✨ Web Tabanlı Mini Oyunlar</span>'}</div>` +
+    `<div class="row"><button class="small" data-act="eduFav" data-cid="${esc(c.id)}" title="${eduIsFav(c.id) ? 'Favorilerden çıkar' : 'Favorilere ekle'}">${eduIsFav(c.id) ? '★' : '☆'}</button><button class="tag lib-tag" data-act="eduLibMove" data-cid="${esc(c.id)}" title="Kütüphaneyi değiştir">✎</button></div></div>` +
+    `<h2>${esc(c.title)}</h2><p>${esc(c.author || '')}</p><p>${esc(c.summary || '')}</p>` +
+    `<div class="bar"><i style="width:${pct}%"></i></div><p>${done} / ${total} bölüm tamamlandı (%${pct})</p>` +
+    `<div class="edu-sec-pills">${c.sections.map(s => `<button class="small edu-sec-pill ${isSecDone(c.id, s.id) ? 'done' : ''}" data-act="openCourse" data-cid="${esc(c.id)}" data-sid="${esc(s.id)}">${isSecDone(c.id, s.id) ? '✓ ' : ''}${esc(s.dayTag)}</button>`).join('')}</div>` +
+    `<div class="row" style="margin-top:14px"><button class="primary" data-act="openCourse" data-cid="${esc(c.id)}">${c.id === 'fen-3-oyun-atolyesi-2026' ? '🎮 Oyun Atölyesini Aç →' : 'Konu Anlatımını Aç →'}</button>` +
+    (c.pairedBookId ? `<button data-act="eduOpenPairedBook" data-book="${esc(c.pairedBookId)}">▦ Eşlikçi Test Kitabını Aç</button>` : '') +
+    (c.pdfFile ? `<button data-act="eduOpenPdf" data-cid="${esc(c.id)}">📄 Basılı PDF</button>` : '') +
+    `<button class="small" data-act="eduExportCourse" data-cid="${esc(c.id)}">↗ JSON İndir</button></div></div></article>`;
+}
+
+function eduMoveCourseDialog(cid) {
+  const c = allCourses().find(x => x.id === cid);
+  if (!c) return;
+  const curLib = eduLibOf(c);
+  dialog('Eğitim kütüphanesini değiştir',
+    `<p><b>${esc(c.title)}</b> şu an <b>${esc(curLib)}</b> kütüphanesinde.</p><label for="eduLibMoveSel">Taşınacak kütüphane</label><select id="eduLibMoveSel">${eduLibList().map(l => `<option ${l === curLib ? 'selected' : ''}>${esc(l)}</option>`).join('')}</select>`,
+    '<button class="primary" id="eduLibMoveGo">Taşı</button>');
+  $('#eduLibMoveGo').onclick = () => {
+    const v = $('#eduLibMoveSel').value;
+    eduLibCur().assign[cid] = v === DIGER ? null : v;
+    closeDialog();
+    eduLibSave();
+    toast('Eğitim modülü taşındı.');
+  };
+}
+
+function eduLibsDialog() {
+  const courses = allCourses();
+  const L = eduLibList().filter(l => l !== DIGER);
+  const say = l => courses.filter(c => eduLibOf(c) === l).length;
+  dialog('Eğitim kütüphanelerini düzenle',
+    `<p class="file-help">Sırayı değiştirmek için ⠿ tutamağını basılı tutup sürükle. Adı değiştirip “Kaydet”e bas.</p>` +
+    `<div class="lib-edit">${L.map((l, i) => `<div class="row"><span class="lib-grip" title="Basılı tutup sürükle">⠿</span><input data-edulib-i="${i}" value="${esc(l)}" maxlength="40"><small>${say(l)} modül</small><button class="small danger" data-act="eduLibDel" data-lib="${esc(l)}">Sil</button></div>`).join('') || '<p class="file-help">Henüz özel kütüphanen yok; modüller “Diğer”de.</p>'}</div>` +
+    `<p class="file-help">“Diğer”: atanmamış eğitim modülleri (adı değişmez, silinmez).</p>` +
+    `<label for="eduLibAdd">Yeni kütüphane</label><div class="row"><input id="eduLibAdd" maxlength="40" placeholder="ör. KPSS / Tarih"><button data-act="eduLibAddGo">＋ Ekle</button></div>`,
+    '<button class="primary" id="eduLibRenameGo">Kaydet</button>');
+  $('#eduLibRenameGo').onclick = () => {
+    const yeni = [...document.querySelectorAll('[data-edulib-i]')].map(x => [L[Number(x.dataset.edulibI)], cleanLib(x.value)]);
+    if (yeni.some(([, n]) => !n)) { toast('Kütüphane adı boş olamaz.'); return; }
+    if (new Set(yeni.map(([, n]) => n.toLocaleLowerCase('tr'))).size !== yeni.length) { toast('İki kütüphanenin adı aynı olamaz.'); return; }
+    for (const [eski, ad] of yeni) {
+      if (eski === ad) continue;
+      for (const c of courses) if (eduLibOf(c) === eski) eduLibCur().assign[c.id] = ad;
+    }
+    eduLibCur().libs = yeni.map(([, n]) => n);
+    closeDialog();
+    eduLibSave();
+    toast('Eğitim kütüphaneleri kaydedildi.');
+  };
+}
+
+function eduLibDelete(lib) {
+  const courses = allCourses();
+  const L = eduLibList().filter(l => l !== lib);
+  const n = courses.filter(c => eduLibOf(c) === lib).length;
+  const bitir = hedef => {
+    for (const c of courses) if (eduLibOf(c) === lib) eduLibCur().assign[c.id] = hedef === DIGER ? null : hedef;
+    eduLibCur().libs = eduLibList().filter(l => l !== lib && l !== DIGER);
+    closeDialog();
+    eduLibSave();
+    toast('“' + lib + '” silindi.');
+  };
+  if (!n) { confirmAction('Kütüphaneyi sil', '“' + lib + '” eğitim kütüphanesi silinecek.', () => bitir(null)); return; }
+  dialog('Kütüphaneyi sil', `<p>“${esc(lib)}” içinde ${n} eğitim modülü var. Silmeden önce nereye taşınsın?</p><select id="eduLibDelTo">${L.map(l => `<option>${esc(l)}</option>`).join('')}</select>`, '<button class="primary danger" id="eduLibDelGo">Taşı ve sil</button>');
+  $('#eduLibDelGo').onclick = () => bitir($('#eduLibDelTo').value);
+}
+
+function educationView() {
+  const courses = allCourses();
+  const sm = eduOverallSummary();
+  const rec = eduRecentCourses();
+  const fav = courses.filter(c => eduIsFav(c.id));
+
+  let h = `<section class="intro"><div><div class="eyebrow">EĞİTİM & KONU ANLATIMI</div><h1>Öğren, derinleş, testte uygula.</h1><p>Adli teşhis dayanaklı konu anlatım kitapçıkları, vektörel şemalar ve test modülleriyle birebir bağlantılı ders atölyen.</p></div>` +
+    `<div class="row"><button data-act="eduImportCourse">＋ Eğitim Modülü Yükle</button><button class="primary" data-act="openCourse" data-cid="${esc(courses[0].id)}" data-sid="${esc(ensureEduState(state).activeSecId)}">Çalışmaya Devam Et →</button></div></section>` +
+    `<section class="stats" aria-label="Eğitim özeti">` +
+    `<div class="stat"><small>Eğitim Modülü</small><strong>${courses.length}</strong></div>` +
+    `<div class="stat"><small>Tamamlanan Bölüm</small><strong>${sm.doneSecs} / ${sm.totalSecs}</strong></div>` +
+    `<div class="stat"><small>Telafi Sorusu</small><strong>${sm.totalAns} / ${sm.totalQ || 120}</strong></div>` +
+    `<div class="stat"><small>Kelime Havuzu</small><strong>${sm.vocabLearned} / ${sm.vocabTotal}</strong></div></section>`;
+
+  if (rec.length) h += `<div class="section-title"><h2>🕘 Son kullanılanlar</h2><span class="eyebrow">${rec.length} MODÜL</span></div><div class="mini-row">${rec.map(eduMiniCourse).join('')}</div>`;
+  if (fav.length) h += `<div class="section-title"><h2>★ Favoriler</h2><span class="eyebrow">${fav.length} MODÜL</span></div><div class="mini-row">${fav.map(eduMiniCourse).join('')}</div>`;
+  h += `<div class="lib-tools"><button class="small" data-act="eduLibsEdit">📚 Eğitim kütüphanelerini düzenle</button></div>`;
+
+  const L = eduLibList(), C = eduLibCur();
+  C.closed = C.closed || {};
+  C.views = C.views || {};
+  for (const lib of L) {
+    const list = courses.filter(c => eduLibOf(c) === lib);
+    const kapali = !!C.closed[lib];
+    const gor = C.views[lib] || 'kart';
+    const vb = (k, t) => `<button class="small lib-vbtn ${gor === k ? 'on' : ''}" data-act="eduLibView" data-lib="${esc(lib)}" data-v="${k}" title="${t}">${t}</button>`;
+    const ic = gor === 'kutucuk'
+      ? `<div class="mini-row">${list.map(eduMiniCourse).join('')}</div>`
+      : gor === 'liste'
+        ? `<div class="lib-list">${list.map(eduCourseRow).join('')}</div>`
+        : list.map(c => eduCourseCard(c)).join('');
+    h += `<section class="lib-section ${kapali ? 'closed' : ''}" data-edulib="${esc(lib)}"><div class="section-title"><h2><button class="lib-toggle" data-act="eduLibToggle" data-lib="${esc(lib)}" aria-expanded="${!kapali}" title="${kapali ? 'Aç' : 'Kapat'}">${kapali ? '▸' : '▾'}</button> 📚 ${esc(lib)}</h2><span class="row"><span class="eyebrow">${list.length} MODÜL</span>${kapali ? '' : `<span class="lib-views">${vb('kart', '▦ Kart')}${vb('liste', '☰ Liste')}${vb('kutucuk', '▣ Kutucuk')}</span>`}<button class="small" data-act="eduImportCourse">＋ Ekle</button></span></div>${kapali ? '' : list.length ? ic : `<div class="lib-empty">Bu eğitim kütüphanesi boş. “＋ Ekle” ile modül yükleyebilir veya mevcut bir modülü buraya taşıyabilirsin.</div>`}</section>`;
+  }
+  return h;
+}
+
+document.addEventListener('click', e => {
+  const el = e.target.closest('[data-act]');
+  if (!el) return;
+  const a = el.dataset.act;
+  if (a === 'eduLibsEdit') { e.stopPropagation(); if (!locked) eduLibsDialog(); return; }
+  if (a === 'eduLibMove') { e.stopPropagation(); if (!locked) eduMoveCourseDialog(el.dataset.cid); return; }
+  if (a === 'eduLibDel') { e.stopPropagation(); if (!locked) eduLibDelete(el.dataset.lib); return; }
+  if (a === 'eduLibAddGo') {
+    e.stopPropagation();
+    const n = cleanLib($('#eduLibAdd')?.value);
+    if (!n) { toast('Kütüphane adı yaz.'); return; }
+    if (eduLibList().some(l => l.toLocaleLowerCase('tr') === n.toLocaleLowerCase('tr'))) { toast('Bu adda kütüphane var.'); return; }
+    eduLibCur().libs = [...eduLibList().filter(l => l !== DIGER), n];
+    eduLibSave();
+    eduLibsDialog();
+    return;
+  }
+  if (a === 'eduLibToggle') {
+    e.stopPropagation();
+    const C = eduLibCur();
+    C.closed = C.closed || {};
+    if (C.closed[el.dataset.lib]) delete C.closed[el.dataset.lib];
+    else C.closed[el.dataset.lib] = true;
+    eduLibSave();
+    return;
+  }
+  if (a === 'eduLibView') {
+    e.stopPropagation();
+    const C = eduLibCur();
+    C.views = C.views || {};
+    C.views[el.dataset.lib] = el.dataset.v;
+    eduLibSave();
+    return;
+  }
+  if (a === 'eduFav') {
+    e.preventDefault();
+    e.stopPropagation();
+    if (!locked) eduToggleFav(el.dataset.cid);
+  }
+}, true);
 // UI decorations use currentColor; question text and user content remain intact.
 (()=>{
 const paths={
