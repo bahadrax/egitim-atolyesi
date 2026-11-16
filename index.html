@@ -767,6 +767,13 @@ button:hover{border-color:color-mix(in srgb,var(--green) 42%,var(--line))}
 .fg-farm-meters{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:10px;font-size:13px}
 .fg-farm-stage{display:grid;grid-template-columns:110px 1fr;gap:14px;align-items:center}
 .fg-plant-icon{height:110px;border-radius:16px;background:var(--paper);border:1.5px solid #86efac;display:grid;place-items:center;font-size:48px}
+
+/* === Hayat Bilgisi Kroki & Renk Atölyesi === */
+.hb-grid-map{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:6px;max-width:300px;margin:0 auto}
+.hb-cell{aspect-ratio:1/1;border-radius:10px;border:1.5px solid var(--line);background:var(--bg);display:grid;place-items:center;font-size:12px;font-weight:700;text-align:center;padding:3px}
+.hb-cell.me{background:#dbeafe;border-color:#0284c7;font-size:22px}
+.hb-cell.tgt{background:#fef9c3;border-color:#eab308;box-shadow:inset 0 0 0 2px #facc15}
+.hb-mix-box{padding:12px;border-radius:10px;border:1.5px dashed #94a3b8;text-align:center;font-size:13.5px}
 </style>
 </head>
 <body>
@@ -1221,7 +1228,7 @@ document.addEventListener('input',e=>{if(e.target.id==='focusVol')focusSetVol(Nu
 //   st.hl[soru]      → vurgulanan ifadeler [{id, t:'metin', w, color:'#fff59d', style:'highlight'|'underline', at:1731500000000}]
 //   st.oops[soru]    → true: kontrol sonrası "dikkatsizlik / sehven hata" beyanı
 //   st.trail[soru]   → soruda sırayla seçilen şıklar (ör. ['B','D','B']); kararsızlığı gösterir
-const APP_VERSION='6.5';
+const APP_VERSION='6.6';
 const HL_THEME='color-mix(in srgb,var(--note-accent,var(--green)) 32%,transparent)';
 const HL_COLORS=[HL_THEME,'#fff59d','#c8e6c9','#bbdefb','#ffe0b2','#f8bbd0'];
 function getLastHlColor(){try{return localStorage.getItem('test-atolyesi:lastHlColor')||HL_COLORS[0];}catch(e){return HL_COLORS[0];}}
@@ -1902,17 +1909,17 @@ const NAYAS_YDS_COURSE = {"id": "nayas-yds-akademik-telafi-2026", "title": "YDS 
 // ── Eğitim Atölyesi v6.2: Konu Anlatımı, 7 Günlük Program & Takip, Notlar ──
 const FEN3_COURSE = {
   id: "fen-3-oyun-atolyesi-2026",
-  title: "İlkokul 3. Sınıf Fen Bilimleri · Tam Müfredat İnteraktif Oyun Atölyesi (8 Ünite)",
-  shortTitle: "3. Sınıf Fen · Oyun Atölyesi",
-  author: "MEB Türkiye Yüzyılı Maarif Modeli (Tüm 8 Ünite) · Zorlayıcı Web Oyunları",
+  title: "İlkokul 3. Sınıf Kitabı · İnteraktif Oyun Atölyesi (Fen Bilimleri & Hayat Bilgisi)",
+  shortTitle: "3. Sınıf Kitabı · Oyun Atölyesi",
+  author: "MEB Türkiye Yüzyılı Maarif Modeli (Fen 8 Ünite + Hayat Bilgisi 6 Öğrenme Alanı)",
   year: 2026,
-  version: 3,
-  library: "Fen Bilimleri",
-  summary: "MEB 2026–2027 geçerli İlkokul 3. Sınıf Fen Bilimleri dersinin TAMAMI (8 Ünite): Tuzlu-Tatlı Su Deneyi, Arcade Balon Avı, Çift Ayarlı Mikroskop Labı, Stratejik 5 Duyu Dedektifi, 3 Canlı Yaşam Döngüsü, Sert Kayaç & Maden Kazısı, Canvas Fırça Kazısı, Madde & Karışım Fabrikası, Canvas Fizik Parkuru, Akıllı Ev Elektrik Mühendisi, Stratejik Sera ve Ekosistem Çeşitlilik Dedektifi!",
+  version: 4,
+  library: "3. Sınıf (Fen + Hayat)",
+  summary: "MEB 2026–2027 İlkokul 3. Sınıf ders kitaplarının TAMAMI tek oyun kitabında! 8 Fen Bilimleri ünitesi (14 web oyunu) + 6 Hayat Bilgisi öğrenme alanı (6 çok aşamalı oyun: Çocuk Hakları, Canvas Trafik Kavşağı, Meslek İstasyonu, Türkiye Kültür Haritası, 4x4 Kroki Robotu & Deprem Çantası, Teknoloji & Renk Atölyesi).",
   sections: [
     {
       id: "sec-fen3-u1",
-      dayTag: "1. Ünite · Bilimsel Keşif",
+      dayTag: "Fen · 1. Bilimsel Keşif",
       title: "Bilimsel Keşif Yolculuğu",
       subtitle: "Tatlı/tuzlu su tankı, Kaptan'ın salı, 35 sn Arcade Balon Avı ve 2 aşamalı kahramanlar!",
       estMin: 18,
@@ -1930,7 +1937,7 @@ const FEN3_COURSE = {
     },
     {
       id: "sec-fen3-u2",
-      dayTag: "2. Ünite · Canlılar Dünyası",
+      dayTag: "Fen · 2. Canlılar Dünyası",
       title: "Canlılar Dünyasına Yolculuk",
       subtitle: "Çift ayarlı mikroskop (Zoom + Odak), 3 haklı 5 Duyu Dedektifi ve 3 canlı yaşam döngüsü!",
       estMin: 22,
@@ -1948,7 +1955,7 @@ const FEN3_COURSE = {
     },
     {
       id: "sec-fen3-u3",
-      dayTag: "3. Ünite · Yer Bilimciler",
+      dayTag: "Fen · 3. Yer Bilimciler",
       title: "Yer Bilimciler İş Başında",
       subtitle: "Sert kayaç kazısı (8 maden), Canvas fırça kazısı + paleontolog ortam çıkarımı!",
       estMin: 20,
@@ -1965,7 +1972,7 @@ const FEN3_COURSE = {
     },
     {
       id: "sec-fen3-u4",
-      dayTag: "4. Ünite · Madde & Karışım",
+      dayTag: "Fen · 4. Madde & Karışım",
       title: "Maddeyi Tanıyalım, Karıştırıp Ayıralım",
       subtitle: "Katı–Sıvı–Gaz + Nitelik Matrisi, kap şekli deneyi, 2 adımlı karışım fabrikası ve geri dönüşüm!",
       estMin: 20,
@@ -1981,7 +1988,7 @@ const FEN3_COURSE = {
     },
     {
       id: "sec-fen3-u5",
-      dayTag: "5. Ünite · Hareket & Kuvvet",
+      dayTag: "Fen · 5. Hareket & Kuvvet",
       title: "Hareketi Keşfediyorum",
       subtitle: "Gerçek Canvas fizik parkurunda itme–çekme ile arabayı bayrakta durdur, şekil değişimini test et!",
       estMin: 18,
@@ -1997,7 +2004,7 @@ const FEN3_COURSE = {
     },
     {
       id: "sec-fen3-u6",
-      dayTag: "6. Ünite · Elektrik",
+      dayTag: "Fen · 6. Elektrik",
       title: "Yaşamımızı Kolaylaştıran Elektrik",
       subtitle: "Şehir elektriği–pil–batarya eşleştir, 4 ev tehlikesini önle ve tasarruf sayacını %100 yap!",
       estMin: 18,
@@ -2012,7 +2019,7 @@ const FEN3_COURSE = {
     },
     {
       id: "sec-fen3-u7",
-      dayTag: "7. Ünite · Toprak & Tarım",
+      dayTag: "Fen · 7. Toprak & Tarım",
       title: "Toprağı Tanıyorum, Tarımı Keşfediyorum",
       subtitle: "5 günlük stratejik sera simülasyonunda su, güneş ve toprak havası dengesini koru!",
       estMin: 18,
@@ -2027,7 +2034,7 @@ const FEN3_COURSE = {
     },
     {
       id: "sec-fen3-u8",
-      dayTag: "8. Ünite · Yaşam Alanları",
+      dayTag: "Fen · 8. Yaşam Alanları",
       title: "Canlıların Yaşam Alanlarına Yolculuk",
       subtitle: "Ekosistem eşleştirme, Toplam Sayı vs Çeşitlilik bulmacası ve Doğa Koruma dedektifliği!",
       estMin: 18,
@@ -2040,6 +2047,96 @@ const FEN3_COURSE = {
       <div class="fen-game-slot" data-game-id="game-u8-habitat"></div>
       <div class="edu-ex-slot" data-ex-id="ex-fen8-1"></div>`,
       searchText: "8. Ünite Canlıların Yaşam Alanlarına Yolculuk çöl kutup orman deniz canlı çeşitliliği toplam sayı yaşam alanı koruma çevre"
+    },
+    {
+      id: "sec-hb3-u1",
+      dayTag: "Hayat B. · 1. Ben ve Okulum",
+      title: "Ben ve Okulum",
+      subtitle: "Okuldaki hak ve sorumluluklarını ayırt et, Çocuk Hakları Avukatı olarak adaleti sağla!",
+      estMin: 15,
+      html: `<div id="fen3ScoreBanner" class="fg-banner"></div>
+      <div class="kid-hero">
+        <div class="chapter-top"><span class="chapter-tag">HAYAT BİLGİSİ 1 · HB.3.1.1 – HB.3.1.3</span><span class="chapter-mod">🎮 Hak–Sorumluluk &amp; Çocuk Hakları</span></div>
+        <h1>🎯 Ben ve Okulum</h1>
+        <p>Güçlü yönlerini tanı, okulda hak ve sorumluluklarını ayır ve çocuk hakları mahkemesinde adaleti sağla!</p>
+      </div>
+      <div class="fen-game-slot" data-game-id="game-hb-u1"></div>`,
+      searchText: "Hayat Bilgisi 1. Öğrenme Alanı Ben ve Okulum güçlü yönler hak sorumluluk çocuk hakları eğitim oyun"
+    },
+    {
+      id: "sec-hb3-u2",
+      dayTag: "Hayat B. · 2. Sağlık & Güvenlik",
+      title: "Sağlığım ve Güvenliğim",
+      subtitle: "Canvas trafik kavşağından güvenli geç, levhaları tanı, 112 ve sağlıklı beslenmeyi çöz!",
+      estMin: 18,
+      html: `<div id="fen3ScoreBanner" class="fg-banner"></div>
+      <div class="kid-hero">
+        <div class="chapter-top"><span class="chapter-tag">HAYAT BİLGİSİ 2 · HB.3.2.1 – HB.3.2.3</span><span class="chapter-mod">🎮 Canvas Trafik Kavşağı &amp; Güvenlik</span></div>
+        <h1>🚦 Sağlığım ve Güvenliğim</h1>
+        <p>Işıklara ve arabalara dikkat! Doğru anda karşıya geç, trafik levhalarını oku ve evdeki tehlikelere karşı önlem al!</p>
+      </div>
+      <div class="fen-game-slot" data-game-id="game-hb-u2"></div>`,
+      searchText: "Hayat Bilgisi 2. Öğrenme Alanı Sağlığım ve Güvenliğim trafik ışığı levha yaya geçidi 112 acil sağlıklı beslenme güvenlik"
+    },
+    {
+      id: "sec-hb3-u3",
+      dayTag: "Hayat B. · 3. Ailem ve Toplum",
+      title: "Ailem ve Toplum",
+      subtitle: "Mahalle kriz merkezine doğru meslek uzmanını yönlendir ve dayanışma köprüsü kur!",
+      estMin: 15,
+      html: `<div id="fen3ScoreBanner" class="fg-banner"></div>
+      <div class="kid-hero">
+        <div class="chapter-top"><span class="chapter-tag">HAYAT BİLGİSİ 3 · HB.3.3.1 – HB.3.3.2</span><span class="chapter-mod">🎮 Mahalle Meslek İstasyonu</span></div>
+        <h1>🏘️ Ailem ve Toplum</h1>
+        <p>İtfaiyeciden ziraat mühendisine tüm meslekleri tanı, olaylara doğru uzmanı gönder ve aile içi iş bölümünü keşfet!</p>
+      </div>
+      <div class="fen-game-slot" data-game-id="game-hb-u3"></div>`,
+      searchText: "Hayat Bilgisi 3. Öğrenme Alanı Ailem ve Toplum meslekler yardımlaşma dayanışma aile içi iş bölümü"
+    },
+    {
+      id: "sec-hb3-u4",
+      dayTag: "Hayat B. · 4. Yer ve Ülkem",
+      title: "Yaşadığım Yer ve Ülkem",
+      subtitle: "Türkiye Kültür Haritasında tarihî mekânları ayır, Cumhuriyet ve Atatürk sorularını çöz!",
+      estMin: 15,
+      html: `<div id="fen3ScoreBanner" class="fg-banner"></div>
+      <div class="kid-hero">
+        <div class="chapter-top"><span class="chapter-tag">HAYAT BİLGİSİ 4 · HB.3.4</span><span class="chapter-mod">🎮 Kültür Haritası &amp; Cumhuriyet</span></div>
+        <h1>🏛️ Yaşadığım Yer ve Ülkem</h1>
+        <p>Efes'ten Pamukkale'ye ülkemizin hazinelerini tanı, Cumhuriyetin ilanını ve Atatürk'ün kişilik özelliklerini keşfet!</p>
+      </div>
+      <div class="fen-game-slot" data-game-id="game-hb-u4"></div>`,
+      searchText: "Hayat Bilgisi 4. Öğrenme Alanı Yaşadığım Yer ve Ülkem tarihi mekan doğal güzellik Cumhuriyet TBMM Atatürk millî birlik"
+    },
+    {
+      id: "sec-hb3-u5",
+      dayTag: "Hayat B. · 5. Doğa ve Çevre",
+      title: "Doğa ve Çevre",
+      subtitle: "4x4 mahalle krokisinde yön robotunu yürüt, 6 doğru afet çantası eşyasını topla!",
+      estMin: 18,
+      html: `<div id="fen3ScoreBanner" class="fg-banner"></div>
+      <div class="kid-hero">
+        <div class="chapter-top"><span class="chapter-tag">HAYAT BİLGİSİ 5 · HB.3.5.1 – HB.3.5.4</span><span class="chapter-mod">🎮 Kroki Robotu &amp; Afet Çantası</span></div>
+        <h1>🧭🎒 Doğa ve Çevre</h1>
+        <p>Kuzey–Güney–Doğu–Batı yönleriyle kroki hedeflerini bul ve deprem anı Çök–Kapan–Tutun kurallarıyla afet çantanı hazırla!</p>
+      </div>
+      <div class="fen-game-slot" data-game-id="game-hb-u5"></div>`,
+      searchText: "Hayat Bilgisi 5. Öğrenme Alanı Doğa ve Çevre kroki yön kuzey güney doğu batı afet deprem çantası çök kapan tutun"
+    },
+    {
+      id: "sec-hb3-u6",
+      dayTag: "Hayat B. · 6. Bilim, Teknoloji, Sanat",
+      title: "Bilim, Teknoloji ve Sanat",
+      subtitle: "Bilinçli teknoloji, ünlü Türk sanatçılar ve interaktif Renk Karıştırma Atölyesi!",
+      estMin: 15,
+      html: `<div id="fen3ScoreBanner" class="fg-banner"></div>
+      <div class="kid-hero">
+        <div class="chapter-top"><span class="chapter-tag">HAYAT BİLGİSİ 6 · HB.3.6</span><span class="chapter-mod">🎮 Teknoloji &amp; Renk Atölyesi</span></div>
+        <h1>🎨🤖 Bilim, Teknoloji ve Sanat</h1>
+        <p>Teknolojiyi güvenli kullan, Mimar Sinan ve Osman Hamdi Bey'i tanı, ana renkleri karıştırıp ara renkleri üret!</p>
+      </div>
+      <div class="fen-game-slot" data-game-id="game-hb-u6"></div>`,
+      searchText: "Hayat Bilgisi 6. Öğrenme Alanı Bilim Teknoloji ve Sanat bilinçli kullanım Mimar Sinan Osman Hamdi Bey renk karıştırma"
     }
   ]
 };
@@ -3604,15 +3701,17 @@ document.addEventListener('input', e => {
       'game-u3-dig', 'game-u3-fossil',
       'game-u4-matter', 'game-u4-separate',
       'game-u5-force', 'game-u6-electric',
-      'game-u7-farm', 'game-u8-habitat'
+      'game-u7-farm', 'game-u8-habitat',
+      'game-hb-u1', 'game-hb-u2', 'game-hb-u3',
+      'game-hb-u4', 'game-hb-u5', 'game-hb-u6'
     ];
     const ex = typeof state !== 'undefined' ? (ensureEduState(state).exercises || {}) : {};
     const done = allIds.filter(id => ex[id]?.done).length;
     const pct = Math.round((done / allIds.length) * 100);
     return `<div class="fg-banner-inner">
-      <div><b>🏆 Fen Kaşifi Karnesi:</b> ${done} / ${allIds.length} Web Oyunu Tamamlandı (%${pct})</div>
+      <div><b>🏆 3. Sınıf Kaşifi Karnesi:</b> ${done} / ${allIds.length} Web Oyunu Tamamlandı (%${pct})</div>
       <div class="fg-banner-bar"><i style="width:${pct}%"></i></div>
-      <div class="fg-banner-stars">${'⭐'.repeat(Math.min(done, 14))}${done === 0 ? 'Oyunları bitirip yıldızları topla!' : ''}</div>
+      <div class="fg-banner-stars">${'⭐'.repeat(Math.min(done, 20))}${done === 0 ? 'Fen Bilimleri ve Hayat Bilgisi oyunlarını bitirip yıldızları topla!' : ''}</div>
     </div>`;
   };
 
@@ -4968,6 +5067,498 @@ document.addEventListener('input', e => {
     'game-u6-electric': mountElectricGame,
     'game-u7-farm': mountFarmGame,
     'game-u8-habitat': mountHabitatGame
+  });
+})();
+// ── 3. Sınıf Hayat Bilgisi · İnteraktif Web Oyunları Motoru (6 Öğrenme Alanı) ──
+(() => {
+  const H = () => window.FEN3_HELPER;
+
+  // ═══════════════════════════════════════════════════════════════
+  // HB OYUN 1: 🎯 Ben ve Okulum (Yetenek · Hak/Sorumluluk · Çocuk Hakları)
+  // ═══════════════════════════════════════════════════════════════
+  function mountHbU1(slot) {
+    const ITEMS = [
+      { txt: 'Temiz ve güvenli bir sınıfta ders işlemek', kind: 'hak' },
+      { txt: 'Sıramı ve sınıfımı temiz tutmak', kind: 'sor' },
+      { txt: 'Sınıf kurallarına ve arkadaşlarıma saygı göstermek', kind: 'sor' },
+      { txt: 'Okul kulüplerinde fikrimi özgürce söylemek', kind: 'hak' },
+      { txt: 'Teneffüste oyun oynayıp dinlenmek', kind: 'hak' },
+      { txt: 'Ödevlerimi zamanında ve özenle yapmak', kind: 'sor' }
+    ];
+    const CASES = [
+      { q: '10 yaşındaki Mert\'i okul yerine ağır işlerde çalıştırmak istiyorlar!', opts: ['Eğitim ve Oyun Hakkı ihlal ediliyor — okula gitmeli!', 'Bu sadece büyüklerin kararıdır'], ans: 0 },
+      { q: 'Tekerlekli sandalyeli Zeynep için okul girişinde rampa yok!', opts: ['Engelli çocukların eşit katılım hakkı için rampa yapılmalı!', 'Zeynep evde tek kalmalı'], ans: 0 },
+      { q: 'Sınıf başkanlığı seçiminde sadece birkaç öğrencinin oy kullanmasına izin verildi!', opts: ['Her çocuğun eşit söz ve katılım hakkı vardır!', 'Sadece ön sıradakiler oy vermeli'], ans: 0 },
+      { q: 'Gelişime açık bir yönümüzü (ör. heyecanlanmadan konuşmayı) nasıl güçlendiririz?', opts: ['Planlı pratik yaparak ve destek isteyerek', 'Bir daha hiç konuşmayarak'], ans: 0 }
+    ];
+    let idx = 0, part1Done = false, cIdx = 0, part2Done = false, msg = '1) Okulda Hak mı, Sorumluluk mu? ayır. 2) Çocuk Hakları Avukatı olarak 4 olayı çöz!';
+
+    function draw() {
+      const it = ITEMS[idx], cs = CASES[cIdx];
+      slot.innerHTML = `<section class="fg-card sky">
+        ${H().gameHeader('game-hb-u1', '🎯 BEN VE OKULUM', 'Oyun 15 · Hak–Sorumluluk & Çocuk Hakları Avukatı', 'Okuldaki hak ve sorumluluklarını ayırt et, ardından çocuk hakları mahkemesinde adaleti sağla!')}
+        <div class="fg-msg">${msg}</div>
+        <div class="fg-sink-layout">
+          <div class="fg-notebook">
+            <h6>1. Hak mı, Sorumluluk mu? (${part1Done ? ITEMS.length : idx}/${ITEMS.length})</h6>
+            <div class="fg-capsule" style="margin-bottom:8px">${part1Done ? '✅ Hepsini doğru ayırdın!' : `Kart: <b>"${it.txt}"</b>`}</div>
+            <div class="row">
+              <button type="button" class="small primary" data-hb1-p1="hak" ${part1Done ? 'disabled' : ''}>🛡️ Benim Hakkım</button>
+              <button type="button" class="small primary" data-hb1-p1="sor" ${part1Done ? 'disabled' : ''}>📋 Sorumluluğum</button>
+            </div>
+          </div>
+          <div class="fg-notebook">
+            <h6>2. Çocuk Hakları Avukatı (${part2Done ? CASES.length : cIdx}/${CASES.length})</h6>
+            <div class="fg-capsule" style="margin-bottom:8px">${part2Done ? '🏆 Tüm çocuk haklarını savundun!' : cs.q}</div>
+            ${!part2Done ? `<div class="row">${cs.opts.map((op, i) => `<button type="button" class="small primary" data-hb1-p2="${i}">${op}</button>`).join('')}</div>` : ''}
+          </div>
+        </div>
+      </section>`;
+    }
+
+    slot.onclick = e => {
+      const b1 = e.target.closest('[data-hb1-p1]');
+      if (b1) {
+        if (b1.dataset.hb1P1 === ITEMS[idx].kind) {
+          H().sfxGood(); msg = '✅ Doğru ayrım!';
+          if (idx < ITEMS.length - 1) idx++;
+          else { part1Done = true; if (part2Done) { H().sfxWin(); H().saveGameProgress('game-hb-u1', 2, 2); } }
+        } else { H().sfxBad(); msg = '🤔 Tekrar düşün: Bu senin alman gereken bir imkân mı (Hak), yapman gereken bir görev mi (Sorumluluk)?'; }
+        draw(); return;
+      }
+      const b2 = e.target.closest('[data-hb1-p2]');
+      if (b2) {
+        if (Number(b2.dataset.hb1P2) === CASES[cIdx].ans) {
+          H().sfxGood(); msg = '⚖️ Harika Avukat! Doğru kararı verdin!';
+          if (cIdx < CASES.length - 1) cIdx++;
+          else { part2Done = true; if (part1Done) { H().sfxWin(); H().saveGameProgress('game-hb-u1', 2, 2); } }
+        } else { H().sfxBad(); msg = '❌ Çocuk hakları tüm çocuklar için geçerlidir, tekrar dene!'; }
+        draw();
+      }
+    };
+    draw();
+  }
+
+  // ═══════════════════════════════════════════════════════════════
+  // HB OYUN 2: 🚦 Canvas Trafik Kavşağı, Güvenlik & Sağlık (HB 2)
+  // ═══════════════════════════════════════════════════════════════
+  function mountHbU2(slot) {
+    const SIGNS = [
+      { ico: '🚸', name: 'Okul Geçidi', opts: ['Okul Geçidi — Yavaşla', 'Yüzme Havuzu', 'Park Yasak'], ans: 0 },
+      { ico: '⛔', name: 'Girilmez', opts: ['Taşıt Giremez / Girilmez', 'Bisiklet Yolu', 'Hastane'], ans: 0 },
+      { ico: '🛑', name: 'Dur', opts: ['Dur ve Kontrol Et', 'Hızlan', 'Sola Dön'], ans: 0 },
+      { ico: '🚲', name: 'Bisiklet Yolu', opts: ['Bisiklet Yolu', 'Kamyon Parkı', 'Tren İstasyonu'], ans: 0 }
+    ];
+    const SAFETY = [
+      { q: 'Evde yalnızken tanımadığın biri kapıyı çalıp "Annen beni gönderdi" derse ne yaparsın?', opts: ['Kapıyı ASLA açmam, ailemi ararım', 'Hemen içeri alırım'], ans: 0 },
+      { q: 'Acil bir kaza veya yangın durumunda hangi tek numarayı aramalıyız?', opts: ['112 Acil Çağrı Merkezi', '999'], ans: 0 },
+      { q: 'Sağlıklı ve dengeli bir öğün için tabağımızda neler dengeli olmalıdır?', opts: ['Sebze-meyve, tahıl, süt/protein ve bol su', 'Sadece şeker, cips ve gazlı içecek'], ans: 0 }
+    ];
+    let light = 'red', kidX = 40, carY = 0, crossings = 0, sIdx = 0, signOk = false, qIdx = 0, qOk = false;
+    let msg = 'Trafik ışığı KIRMIZI/YEŞİL değişiyor! Araba geçerken ve kırmızıdayken SAKIN geçme; sadece yaya ışığı YEŞİL iken "🚶 Karşıya Geç"e bas!';
+
+    slot.innerHTML = `<section class="fg-card rose">
+      ${H().gameHeader('game-hb-u2', '🚦 CANVAS TRAFİK & GÜVENLİK LABI', 'Oyun 16 · Trafik Kavşağı, Levhalar & 112 Güvenlik', 'Yaya ışığı YEŞİL yanıp yol boşaldığında karşıya geç (3 kez); ardından trafik levhalarını ve güvenlik sorularını çöz!')}
+      <div class="fg-msg" id="hb2Msg">${msg}</div>
+      <div class="fg-sink-layout">
+        <div>
+          <div class="fg-canvas-wrap"><canvas id="hb2Canvas" width="360" height="190" style="border-radius:12px;border:2px solid #94a3b8;width:100%;max-width:360px"></canvas></div>
+          <div class="row" style="margin-top:8px;justify-content:center">
+            <button type="button" class="small primary" id="hb2Cross">🚶 Karşıya Geç (<span id="hb2Cnt">0</span>/3)</button>
+          </div>
+        </div>
+        <div style="display:grid;gap:10px">
+          <div class="fg-notebook" id="hb2SignBox"></div>
+          <div class="fg-notebook" id="hb2SafeBox"></div>
+        </div>
+      </div>
+    </section>`;
+
+    const canvas = slot.querySelector('#hb2Canvas'), ctx = canvas.getContext('2d');
+    const msgEl = slot.querySelector('#hb2Msg'), cntEl = slot.querySelector('#hb2Cnt');
+
+    function checkAllDone() {
+      if (crossings >= 3 && signOk && qOk) {
+        H().sfxWin(); H().saveGameProgress('game-hb-u2', 3, 3);
+        msgEl.textContent = '🏆 SÜPER! Hem dikkatli yaya hem trafik/sağlık kahramanı oldun!';
+      }
+    }
+
+    function renderSub() {
+      const sg = SIGNS[sIdx], sf = SAFETY[qIdx];
+      slot.querySelector('#hb2SignBox').innerHTML = `<h6>🚸 Trafik Levhası (${signOk ? 4 : sIdx}/4)</h6>
+        ${signOk ? '<div class="fg-won">✅ Tüm levhaları bildin!</div>' : `<div style="font-size:34px;text-align:center">${sg.ico}</div>
+        <div class="row" style="margin-top:6px">${sg.opts.map((o, i) => `<button type="button" class="small primary" data-hb2-sg="${i}">${o}</button>`).join('')}</div>`}`;
+      slot.querySelector('#hb2SafeBox').innerHTML = `<h6>🏥 Sağlık &amp; Güvenlik (${qOk ? 3 : qIdx}/3)</h6>
+        ${qOk ? '<div class="fg-won">✅ Güvenlik ve sağlık tam!</div>' : `<p style="font-size:12.5px;margin:0 0 6px">${sf.q}</p>
+        <div class="row">${sf.opts.map((o, i) => `<button type="button" class="small primary" data-hb2-sf="${i}">${o}</button>`).join('')}</div>`}`;
+
+      slot.querySelectorAll('[data-hb2-sg]').forEach(b => b.onclick = () => {
+        if (Number(b.dataset.hb2Sg) === SIGNS[sIdx].ans) {
+          H().sfxGood();
+          if (sIdx < SIGNS.length - 1) sIdx++; else signOk = true;
+          checkAllDone(); renderSub();
+        } else { H().sfxBad(); msgEl.textContent = '❌ Bu trafik levhasının anlamını tekrar düşün!'; }
+      });
+      slot.querySelectorAll('[data-hb2-sf]').forEach(b => b.onclick = () => {
+        if (Number(b.dataset.hb2Sf) === SAFETY[qIdx].ans) {
+          H().sfxGood();
+          if (qIdx < SAFETY.length - 1) qIdx++; else qOk = true;
+          checkAllDone(); renderSub();
+        } else { H().sfxBad(); msgEl.textContent = '⚠️ Güvenliğimiz ve sağlığımız için dikkatli seç!'; }
+      });
+    }
+    renderSub();
+
+    let tick = 0;
+    const iv = setInterval(() => {
+      if (!document.body.contains(canvas)) return;
+      tick = (tick + 1) % 60;
+      light = tick < 32 ? 'red' : 'green';
+    }, 100);
+    H().activeIntervals.push(iv);
+
+    function loop() {
+      if (!document.body.contains(canvas)) return;
+      if (light === 'red') carY = (carY + 3.2) % 240;
+      else if (carY > 20 && carY < 170) carY += 3.2;
+
+      ctx.clearRect(0, 0, 360, 190);
+      ctx.fillStyle = '#dcfce7'; ctx.fillRect(0, 0, 360, 190);
+      ctx.fillStyle = '#475569'; ctx.fillRect(105, 0, 150, 190);
+      // Yaya gecidi
+      ctx.fillStyle = '#fff';
+      for (let x = 115; x < 245; x += 26) ctx.fillRect(x, 82, 16, 36);
+      // Trafik isigi
+      ctx.fillStyle = '#1e293b'; ctx.fillRect(272, 18, 28, 56);
+      ctx.fillStyle = light === 'red' ? '#ef4444' : '#450a0a'; ctx.beginPath(); ctx.arc(286, 33, 8, 0, Math.PI * 2); ctx.fill();
+      ctx.fillStyle = light === 'green' ? '#22c55e' : '#052e16'; ctx.beginPath(); ctx.arc(286, 58, 8, 0, Math.PI * 2); ctx.fill();
+      // Araba
+      if (light === 'red' || (carY > 0 && carY < 195)) {
+        ctx.fillStyle = '#f59e0b'; ctx.beginPath(); ctx.roundRect(156, carY - 35, 34, 46, 6); ctx.fill();
+      }
+      // Yaya
+      ctx.font = '24px Segoe UI, sans-serif'; ctx.fillText('🧒', kidX, 108);
+      H().activeRafs.push(requestAnimationFrame(loop));
+    }
+    H().activeRafs.push(requestAnimationFrame(loop));
+
+    slot.querySelector('#hb2Cross').onclick = () => {
+      if (crossings >= 3) return;
+      if (light === 'green') {
+        kidX = 290; crossings++; cntEl.textContent = crossings; H().sfxGood();
+        msgEl.textContent = `✅ Harika! Yeşil yaya ışığında güvenli geçtin! (${crossings}/3)`;
+        setTimeout(() => { kidX = 40; }, 550);
+        checkAllDone();
+      } else {
+        H().sfxBad();
+        msgEl.textContent = '🚨 DUR! Işık kırmızı ve arabalar geçiyor! Yeşil yanınca geç!';
+      }
+    };
+  }
+
+  // ═══════════════════════════════════════════════════════════════
+  // HB OYUN 3: 🏘️ Mahalle Meslek İstasyonu & Aile Dayanışması (HB 3)
+  // ═══════════════════════════════════════════════════════════════
+  function mountHbU3(slot) {
+    const CALLS = [
+      { ev: '🔥 Mahalledeki fırının bacasında yangın çıktı!', ans: 'İtfaiyeci' },
+      { ev: '🦷 Küçük Kerem\'in azı dişi çok ağrıyor!', ans: 'Diş Hekimi' },
+      { ev: '⚡ Fırtınadan sonra sokağın elektrik direği arızalandı!', ans: 'Elektrik Teknisyeni' },
+      { ev: '🌾 Tarladaki buğdayların daha verimli büyümesi için uzman lazım!', ans: 'Ziraat Mühendisi' },
+      { ev: '🏗️ Depreme dayanıklı yeni okul binasının projesi çizilecek!', ans: 'İnşaat Mühendisi' }
+    ];
+    const PROS = ['🚒 İtfaiyeci', '🦷 Diş Hekimi', '⚡ Elektrik Teknisyeni', '🌾 Ziraat Mühendisi', '🏗️ İnşaat Mühendisi'];
+    const FAM = [
+      { q: 'Annemiz ve babamız işten yorgun geldiğinde sofrayı kurarken ne yapmalıyız?', opts: ['Aile içi iş bölümüne katılıp yardım etmeliyiz', 'Sadece televizyon izlemeliyiz'], ans: 0 },
+      { q: 'Mahallemizde hasta veya yaşlı bir komşumuzun market alışverişine ihtiyacı varsa?', opts: ['Dayanışma ve yardımlaşma gösterip destek oluruz', 'Bizi ilgilendirmez deriz'], ans: 0 }
+    ];
+    let cIdx = 0, cDone = false, fIdx = 0, fDone = false, msg = 'Acil çağrıyı oku, doğru meslek uzmanını gönder ve dayanışma sorularını çöz!';
+
+    function draw() {
+      const cur = CALLS[cIdx], fm = FAM[fIdx];
+      slot.innerHTML = `<section class="fg-card mint">
+        ${H().gameHeader('game-hb-u3', '🏘️ AİLEM VE TOPLUM', 'Oyun 17 · Mahalle Meslek İstasyonu & Dayanışma', 'Her meslek toplum için değerlidir! Olaylara doğru mesleği yönlendir ve aile içi dayanışmayı seç!')}
+        <div class="fg-msg">${msg}</div>
+        <div class="fg-sink-layout">
+          <div class="fg-notebook">
+            <h6>🚨 Meslek Çağrı Merkezi (${cDone ? 5 : cIdx}/5)</h6>
+            <div class="fg-capsule" style="margin-bottom:8px">${cDone ? '✅ Tüm mahalle olayları çözüldü!' : cur.ev}</div>
+            <div class="row">${PROS.map(p => `<button type="button" class="small primary" data-hb3-pro="${p}" ${cDone ? 'disabled' : ''}>${p}</button>`).join('')}</div>
+          </div>
+          <div class="fg-notebook">
+            <h6>🤝 Aile ve Dayanışma (${fDone ? 2 : fIdx}/2)</h6>
+            <div class="fg-capsule" style="margin-bottom:8px">${fDone ? '💚 Yardımlaşma ve dayanışma tam!' : fm.q}</div>
+            ${!fDone ? `<div class="row">${fm.opts.map((op, i) => `<button type="button" class="small primary" data-hb3-fam="${i}">${op}</button>`).join('')}</div>` : ''}
+          </div>
+        </div>
+      </section>`;
+    }
+
+    slot.onclick = e => {
+      const pb = e.target.closest('[data-hb3-pro]');
+      if (pb) {
+        if (pb.dataset.hb3Pro.includes(CALLS[cIdx].ans)) {
+          H().sfxGood(); msg = '🌟 Doğru uzman olay yerine ulaştı!';
+          if (cIdx < CALLS.length - 1) cIdx++; else { cDone = true; if (fDone) { H().sfxWin(); H().saveGameProgress('game-hb-u3', 2, 2); } }
+        } else { H().sfxBad(); msg = '🤔 Bu olaya başka bir meslek uzmanı bakıyor!'; }
+        draw(); return;
+      }
+      const fb = e.target.closest('[data-hb3-fam]');
+      if (fb) {
+        if (Number(fb.dataset.hb3Fam) === FAM[fIdx].ans) {
+          H().sfxGood(); msg = '🤝 Ailede iş bölümü ve toplumda yardımlaşma bizi güçlendirir!';
+          if (fIdx < FAM.length - 1) fIdx++; else { fDone = true; if (cDone) { H().sfxWin(); H().saveGameProgress('game-hb-u3', 2, 2); } }
+        } else { H().sfxBad(); msg = '❌ Empati ve yardımlaşmayı düşünerek tekrar seç!'; }
+        draw();
+      }
+    };
+    draw();
+  }
+
+  // ═══════════════════════════════════════════════════════════════
+  // HB OYUN 4: 🏛️ Türkiye Kültür Haritası & Cumhuriyet/Atatürk (HB 4)
+  // ═══════════════════════════════════════════════════════════════
+  function mountHbU4(slot) {
+    const PLACES = [
+      { name: '🏛️ Efes Antik Kenti (İzmir)', kind: 'tarihi' },
+      { name: '🌊 Pamukkale Travertenleri (Denizli)', kind: 'dogal' },
+      { name: '🏰 Topkapı Sarayı (İstanbul)', kind: 'tarihi' },
+      { name: '🏞️ Uzungöl (Trabzon)', kind: 'dogal' },
+      { name: '🪨 Göbeklitepe (Şanlıurfa)', kind: 'tarihi' },
+      { name: '💎 Salda Gölü (Burdur)', kind: 'dogal' }
+    ];
+    const ATA = [
+      { q: 'Ülkemizin yönetim şekli nedir ve ne zaman ilan edilmiştir?', opts: ['Cumhuriyet · 29 Ekim 1923', 'Krallık · 1900'], ans: 0 },
+      { q: 'Atatürk\'ün "Yurtta sulh, cihanda sulh" sözü hangi özelliğini gösterir?', opts: ['Barışseverliğini', 'Sadece askerliği sevdiğini'], ans: 0 },
+      { q: 'Atatürk\'ün Geometri kitabı yazıp yeni terimler üretmesi hangi özelliğidir?', opts: ['Eğitime/bilime verdiği önem ve çok yönlülüğü', 'Aceleciliği'], ans: 0 },
+      { q: 'Halkın kendini yönetecek temsilcileri seçtiği meclisimiz ne zaman açıldı?', opts: ['23 Nisan 1920 (TBMM)', '1 Mayıs 1950'], ans: 0 }
+    ];
+    let pIdx = 0, pDone = false, aIdx = 0, aDone = false, msg = '1) Ülkemizdeki yerleri "Tarihî Mekân" veya "Doğal Güzellik" olarak ayır. 2) Cumhuriyet ve Atatürk sorularını çöz!';
+
+    function draw() {
+      const pl = PLACES[pIdx], at = ATA[aIdx];
+      slot.innerHTML = `<section class="fg-card sun">
+        ${H().gameHeader('game-hb-u4', '🏛️ YAŞADIĞIM YER VE ÜLKEM', 'Oyun 18 · Türkiye Kültür Haritası & Atatürk / Cumhuriyet', 'Tarihî eserleri doğal güzelliklerden ayır, Cumhuriyet ve Atatürk\'ün özelliklerini eşleştir!')}
+        <div class="fg-msg">${msg}</div>
+        <div class="fg-sink-layout">
+          <div class="fg-notebook">
+            <h6>🗺️ Tarihî Mekân mı, Doğal Güzellik mi? (${pDone ? 6 : pIdx}/6)</h6>
+            <div class="fg-capsule" style="margin-bottom:8px">${pDone ? '✅ Türkiye haritasını tamamladın!' : `Yer: <b>${pl.name}</b>`}</div>
+            <div class="row">
+              <button type="button" class="small primary" data-hb4-pl="tarihi" ${pDone ? 'disabled' : ''}>🏛️ Tarihî Mekân (İnsan Yapımı)</button>
+              <button type="button" class="small primary" data-hb4-pl="dogal" ${pDone ? 'disabled' : ''}>🌿 Doğal Güzellik (Doğa Oluşumu)</button>
+            </div>
+          </div>
+          <div class="fg-notebook">
+            <h6>🇹🇷 Cumhuriyet &amp; Atatürk (${aDone ? 4 : aIdx}/4)</h6>
+            <div class="fg-capsule" style="margin-bottom:8px">${aDone ? '🏆 Millî birlik ve tarih bilgisi tam!' : at.q}</div>
+            ${!aDone ? `<div class="row">${at.opts.map((op, i) => `<button type="button" class="small primary" data-hb4-at="${i}">${op}</button>`).join('')}</div>` : ''}
+          </div>
+        </div>
+      </section>`;
+    }
+
+    slot.onclick = e => {
+      const pb = e.target.closest('[data-hb4-pl]');
+      if (pb) {
+        if (pb.dataset.hb4Pl === PLACES[pIdx].kind) {
+          H().sfxGood(); msg = '🌟 Doğru! Geçmişten kalan yapılar tarihî mekân, doğanın oluşturdukları doğal güzelliktir.';
+          if (pIdx < PLACES.length - 1) pIdx++; else { pDone = true; if (aDone) { H().sfxWin(); H().saveGameProgress('game-hb-u4', 2, 2); } }
+        } else { H().sfxBad(); msg = '🤔 Düşün: Bunu eski insanlar mı yaptı, yoksa doğa kendiliğinden mi oluşturdu?'; }
+        draw(); return;
+      }
+      const ab = e.target.closest('[data-hb4-at]');
+      if (ab) {
+        if (Number(ab.dataset.hb4At) === ATA[aIdx].ans) {
+          H().sfxGood(); msg = '🇹🇷 Harika! Doğru bilgi!';
+          if (aIdx < ATA.length - 1) aIdx++; else { aDone = true; if (pDone) { H().sfxWin(); H().saveGameProgress('game-hb-u4', 2, 2); } }
+        } else { H().sfxBad(); msg = '❌ Tekrar düşün!'; }
+        draw();
+      }
+    };
+    draw();
+  }
+
+  // ═══════════════════════════════════════════════════════════════
+  // HB OYUN 5: 🧭🎒 İnteraktif 4x4 Kroki Robotu & Afet Çantası (HB 5)
+  // ═══════════════════════════════════════════════════════════════
+  function mountHbU5(slot) {
+    // 4x4 Harita: (r, c), Kuzey = r-1, Guney = r+1, Bati = c-1, Dogu = c+1
+    const MAP_OBJS = { '0,0': '🏠 Ev', '0,3': '🏥 Hastane', '1,2': '🌳 Park', '2,1': '📮 Postane', '3,3': '🏫 Okul', '3,0': '📚 Kütüphane' };
+    const MISSIONS = [
+      { txt: 'Görev 1: Ev\'den (0,0) çıkıp OKUL\'a (sağ alt köşe) ulaş! (Kuzey-Güney-Doğu-Batı oklarıyla yürü)', target: '3,3' },
+      { txt: 'Görev 2: Şimdi OKUL\'un BATISINDAKİ ve biraz yukarısındaki POSTANE\'yi bul!', target: '2,1' },
+      { txt: 'Görev 3: POSTANE\'nin kuzeydoğusundaki HASTANE\'ye ulaş!', target: '0,3' }
+    ];
+    const BAG_ITEMS = [
+      { id: 'su', name: '💧 İçme Suyu', good: true }, { id: 'oyuncak', name: '🎮 Oyun Konsolu', good: false },
+      { id: 'duduk', name: '📣 Düdük', good: true }, { id: 'fener', name: '🔦 El Feneri & Pil', good: true },
+      { id: 'vazo', name: '🏺 Ağır Cam Vazo', good: false }, { id: 'ilkyardim', name: '🩹 İlk Yardım Çantası', good: true },
+      { id: 'biskuvi', name: '🍪 Kuru Gıda/Bisküvi', good: true }, { id: 'mum', name: '🕯️ Açık Mum', good: false },
+      { id: 'battaniye', name: '🧣 Yedek Giysi/Battaniye', good: true }
+    ];
+    let r = 0, c = 0, mIdx = 0, mapDone = false, pickedBag = [], bagDone = false;
+    let msg = 'Kroki oklarıyla haritada yürü (Yukarı=Kuzey, Sağ=Doğu)! Sağda da 6 doğru Afet Çantası eşyasını seç!';
+
+    function draw() {
+      let gridHtml = '';
+      for (let rr = 0; rr < 4; rr++) {
+        for (let cc = 0; cc < 4; cc++) {
+          const key = rr + ',' + cc;
+          const isMe = rr === r && cc === c;
+          const isTgt = !mapDone && MISSIONS[mIdx].target === key;
+          gridHtml += `<div class="hb-cell ${isMe ? 'me' : ''} ${isTgt ? 'tgt' : ''}">${isMe ? '🤖' : (MAP_OBJS[key] || '·')}</div>`;
+        }
+      }
+      slot.innerHTML = `<section class="fg-card mint">
+        ${H().gameHeader('game-hb-u5', '🧭🎒 KROKİ ROBOTU & AFET HAZIRLIĞI', 'Oyun 19 · Haritada Yön Bulma & Deprem Çantası', 'Kuzey–Güney–Doğu–Batı yönleriyle kroki görevlerini tamamla, ardından 6 doğru afet çantası eşyasını topla!')}
+        <div class="fg-msg">${msg}</div>
+        <div class="fg-sink-layout">
+          <div class="fg-notebook">
+            <h6>🧭 Kroki Haritası (${mapDone ? 3 : mIdx}/3) · K=Yukarı, D=Sağ</h6>
+            <div class="fg-capsule" style="margin-bottom:8px">${mapDone ? '✅ Tüm kroki hedeflerine ulaştın!' : MISSIONS[mIdx].txt}</div>
+            <div class="hb-grid-map">${gridHtml}</div>
+            <div class="row" style="justify-content:center;margin-top:8px">
+              <button type="button" class="small primary" data-dir="N" ${mapDone ? 'disabled' : ''}>⬆️ Kuzey</button>
+              <button type="button" class="small primary" data-dir="S" ${mapDone ? 'disabled' : ''}>⬇️ Güney</button>
+              <button type="button" class="small primary" data-dir="W" ${mapDone ? 'disabled' : ''}>⬅️ Batı</button>
+              <button type="button" class="small primary" data-dir="E" ${mapDone ? 'disabled' : ''}>➡️ Doğu</button>
+            </div>
+          </div>
+          <div class="fg-notebook">
+            <h6>🎒 Afet &amp; Deprem Çantası (${pickedBag.length}/6 Doğru Eşya)</h6>
+            <p style="font-size:12px;margin:0 0 6px">Deprem anında ne yapmalıyız? <b>ÇÖK – KAPAN – TUTUN!</b> (Asansöre binme!) Şimdi çantaya sadece 6 gerekli eşyayı koy:</p>
+            <div class="row">
+              ${BAG_ITEMS.map(it => {
+                const on = pickedBag.includes(it.id);
+                return `<button type="button" class="small ${on ? 'primary' : ''}" data-bag="${it.id}" ${bagDone ? 'disabled' : ''}>${on ? '✓ ' : ''}${it.name}</button>`;
+              }).join('')}
+            </div>
+          </div>
+        </div>
+      </section>`;
+    }
+
+    slot.onclick = e => {
+      const db = e.target.closest('[data-dir]');
+      if (db) {
+        const d = db.dataset.dir;
+        if (d === 'N' && r > 0) r--; else if (d === 'S' && r < 3) r++;
+        else if (d === 'W' && c > 0) c--; else if (d === 'E' && c < 3) c++;
+        H().sfxPop();
+        if (r + ',' + c === MISSIONS[mIdx].target) {
+          H().sfxGood(); msg = '🎯 Hedefe ulaştın!';
+          if (mIdx < MISSIONS.length - 1) mIdx++; else { mapDone = true; if (bagDone) { H().sfxWin(); H().saveGameProgress('game-hb-u5', 2, 2); } }
+        }
+        draw(); return;
+      }
+      const bb = e.target.closest('[data-bag]');
+      if (bb) {
+        const it = BAG_ITEMS.find(x => x.id === bb.dataset.bag);
+        if (it.good) {
+          if (!pickedBag.includes(it.id)) {
+            pickedBag.push(it.id); H().sfxGood();
+            msg = `🎒 "${it.name}" çantaya eklendi!`;
+            if (pickedBag.length === 6) {
+              bagDone = true; msg = '🏆 Afet çantan eksiksiz hazır! (Çök–Kapan–Tutun kuralını unutma!)';
+              if (mapDone) { H().sfxWin(); H().saveGameProgress('game-hb-u5', 2, 2); }
+            }
+          }
+        } else {
+          H().sfxBad();
+          msg = `🚫 "${it.name}" afet çantasına konmaz! (Ağır/kırılgan/yanıcı veya acil öncelikli değil)`;
+        }
+        draw();
+      }
+    };
+    draw();
+  }
+
+  // ═══════════════════════════════════════════════════════════════
+  // HB OYUN 6: 🎨🤖 Bilim, Teknoloji ve Sanat Atölyesi (HB 6)
+  // ═══════════════════════════════════════════════════════════════
+  function mountHbU6(slot) {
+    const TECH = [
+      { q: 'Eskiden mektup veya haberleşmede telgraf kullanılırdı; bugün anında hangi teknolojiyi kullanıyoruz?', opts: ['E-posta ve görüntülü arama (İnternet)', 'Kil tablet'], ans: 0 },
+      { q: 'Teknolojiyi bilinçli ve güvenli kullanmak için hangisini yapmalıyız?', opts: ['Ekran süresine uymak, gözleri dinlendirmek ve şifreleri paylaşmamak', 'Gece geç saatlere kadar ara vermeden tablet kullanmak'], ans: 0 },
+      { q: '"Kaplumbağa Terbiyecisi" tablosunu yapan ünlü Türk ressam kimdir?', opts: ['Osman Hamdi Bey', 'Mimar Sinan'], ans: 0 },
+      { q: 'Selimiye ve Süleymaniye Camilerini yapan dünyaca ünlü başmimarımız kimdir?', opts: ['Mimar Sinan', 'Âşık Veysel'], ans: 0 }
+    ];
+    const MIX_GOALS = [
+      { name: '🟠 Turuncu', need: ['kirmizi', 'sari'], hex: '#f97316' },
+      { name: '🟢 Yeşil', need: ['mavi', 'sari'], hex: '#22c55e' },
+      { name: '🟣 Mor', need: ['kirmizi', 'mavi'], hex: '#a855f7' }
+    ];
+    let qIdx = 0, qDone = false, mixIdx = 0, mixPick = [], mixDone = false, msg = '1) Teknoloji & Sanat sorularını çöz. 2) Sanat Atölyesinde iki ana rengi karıştırarak hedef rengi üret!';
+
+    function draw() {
+      const curQ = TECH[qIdx], mg = MIX_GOALS[mixIdx];
+      slot.innerHTML = `<section class="fg-card sky">
+        ${H().gameHeader('game-hb-u6', '🎨🤖 BİLİM, TEKNOLOJİ VE SANAT', 'Oyun 20 · Bilinçli Teknoloji & Sanatçı Renk Atölyesi', 'Teknoloji ve sanat sorularını çöz, sağdaki paletten iki ana rengi karıştırıp Turuncu, Yeşil ve Mor üret!')}
+        <div class="fg-msg">${msg}</div>
+        <div class="fg-sink-layout">
+          <div class="fg-notebook">
+            <h6>💻 Teknoloji &amp; Sanatçılar (${qDone ? 4 : qIdx}/4)</h6>
+            <div class="fg-capsule" style="margin-bottom:8px">${qDone ? '✅ Tüm sorular tamam!' : curQ.q}</div>
+            ${!qDone ? `<div class="row">${curQ.opts.map((op, i) => `<button type="button" class="small primary" data-hb6-q="${i}">${op}</button>`).join('')}</div>` : ''}
+          </div>
+          <div class="fg-notebook">
+            <h6>🎨 Renk Karıştırma Atölyesi (${mixDone ? 3 : mixIdx}/3)</h6>
+            <div class="fg-capsule" style="margin-bottom:8px">${mixDone ? '🌈 Harika Ressam! Tüm ara renkleri ürettin!' : `Üretilecek Renk: <b>${mg.name}</b>`}</div>
+            <div class="hb-mix-box" style="background:${mixDone ? '#dcfce7' : (mixPick.length === 2 ? '#f1f5f9' : '#fff')}">
+              Seçilenler: <b>${mixPick.join(' + ') || 'Henüz renk seçmedin'}</b>
+            </div>
+            <div class="row" style="margin-top:8px">
+              <button type="button" class="small" data-col="kirmizi" ${mixDone ? 'disabled' : ''}>🔴 Kırmızı</button>
+              <button type="button" class="small" data-col="sari" ${mixDone ? 'disabled' : ''}>🟡 Sarı</button>
+              <button type="button" class="small" data-col="mavi" ${mixDone ? 'disabled' : ''}>🔵 Mavi</button>
+            </div>
+          </div>
+        </div>
+      </section>`;
+    }
+
+    slot.onclick = e => {
+      const qb = e.target.closest('[data-hb6-q]');
+      if (qb) {
+        if (Number(qb.dataset.hb6Q) === TECH[qIdx].ans) {
+          H().sfxGood(); msg = '🌟 Doğru! Teknoloji hayatı kolaylaştırır, sanat ise güzelleştirir.';
+          if (qIdx < TECH.length - 1) qIdx++; else { qDone = true; if (mixDone) { H().sfxWin(); H().saveGameProgress('game-hb-u6', 2, 2); } }
+        } else { H().sfxBad(); msg = '🤔 Tekrar düşün!'; }
+        draw(); return;
+      }
+      const cb = e.target.closest('[data-col]');
+      if (cb) {
+        const col = cb.dataset.col;
+        if (!mixPick.includes(col)) mixPick.push(col);
+        H().sfxPop();
+        if (mixPick.length === 2) {
+          const mg = MIX_GOALS[mixIdx];
+          const ok = mg.need.every(x => mixPick.includes(x));
+          if (ok) {
+            H().sfxGood(); msg = `🎨 Harika! ${mg.name} rengini ürettin!`;
+            mixPick = [];
+            if (mixIdx < MIX_GOALS.length - 1) mixIdx++;
+            else { mixDone = true; if (qDone) { H().sfxWin(); H().saveGameProgress('game-hb-u6', 2, 2); } }
+          } else {
+            H().sfxBad(); msg = `❌ Bu iki renk ${mg.name} yapmadı! Tekrar dene.`;
+            mixPick = [];
+          }
+        }
+        draw();
+      }
+    };
+    draw();
+  }
+
+  Object.assign(window.FEN3_GAME_MAP, {
+    'game-hb-u1': mountHbU1,
+    'game-hb-u2': mountHbU2,
+    'game-hb-u3': mountHbU3,
+    'game-hb-u4': mountHbU4,
+    'game-hb-u5': mountHbU5,
+    'game-hb-u6': mountHbU6
   });
 })();
 // ── Bilmediğim Şeyleri Öğren (Anki Flashcards + Kategoriler + AI Kategorizasyon) & Vurgu Kategorileri ──
