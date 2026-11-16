@@ -264,7 +264,7 @@ html[data-theme="love"] .bar i{background:linear-gradient(90deg,#e48ab5,#a978d3)
 .unk-chips{display:flex;flex-wrap:wrap;gap:6px;align-items:center;margin:0 0 12px;font-size:12px;color:var(--muted)}
 .unk-chip{font-size:12px;padding:4px 8px;border-radius:999px;border:1px solid #7b5ea7;background:color-mix(in srgb,#7b5ea7 10%,var(--paper));color:var(--ink);font-weight:600}
 .unk-chip small{margin-left:5px;color:var(--muted);font-weight:400}
-.unk-menu{position:fixed;z-index:200;display:flex;flex-direction:column;min-width:195px;max-width:calc(100vw - 16px);background:var(--paper);border:1px solid var(--line);border-radius:10px;box-shadow:0 10px 30px #0003;overflow:hidden}
+.unk-menu{position:fixed;z-index:200;display:flex;flex-direction:column;min-width:195px;max-width:calc(100vw - 16px);background:var(--paper);border:1px solid var(--line);border-radius:10px;box-shadow:0 10px 30px #0003;overflow:hidden;user-select:none;-webkit-user-select:none}
 .unk-menu button{border:0;border-radius:0;text-align:left;padding:9px 14px;font-size:13px;background:transparent}
 .unk-menu button:hover{background:var(--light)}
 .unk-menu .menu-divider{height:1px;background:var(--line);margin:3px 0}
@@ -1047,7 +1047,7 @@ document.addEventListener('input',e=>{if(e.target.id==='focusVol')focusSetVol(Nu
 //   st.hl[soru]      → vurgulanan ifadeler [{id, t:'metin', w, color:'#fff59d', style:'highlight'|'underline', at:1731500000000}]
 //   st.oops[soru]    → true: kontrol sonrası "dikkatsizlik / sehven hata" beyanı
 //   st.trail[soru]   → soruda sırayla seçilen şıklar (ör. ['B','D','B']); kararsızlığı gösterir
-const APP_VERSION='6.2';
+const APP_VERSION='6.3';
 const HL_THEME='color-mix(in srgb,var(--note-accent,var(--green)) 32%,transparent)';
 const HL_COLORS=[HL_THEME,'#fff59d','#c8e6c9','#bbdefb','#ffe0b2','#f8bbd0'];
 function getLastHlColor(){try{return localStorage.getItem('test-atolyesi:lastHlColor')||HL_COLORS[0];}catch(e){return HL_COLORS[0];}}
@@ -1068,12 +1068,13 @@ function hlChips(s,q){const list=marksOf(s,'hl',q.id)||[];if(!list.length)return
 // İfade seçimi: hem soru alanındaki (.question-body) hem konu anlatımındaki (.course-article) seçili metni yakalar.
 function selInfo(){
   const sel=window.getSelection();
-  if(!sel||sel.isCollapsed)return null;
+  if(!sel||sel.isCollapsed||!sel.rangeCount)return null;
   const t=sel.toString().replace(/\s+/g,' ').trim();
   if(t.length<2||t.length>300)return null;
   const node=sel.anchorNode?.nodeType===1?sel.anchorNode:sel.anchorNode?.parentElement;
   if(!node)return null;
-  const r=sel.getRangeAt(0).getBoundingClientRect();
+  let r=sel.getRangeAt(0).getBoundingClientRect();
+  if(!r||(r.width===0&&r.height===0))r=node.getBoundingClientRect();
   const eduArt=node.closest?.('.course-article');
   if(eduArt&&view==='course'){
     return{scope:'edu',t,cid:eduArt.dataset.cid,sid:eduArt.dataset.sid,r};
@@ -1183,13 +1184,13 @@ function legacyCopy(t){
 function renderSystemMenuContent(m){
   if(!m||!m._info)return;
   m.dataset.mode='sys';
-  m.innerHTML=`<div class="sys-menu-head">İşletim Sistemi / Tarayıcı Menüsü</div>
+  const canShare=typeof navigator.share==='function';
+  m.innerHTML=`<div class="sys-menu-head">Sistem Menüsü</div>
   <button type="button" data-act="sysCopy">📋 Kopyala</button>
   <button type="button" data-act="sysSearch">🔍 Google'da Ara</button>
   <button type="button" data-act="sysSpeak">🔊 Sesli Oku</button>
-  <button type="button" data-act="sysPrint">🖨️ Yazdır...</button>
-  <div class="menu-divider"></div>
-  <button type="button" data-act="sysRelease" class="menu-subtle">🔓 Tarayıcı Sağ Tıkını Aç (Serbest Bırak)</button>`;
+  ${canShare?'<button type="button" data-act="sysShare">📤 Paylaş</button>':''}
+  <button type="button" data-act="sysPrint">🖨️ Yazdır...</button>`;
   positionFloating(m,parseFloat(m.style.left)||8,parseFloat(m.style.top)||8);
 }
 
@@ -1214,6 +1215,7 @@ function showUnkMenu(info,x,y){
     <button type="button" data-act="showSysMenu" class="menu-subtle">⋯ Sistem menüsünü göster</button>`;
   }
   m._info=info;
+  m.addEventListener('mousedown',ev=>ev.preventDefault());
   document.body.append(m);
   positionFloating(m,x,y);
 }
@@ -1244,30 +1246,31 @@ function showHlPopover(hl,ctx,targetEl){
   p.style.top=top+'px';
 }
 
-// Sağ tık: Eğitim Atölyesi özel menüsü açılır; tarayıcı menüsü engellenir ve "Sistem menüsü" butonuna bağlanır.
-let allowNativeContextMenu=false;
+// Sağ tık (masaüstü) ve metin seçimi (dokunmatik cihazlar: Android/iOS) mantığı
+const isCoarsePointer=()=>matchMedia('(pointer:coarse)').matches;
 let selTimer=null;
 document.addEventListener('contextmenu',e=>{
-  if(allowNativeContextMenu){allowNativeContextMenu=false;return;}
   const info=selInfo();
   if(!info)return;
   e.preventDefault();
   clearTimeout(selTimer);
-  showUnkMenu(info,e.clientX,e.clientY);
+  const cur=$('#unkMenu');
+  if(isCoarsePointer()&&cur?.dataset.mode==='sys')return;
+  showUnkMenu(info,e.clientX||info.r.left,e.clientY||(info.r.bottom+10));
 });
 
 document.addEventListener('selectionchange',()=>{
   clearTimeout(selTimer);
   selTimer=setTimeout(()=>{
-    if(!matchMedia('(pointer:coarse)').matches)return;
+    if(!isCoarsePointer())return;
     const cur=$('#unkMenu');
     if(cur?.dataset.mode==='sys')return;
     const info=selInfo();
     if(!info){if(cur&&!cur.matches(':hover'))hideUnkMenu();return;}
     if(cur?._info&&cur._info.t===info.t&&cur._info.scope===info.scope)return;
-    const y=info.r.bottom+10+170<=innerHeight?info.r.bottom+10:Math.max(8,info.r.top-175);
+    const y=info.r.bottom+10+180<=innerHeight?info.r.bottom+10:Math.max(8,info.r.top-185);
     showUnkMenu(info,info.r.left,y);
-  },350);
+  },300);
 });
 
 function saveHlChange(ctx){
@@ -1301,8 +1304,8 @@ document.addEventListener('click',e=>{
   if(a==='sysCopy'){e.stopPropagation();copyTextFallback($('#unkMenu')?._info?.t||'');hideUnkMenu();return;}
   if(a==='sysSearch'){e.stopPropagation();const t=$('#unkMenu')?._info?.t||'';if(t)window.open('https://www.google.com/search?q='+encodeURIComponent(t),'_blank');hideUnkMenu();return;}
   if(a==='sysSpeak'){e.stopPropagation();const t=$('#unkMenu')?._info?.t||'';if(t){if(window.ttsSpeak)ttsSpeak(t);else{const u=new SpeechSynthesisUtterance(t);u.lang='tr-TR';window.speechSynthesis?.speak(u);}}hideUnkMenu();return;}
+  if(a==='sysShare'){e.stopPropagation();const t=$('#unkMenu')?._info?.t||'';hideUnkMenu();if(t&&navigator.share)navigator.share({text:t}).catch(()=>{});return;}
   if(a==='sysPrint'){e.stopPropagation();hideUnkMenu();setTimeout(()=>window.print(),100);return;}
-  if(a==='sysRelease'){e.stopPropagation();allowNativeContextMenu=true;hideUnkMenu();toast('Tarayıcı sağ tıkı serbest bırakıldı; şimdi sağ tıklayabilirsiniz.');return;}
   if(a==='hlSetColor'){
     e.stopPropagation();const pop=$('#hlPopover');
     if(pop?._hl&&pop._ctx){pop._hl.color=el.dataset.color;setLastHlColor(el.dataset.color);hideHlPopover();saveHlChange(pop._ctx);toast('Vurgu rengi güncellendi.');}
