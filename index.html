@@ -735,7 +735,38 @@ button:hover{border-color:color-mix(in srgb,var(--green) 42%,var(--line))}
 .fg-tm-labels{display:flex;justify-content:space-between;font-size:11px;color:var(--muted)}
 .fg-tm-box{padding:14px;border-radius:10px;background:#f8fafc;border:1px dashed #94a3b8;text-align:center;font-size:16px;font-weight:700;color:#0f172a}
 
-@media(max-width:760px){.fg-sink-layout,.fg-micro-layout,.fg-mys-layout,.fg-dig-layout,.fg-fossil-layout,.fg-bf-stage{grid-template-columns:1fr}}
+@media(max-width:760px){.fg-sink-layout,.fg-micro-layout,.fg-mys-layout,.fg-dig-layout,.fg-fossil-layout,.fg-bf-stage,.fg-grid-3,.fg-farm-meters,.fg-farm-stage{grid-template-columns:1fr}}
+
+/* === Fen Kaşifi Karnesi & Ünite 1–8 Gelişmiş Oyun Stilleri === */
+.fg-banner{margin-bottom:14px}
+.fg-banner-inner{display:grid;gap:6px;padding:12px 16px;border-radius:14px;background:linear-gradient(135deg,#fffbeb,#e0f2fe);border:1.5px solid #93c5fd;font-size:13.5px}
+.fg-banner-bar{height:9px;border-radius:999px;background:#e2e8f0;overflow:hidden}
+.fg-banner-bar i{display:block;height:100%;background:linear-gradient(90deg,#10b981,#0ea5e9);transition:width .3s}
+.fg-banner-stars{font-size:14px;letter-spacing:2px;min-height:20px}
+[data-dark="1"] .fg-banner-inner{background:var(--paper);border-color:var(--line)}
+
+.fg-water-switch{display:flex;gap:6px;margin-bottom:8px}
+.fg-tank.salty .fg-water{background:linear-gradient(180deg,#bae6fdcc,#0ea5e9cc)}
+.fg-raft-box,.fg-tool-box{margin-top:10px;padding:10px 12px;border-radius:10px;background:var(--bg);border:1.5px dashed #7dd3fc}
+.fg-raft-box h6,.fg-tool-box p{margin:0 0 6px;font-size:13px}
+.fg-hero-card.sel{border-color:#0284c7;background:#e0f2fe}
+
+.fg-cup-stage{display:grid;place-items:center;gap:10px;padding:12px;border-radius:12px;background:var(--bg);border:1px solid var(--line);text-align:center}
+.fg-cup{position:relative;border:3px solid #334155;border-top:none;border-radius:0 0 12px 12px;background:#fff;overflow:hidden;transition:width .3s,height .3s}
+.fg-cup.tall{width:74px;height:130px}
+.fg-cup.wide{width:170px;height:74px}
+.fg-cup-fill{position:absolute;bottom:0;left:0;right:0;transition:all .3s}
+.fg-cup-fill.tas{width:46px;height:46px;margin:0 auto;bottom:6px;border-radius:12px;background:#64748b;border:2px solid #334155}
+.fg-cup-fill.su{height:58%;background:linear-gradient(180deg,#7dd3fc,#0284c7)}
+.fg-cup-fill.gaz{top:0;height:100%;background:radial-gradient(circle,#fde04788,#bae6fd55)}
+
+.fg-grid-3{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:12px}
+.fg-list-col{display:grid;gap:6px}
+.fg-list-col button{text-align:left}
+
+.fg-farm-meters{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:10px;font-size:13px}
+.fg-farm-stage{display:grid;grid-template-columns:110px 1fr;gap:14px;align-items:center}
+.fg-plant-icon{height:110px;border-radius:16px;background:var(--paper);border:1.5px solid #86efac;display:grid;place-items:center;font-size:48px}
 </style>
 </head>
 <body>
@@ -1190,7 +1221,7 @@ document.addEventListener('input',e=>{if(e.target.id==='focusVol')focusSetVol(Nu
 //   st.hl[soru]      → vurgulanan ifadeler [{id, t:'metin', w, color:'#fff59d', style:'highlight'|'underline', at:1731500000000}]
 //   st.oops[soru]    → true: kontrol sonrası "dikkatsizlik / sehven hata" beyanı
 //   st.trail[soru]   → soruda sırayla seçilen şıklar (ör. ['B','D','B']); kararsızlığı gösterir
-const APP_VERSION='6.4';
+const APP_VERSION='6.5';
 const HL_THEME='color-mix(in srgb,var(--note-accent,var(--green)) 32%,transparent)';
 const HL_COLORS=[HL_THEME,'#fff59d','#c8e6c9','#bbdefb','#ffe0b2','#f8bbd0'];
 function getLastHlColor(){try{return localStorage.getItem('test-atolyesi:lastHlColor')||HL_COLORS[0];}catch(e){return HL_COLORS[0];}}
@@ -1871,63 +1902,144 @@ const NAYAS_YDS_COURSE = {"id": "nayas-yds-akademik-telafi-2026", "title": "YDS 
 // ── Eğitim Atölyesi v6.2: Konu Anlatımı, 7 Günlük Program & Takip, Notlar ──
 const FEN3_COURSE = {
   id: "fen-3-oyun-atolyesi-2026",
-  title: "İlkokul 3. Sınıf Fen Bilimleri · İnteraktif Oyun Atölyesi (İlk 3 Ünite)",
+  title: "İlkokul 3. Sınıf Fen Bilimleri · Tam Müfredat İnteraktif Oyun Atölyesi (8 Ünite)",
   shortTitle: "3. Sınıf Fen · Oyun Atölyesi",
-  author: "MEB Türkiye Yüzyılı Maarif Modeli (1. Kitap) · Web Tabanlı Mini Oyunlar",
+  author: "MEB Türkiye Yüzyılı Maarif Modeli (Tüm 8 Ünite) · Zorlayıcı Web Oyunları",
   year: 2026,
-  version: 2,
+  version: 3,
   library: "Fen Bilimleri",
-  summary: "MEB 2026–2027 geçerli İlkokul 3. Sınıf Fen Bilimleri Ders Kitabı (1. Kitap) ilk 3 ünitesini test sorusu olmadan; Sihirli Su Tankı Deneyi, Balon Patlatma, Mikroskop Zoom Laboratuvarı, 5 Duyu Gizemli Kutusu, Kelebek Zaman Çarkı, Yer Altı Maden Kazısı ve Canvas Fırça Kazısı gibi gerçek web mini oyunlarıyla eğlenerek öğretir.",
+  summary: "MEB 2026–2027 geçerli İlkokul 3. Sınıf Fen Bilimleri dersinin TAMAMI (8 Ünite): Tuzlu-Tatlı Su Deneyi, Arcade Balon Avı, Çift Ayarlı Mikroskop Labı, Stratejik 5 Duyu Dedektifi, 3 Canlı Yaşam Döngüsü, Sert Kayaç & Maden Kazısı, Canvas Fırça Kazısı, Madde & Karışım Fabrikası, Canvas Fizik Parkuru, Akıllı Ev Elektrik Mühendisi, Stratejik Sera ve Ekosistem Çeşitlilik Dedektifi!",
   sections: [
     {
       id: "sec-fen3-u1",
       dayTag: "1. Ünite · Bilimsel Keşif",
       title: "Bilimsel Keşif Yolculuğu",
-      subtitle: "Deney tankında tahmin et, balonları patlat ve bilim kahramanlarını keşfet!",
-      estMin: 15,
-      html: `<div class="kid-hero">
-        <div class="chapter-top"><span class="chapter-tag">1. ÜNİTE · FB.3.1.1 – FB.3.1.2</span><span class="chapter-mod">🎮 3 Web Oyunu · 1 Pekiştirme</span></div>
+      subtitle: "Tatlı/tuzlu su tankı, Kaptan'ın salı, 35 sn Arcade Balon Avı ve 2 aşamalı kahramanlar!",
+      estMin: 18,
+      html: `<div id="fen3ScoreBanner" class="fg-banner"></div>
+      <div class="kid-hero">
+        <div class="chapter-top"><span class="chapter-tag">1. ÜNİTE · FB.3.1.1 – FB.3.1.2</span><span class="chapter-mod">🎮 3 Zorlu Web Oyunu · 1 Sıralama</span></div>
         <h1>🔍 Bilimsel Keşif Yolculuğu</h1>
-        <p>Bilim merak etmekle başlar! Önce tahmin et, sonra deneyle test et, veriyi kaydet ve bilim insanlarının süper güçlerini oyunlarla keşfet.</p>
+        <p>Tahmin et, tuzlu suda dene, Kaptan'ın batmayan salını kur, 35 saniyede balonları patlat ve kahramanların ölçüm araçlarını bul!</p>
       </div>
       <div class="fen-game-slot" data-game-id="game-u1-sink"></div>
       <div class="fen-game-slot" data-game-id="game-u1-balloons"></div>
       <div class="fen-game-slot" data-game-id="game-u1-heroes"></div>
       <div class="edu-ex-slot" data-ex-id="ex-fen1-1"></div>`,
-      searchText: "1. Ünite Bilimsel Keşif Yolculuğu merak soru tahmin gözlem deney veri çıkarım bilim insanı Ali Kuşçu Aziz Sancar Marie Curie Cahit Arf İbn-i Sina"
+      searchText: "1. Ünite Bilimsel Keşif Yolculuğu merak tahmin tuzlu su tatlı su gözlem deney veri çıkarım bilim insanı Ali Kuşçu Aziz Sancar Marie Curie Cahit Arf İbn-i Sina"
     },
     {
       id: "sec-fen3-u2",
       dayTag: "2. Ünite · Canlılar Dünyası",
       title: "Canlılar Dünyasına Yolculuk",
-      subtitle: "Mikroskobu 1000x'e büyüt, Gizemli Kutu'yu 5 duyunla çöz, kelebeği uçur!",
-      estMin: 20,
-      html: `<div class="kid-hero">
-        <div class="chapter-top"><span class="chapter-tag">2. ÜNİTE · FB.3.2.1 – FB.3.2.3</span><span class="chapter-mod">🎮 3 Web Oyunu · 1 Bahçe Etkinliği</span></div>
+      subtitle: "Çift ayarlı mikroskop (Zoom + Odak), 3 haklı 5 Duyu Dedektifi ve 3 canlı yaşam döngüsü!",
+      estMin: 22,
+      html: `<div id="fen3ScoreBanner" class="fg-banner"></div>
+      <div class="kid-hero">
+        <div class="chapter-top"><span class="chapter-tag">2. ÜNİTE · FB.3.2.1 – FB.3.2.3</span><span class="chapter-mod">🎮 3 Zorlu Web Oyunu · 1 Sınıflandırma</span></div>
         <h1>🦋 Canlılar Dünyasına Yolculuk</h1>
-        <p>Çıplak gözle göremediğin canlıları mikroskopla büyüt, gizemli kutunun sırrını 5 duyunla çöz ve kelebeğin dönüşümünü canlandır!</p>
+        <p>Hem Zoom hem İnce Odak ayarını yakala, sadece 3 duyu hakkıyla gizemli kutuyu çöz ve kelebek–kurbağa–fasulye döngülerini kur!</p>
       </div>
       <div class="fen-game-slot" data-game-id="game-u2-microscope"></div>
       <div class="fen-game-slot" data-game-id="game-u2-mystery"></div>
       <div class="fen-game-slot" data-game-id="game-u2-butterfly"></div>
       <div class="edu-ex-slot" data-ex-id="ex-fen2-1"></div>`,
-      searchText: "2. Ünite Canlılar Dünyasına Yolculuk mikroskop bakteri amip mantar bitki hayvan 5 duyu organı göz kulak burun dil deri yaşam döngüsü kelebek tırtıl pupa"
+      searchText: "2. Ünite Canlılar Dünyasına Yolculuk mikroskop odak bakteri amip mantar maya bitki soğan zarı 5 duyu organı yaşam döngüsü kelebek kurbağa fasulye"
     },
     {
       id: "sec-fen3-u3",
       dayTag: "3. Ünite · Yer Bilimciler",
       title: "Yer Bilimciler İş Başında",
-      subtitle: "Kayacı parçala, yer altından maden çıkar ve fırçayla kumu silip fosili bul!",
-      estMin: 18,
-      html: `<div class="kid-hero">
-        <div class="chapter-top"><span class="chapter-tag">3. ÜNİTE · FB.3.3.1 – FB.3.3.2</span><span class="chapter-mod">🎮 2 Web Oyunu · 1 Kazı Sepeti</span></div>
+      subtitle: "Sert kayaç kazısı (8 maden), Canvas fırça kazısı + paleontolog ortam çıkarımı!",
+      estMin: 20,
+      html: `<div id="fen3ScoreBanner" class="fg-banner"></div>
+      <div class="kid-hero">
+        <div class="chapter-top"><span class="chapter-tag">3. ÜNİTE · FB.3.3.1 – FB.3.3.2</span><span class="chapter-mod">🎮 2 Zorlu Web Oyunu · 1 Kazı Sepeti</span></div>
         <h1>⛏️🦕 Yer Bilimciler İş Başında</h1>
-        <p>Baretini tak! Önce kayacı parçalayıp madenleri çıkar, sonra paleontolog fırçanla kumları temizleyip milyonlarca yıllık fosilleri ortaya çıkar!</p>
+        <p>Sert kayaları 2 darbede kırıp 8 madeni işle, kumların altındaki fosilleri fırçala ve o bölgenin milyonlarca yıl önceki iklimini çöz!</p>
       </div>
       <div class="fen-game-slot" data-game-id="game-u3-dig"></div>
       <div class="fen-game-slot" data-game-id="game-u3-fossil"></div>
       <div class="edu-ex-slot" data-ex-id="ex-fen3-3"></div>`,
-      searchText: "3. Ünite Yer Bilimciler İş Başında kayaç taş çakıl kum mineral maden bor demir bakır mermer kömür altın fosil paleontolog paleontoloji kazı"
+      searchText: "3. Ünite Yer Bilimciler İş Başında kayaç taş çakıl kum mineral maden bor demir bakır mermer kömür altın krom boksit fosil paleontolog"
+    },
+    {
+      id: "sec-fen3-u4",
+      dayTag: "4. Ünite · Madde & Karışım",
+      title: "Maddeyi Tanıyalım, Karıştırıp Ayıralım",
+      subtitle: "Katı–Sıvı–Gaz + Nitelik Matrisi, kap şekli deneyi, 2 adımlı karışım fabrikası ve geri dönüşüm!",
+      estMin: 20,
+      html: `<div id="fen3ScoreBanner" class="fg-banner"></div>
+      <div class="kid-hero">
+        <div class="chapter-top"><span class="chapter-tag">4. ÜNİTE · FB.3.4.1 – FB.3.4.3</span><span class="chapter-mod">🎮 2 Zorlu Web Oyunu</span></div>
+        <h1>🧊💧☁️ Maddeyi Tanıyalım, Karıştırıp Ayıralım</h1>
+        <p>Sünger neden katıdır? Kap değişince sıvı nasıl şekil alır? 2 adımlı karışım boss'unu ayır ve atıkları geri dönüşüm bandında ayrıştır!</p>
+      </div>
+      <div class="fen-game-slot" data-game-id="game-u4-matter"></div>
+      <div class="fen-game-slot" data-game-id="game-u4-separate"></div>`,
+      searchText: "4. Ünite Maddeyi Tanıyalım Karıştırıp Ayıralım katı sıvı gaz sert esnek kırılgan akışkan mıknatıs elek süzgeç yüzdürme geri dönüşüm atık"
+    },
+    {
+      id: "sec-fen3-u5",
+      dayTag: "5. Ünite · Hareket & Kuvvet",
+      title: "Hareketi Keşfediyorum",
+      subtitle: "Gerçek Canvas fizik parkurunda itme–çekme ile arabayı bayrakta durdur, şekil değişimini test et!",
+      estMin: 18,
+      html: `<div id="fen3ScoreBanner" class="fg-banner"></div>
+      <div class="kid-hero">
+        <div class="chapter-top"><span class="chapter-tag">5. ÜNİTE · FB.3.5.1 – FB.3.5.2</span><span class="chapter-mod">🎮 Canvas Fizik Parkuru · 1 Hareket Sepeti</span></div>
+        <h1>🏎️ Hareketi Keşfediyorum</h1>
+        <p>Asfalt, kaygan buz ve rüzgarlı pistte itme ve çekme (fren) kuvvetini tam ayarla, arabayı uçuruma düşürmeden bayrakta durdur!</p>
+      </div>
+      <div class="fen-game-slot" data-game-id="game-u5-force"></div>
+      <div class="edu-ex-slot" data-ex-id="ex-fen5-1"></div>`,
+      searchText: "5. Ünite Hareketi Keşfediyorum kuvvet itme çekme hızlanma yavaşlama dönme sallanma yön değiştirme durdurma şekil değiştirme esnek"
+    },
+    {
+      id: "sec-fen3-u6",
+      dayTag: "6. Ünite · Elektrik",
+      title: "Yaşamımızı Kolaylaştıran Elektrik",
+      subtitle: "Şehir elektriği–pil–batarya eşleştir, 4 ev tehlikesini önle ve tasarruf sayacını %100 yap!",
+      estMin: 18,
+      html: `<div id="fen3ScoreBanner" class="fg-banner"></div>
+      <div class="kid-hero">
+        <div class="chapter-top"><span class="chapter-tag">6. ÜNİTE · FB.3.6.1 – FB.3.6.3</span><span class="chapter-mod">🎮 3 Aşamalı Akıllı Ev Oyunu</span></div>
+        <h1>⚡ Yaşamımızı Kolaylaştıran Elektrik</h1>
+        <p>Elektrikli araçların kaynağını bul, evdeki gizli elektrik tehlikelerini etkisiz hâle getir ve enerji tasarruf sayacını yeşile çevir!</p>
+      </div>
+      <div class="fen-game-slot" data-game-id="game-u6-electric"></div>`,
+      searchText: "6. Ünite Yaşamımızı Kolaylaştıran Elektrik şehir elektriği pil batarya akü priz kablo güvenli kullanım enerji tasarrufu"
+    },
+    {
+      id: "sec-fen3-u7",
+      dayTag: "7. Ünite · Toprak & Tarım",
+      title: "Toprağı Tanıyorum, Tarımı Keşfediyorum",
+      subtitle: "5 günlük stratejik sera simülasyonunda su, güneş ve toprak havası dengesini koru!",
+      estMin: 18,
+      html: `<div id="fen3ScoreBanner" class="fg-banner"></div>
+      <div class="kid-hero">
+        <div class="chapter-top"><span class="chapter-tag">7. ÜNİTE · FB.3.7.1 – FB.3.7.2</span><span class="chapter-mod">🎮 5 Günlük Sera Strateji Oyunu</span></div>
+        <h1>🌱 Toprağı Tanıyorum, Tarımı Keşfediyorum</h1>
+        <p>Toprak canlıların yuvasıdır! Ata tohumu domatesini 5 gün boyunca kurutmadan ve çürütmeden büyütüp hasat edebilir misin?</p>
+      </div>
+      <div class="fen-game-slot" data-game-id="game-u7-farm"></div>`,
+      searchText: "7. Ünite Toprağı Tanıyorum Tarımı Keşfediyorum toprak humus çakıl kil kum ata tohumu fide su güneş tarım"
+    },
+    {
+      id: "sec-fen3-u8",
+      dayTag: "8. Ünite · Yaşam Alanları",
+      title: "Canlıların Yaşam Alanlarına Yolculuk",
+      subtitle: "Ekosistem eşleştirme, Toplam Sayı vs Çeşitlilik bulmacası ve Doğa Koruma dedektifliği!",
+      estMin: 18,
+      html: `<div id="fen3ScoreBanner" class="fg-banner"></div>
+      <div class="kid-hero">
+        <div class="chapter-top"><span class="chapter-tag">8. ÜNİTE · FB.3.8.1 – FB.3.8.3</span><span class="chapter-mod">🎮 Ekosistem Dedektifi · 1 Doğa Koruma</span></div>
+        <h1>🌍 Canlıların Yaşam Alanlarına Yolculuk</h1>
+        <p>Çöl, kutup, orman ve deniz canlılarını yuvalarına yerleştir; "toplam sayı" ile "canlı çeşitliliği" tuzağını çöz ve doğayı koru!</p>
+      </div>
+      <div class="fen-game-slot" data-game-id="game-u8-habitat"></div>
+      <div class="edu-ex-slot" data-ex-id="ex-fen8-1"></div>`,
+      searchText: "8. Ünite Canlıların Yaşam Alanlarına Yolculuk çöl kutup orman deniz canlı çeşitliliği toplam sayı yaşam alanı koruma çevre"
     }
   ]
 };
@@ -3141,6 +3253,29 @@ const EDU_EXERCISES = {
       { before: 'Milyonlarca yıl önce yaşamış canlıların taşlaşmış kalıntısına ', after: ' denir.', ans: 'fosil', note: 'Fosiller geçmiş yaşam hakkında ipucu verir.' },
       { before: 'Fosilleri inceleyen bilim insanına ', after: ' adı verilir.', ans: 'paleontolog', note: 'Fosil bilimi paleontolojidir.' }
     ]
+  },
+  'ex-fen5-1': {
+    kind: 'sort-bucket',
+    title: 'Etkinlik 5.2 · Hareket Türleri & Güvenlik Sepeti',
+    prompt: 'Hareket örneklerini doğru hareket türüne yerleştir!',
+    buckets: ['🔄 Dönme', '〰️ Sallanma', '⚡ Hızlanma / Yavaşlama', '⚠️ Tehlikeli Davranış'],
+    items: [
+      { text: 'Topaç ve vantilatör pervanesi', bucket: 0 },
+      { text: 'Saatin yelkovanı ve rüzgar gülü', bucket: 0 },
+      { text: 'Parktaki salıncak', bucket: 1 },
+      { text: 'Duvar saatinin sarkacı', bucket: 1 },
+      { text: 'Kırmızı ışıkta fren yapan araba', bucket: 2 },
+      { text: 'Dönerken pervaneyi elle tutmaya çalışmak', bucket: 3 }
+    ]
+  },
+  'ex-fen8-1': {
+    kind: 'spot-fix',
+    title: 'Etkinlik 8.2 · Doğa Koruma Dedektifi (Yanlışı Yakala!)',
+    prompt: 'Yaşam alanları ve canlı çeşitliliğiyle ilgili cümlelerdeki hatalı kelimeye dokun!',
+    items: [
+      { tokens: ['Bir', 'bahçede', 'sadece', '100', 'papatya', 'varsa', 'canlı', 'çeşitliliği', 'çok', 'yüksektir.'], bad: 9, fix: 'düşüktür (tek tür vardır)', note: 'Çeşitlilik toplam canlı sayısına değil, FARKLI tür sayısına bağlıdır.' },
+      { tokens: ['Göle', 'fabrika', 'atığı', 'dökülmesi', 'sadece', 'balıkları', 'etkiler,', 'kuşlara', 'zarar', 'vermez.'], bad: 9, fix: 'tüm yaşam alanı zincirini etkiler', note: 'Yaşam alanında tüm canlılar birbirine bağlıdır; su kirlenince kuşlar ve bitkiler de etkilenir.' }
+    ]
   }
 };
 
@@ -3398,7 +3533,7 @@ document.addEventListener('input', e => {
     if (w) { w.vals[idx] = e.target.value; w.checked = false; eduExPersist(exId, false); }
   }
 });
-// ── 3. Sınıf Fen Bilimleri · Gerçek Web Tabanlı Mini Oyunlar Motoru ──
+// ── 3. Sınıf Fen Bilimleri · İnteraktif Web Oyunları Motoru (Bölüm 1: Ünite 1–3 + Ortak Ses/Kayıt) ──
 (() => {
   let audioCtx = null;
   let fen3Muted = false;
@@ -3431,11 +3566,11 @@ document.addEventListener('input', e => {
     } catch (_) {}
   }
 
-  function sfxGood() { playTone(523, 0.1, 'triangle', 0.09, 0); playTone(659, 0.14, 'triangle', 0.09, 0.08); }
-  function sfxWin() { playTone(523, 0.1, 'triangle', 0.09, 0); playTone(659, 0.1, 'triangle', 0.09, 0.09); playTone(784, 0.2, 'triangle', 0.1, 0.18); }
-  function sfxBad() { playTone(220, 0.16, 'sawtooth', 0.05, 0); }
-  function sfxPop() { playTone(720, 0.07, 'sine', 0.08, 0); }
-  function sfxSplash() { playTone(320, 0.1, 'sine', 0.07, 0); playTone(240, 0.14, 'sine', 0.06, 0.05); }
+  const sfxGood = () => { playTone(523, 0.1, 'triangle', 0.09, 0); playTone(659, 0.14, 'triangle', 0.09, 0.08); };
+  const sfxWin = () => { playTone(523, 0.1, 'triangle', 0.09, 0); playTone(659, 0.1, 'triangle', 0.09, 0.09); playTone(784, 0.12, 'triangle', 0.1, 0.18); playTone(1046, 0.22, 'triangle', 0.1, 0.28); };
+  const sfxBad = () => playTone(195, 0.18, 'sawtooth', 0.055, 0);
+  const sfxPop = () => playTone(720, 0.07, 'sine', 0.08, 0);
+  const sfxSplash = () => { playTone(320, 0.1, 'sine', 0.07, 0); playTone(230, 0.14, 'sine', 0.06, 0.05); };
 
   function saveGameProgress(gameId, score, total) {
     if (typeof state === 'undefined' || typeof ensureEduState !== 'function') return;
@@ -3443,6 +3578,8 @@ document.addEventListener('input', e => {
     e.exercises = e.exercises || {};
     e.exercises[gameId] = { done: score >= total, score, total, at: Date.now() };
     if (typeof eduTouch === 'function') eduTouch(true);
+    const bar = document.getElementById('fen3ScoreBanner');
+    if (bar && typeof window.fen3ScoreBannerHTML === 'function') bar.innerHTML = window.fen3ScoreBannerHTML();
   }
 
   function gameHeader(gameId, badge, title, subtitle) {
@@ -3456,190 +3593,239 @@ document.addEventListener('input', e => {
     </div>`;
   }
 
+  window.FEN3_HELPER = {
+    activeIntervals, activeRafs, sfxGood, sfxWin, sfxBad, sfxPop, sfxSplash, saveGameProgress, gameHeader
+  };
+
+  window.fen3ScoreBannerHTML = function () {
+    const allIds = [
+      'game-u1-sink', 'game-u1-balloons', 'game-u1-heroes',
+      'game-u2-microscope', 'game-u2-mystery', 'game-u2-butterfly',
+      'game-u3-dig', 'game-u3-fossil',
+      'game-u4-matter', 'game-u4-separate',
+      'game-u5-force', 'game-u6-electric',
+      'game-u7-farm', 'game-u8-habitat'
+    ];
+    const ex = typeof state !== 'undefined' ? (ensureEduState(state).exercises || {}) : {};
+    const done = allIds.filter(id => ex[id]?.done).length;
+    const pct = Math.round((done / allIds.length) * 100);
+    return `<div class="fg-banner-inner">
+      <div><b>🏆 Fen Kaşifi Karnesi:</b> ${done} / ${allIds.length} Web Oyunu Tamamlandı (%${pct})</div>
+      <div class="fg-banner-bar"><i style="width:${pct}%"></i></div>
+      <div class="fg-banner-stars">${'⭐'.repeat(Math.min(done, 14))}${done === 0 ? 'Oyunları bitirip yıldızları topla!' : ''}</div>
+    </div>`;
+  };
+
   // ═══════════════════════════════════════════════════════════════
-  // OYUN 1: 🧪 Sihirli Su Tankı Deneyi (Yüzer mi, Batar mı?)
+  // OYUN 1: 🧪 Sihirli Su Tankı + Tuzlu Su & Kaptan Salı Görevi
   // ═══════════════════════════════════════════════════════════════
   const SINK_ITEMS = [
-    { id: 'wood', name: 'Tahta Küp', icon: '🪵', floats: true, fact: 'Tahta sudan hafiftir ve içinde hava boşlukları vardır; bu yüzden yüzer!' },
-    { id: 'nail', name: 'Demir Çivi', icon: '🔩', floats: false, fact: 'Demir çok yoğun ve ağırdır; bu yüzden suyun dibine batar!' },
-    { id: 'cork', name: 'Mantar Tıpa', icon: '🍾', floats: true, fact: 'Mantar tıpa içi gözenekli olduğu için suyun üstünde kalır!' },
-    { id: 'coin', name: 'Madeni Para', icon: '🪙', floats: false, fact: 'Metal madeni para sudan yoğun olduğu için hemen dibe iner!' },
-    { id: 'ball', name: 'Plastik Top', icon: '⚽', floats: true, fact: 'İçi hava dolu plastik top suyun kaldırma kuvvetiyle yüzer!' },
-    { id: 'marble', name: 'Cam Bilye', icon: '🔮', floats: false, fact: 'Dolu cam bilye ağır olduğu için tankın tabanına çöker!' }
+    { id: 'wood', name: 'Tahta Küp', icon: '🪵', fresh: true, salty: true, fact: 'Tahta her iki suda da yüzer; içi hafif ve gözeneklidir.' },
+    { id: 'nail', name: 'Demir Çivi', icon: '🔩', fresh: false, salty: false, fact: 'Demir çok yoğundur, tuzlu suda bile dibe batar.' },
+    { id: 'egg', name: 'Taze Yumurta', icon: '🥚', fresh: false, salty: true, fact: 'Sürpriz! Yumurta tatlı suda batar ama suya tuz eklenince su yoğunlaşır ve YÜZER!' },
+    { id: 'ice', name: 'Buz Küpü', icon: '🧊', fresh: true, salty: true, fact: 'Buz sudan hafif olduğu için suyun üstünde yüzer!' },
+    { id: 'coin', name: 'Madeni Para', icon: '🪙', fresh: false, salty: false, fact: 'Metal para yoğun olduğu için dibe çöker.' },
+    { id: 'cork', name: 'Mantar Tıpa', icon: '🍾', fresh: true, salty: true, fact: 'Mantar tıpa hafif olduğu için yüzeyde kalır.' },
+    { id: 'marble', name: 'Cam Bilye', icon: '🔮', fresh: false, salty: false, fact: 'Cam bilye ağır ve yoğundur; hemen batar.' },
+    { id: 'grape', name: 'Üzüm Tanesi', icon: '🍇', fresh: false, salty: true, fact: 'Üzüm tatlı suda batar ama tuzlu suda yukarı çıkar!' }
   ];
-  const sinkState = { sel: 'wood', guess: null, tested: {}, dropping: false, msg: 'Bir nesne seç, önce TAHMİN ET, sonra suya bırak!' };
 
   function mountSinkGame(slot) {
+    let sel = 'wood', salty = false, guess = null, tested = {}, dropping = false;
+    let raftPick = [], raftDone = false;
+    let msg = 'ZORLU DENEY: Bu kez "Tatlı Su" ve "Tuzlu Su" farkı da var! Nesne seç, tahmin et, suya bırak!';
+
     function draw() {
-      const cur = SINK_ITEMS.find(x => x.id === sinkState.sel) || SINK_ITEMS[0];
-      const testedCur = sinkState.tested[cur.id];
-      const doneCount = Object.keys(sinkState.tested).length;
-      const hitCount = Object.values(sinkState.tested).filter(x => x.hit).length;
-      const floaters = SINK_ITEMS.filter(x => sinkState.tested[x.id] && x.floats);
-      const sinkers = SINK_ITEMS.filter(x => sinkState.tested[x.id] && !x.floats);
+      const cur = SINK_ITEMS.find(x => x.id === sel) || SINK_ITEMS[0];
+      const key = cur.id + '_' + (salty ? 's' : 'f');
+      const curFloats = salty ? cur.salty : cur.fresh;
+      const doneKeys = Object.keys(tested).length;
+      const floaters = SINK_ITEMS.filter(x => tested[x.id + '_' + (salty ? 's' : 'f')] && (salty ? x.salty : x.fresh));
+      const sinkers = SINK_ITEMS.filter(x => tested[x.id + '_' + (salty ? 's' : 'f')] && !(salty ? x.salty : x.fresh));
+      const hits = Object.values(tested).filter(x => x.hit).length;
 
       slot.innerHTML = `<section class="fg-card sky">
-        ${gameHeader('game-u1-sink', '🧪 SANAL DENEY LABORATUVARI', 'Oyun 1 · Yüzer mi, Batar mı? (Tahmin → Deney → Veri)', 'Önce tahminini seç, sonra nesneyi su tankına bırak ve gözlemini kaydet!')}
+        ${gameHeader('game-u1-sink', '🧪 ZORLU DENEY LABI · 2 AŞAMALI', 'Oyun 1 · Tatlı Su vs Tuzlu Su Tankı & Kaptan Salı', 'Yumurta ve üzüm tuzlu suda nasıl davranır? İki suda da dene, sonra Kaptan\'ın batmayacak 3 malzemeli salını kur!')}
         <div class="fg-sink-layout">
           <div class="fg-tank-col">
+            <div class="fg-water-switch">
+              <button type="button" class="small ${!salty ? 'primary' : ''}" data-sink-mode="0">💧 Tatlı Su</button>
+              <button type="button" class="small ${salty ? 'primary' : ''}" data-sink-mode="1">🧂 Tuzlu Su (Yoğun)</button>
+            </div>
             <div class="fg-shelf">
               ${SINK_ITEMS.map(it => {
-                const t = sinkState.tested[it.id];
-                return `<button type="button" class="fg-obj-btn ${sinkState.sel === it.id ? 'sel' : ''} ${t ? 'done' : ''}" data-sink-pick="${it.id}">
-                  <span class="fg-ico">${it.icon}</span><small>${it.name}</small>${t ? `<span class="fg-mini-tag">${t.hit ? '✅' : '🔬'}</span>` : ''}
+                const k = it.id + '_' + (salty ? 's' : 'f');
+                const t = tested[k];
+                return `<button type="button" class="fg-obj-btn ${sel === it.id ? 'sel' : ''} ${t ? 'done' : ''}" data-sink-pick="${it.id}">
+                  <span class="fg-ico">${it.icon}</span><small>${it.name}</small>${t ? `<span class="fg-mini-tag">${t.hit ? '🌟' : '🔬'}</span>` : ''}
                 </button>`;
               }).join('')}
             </div>
             <div class="fg-controls">
               <div class="fg-guess-row">
-                <span><b>1. Tahminin:</b></span>
-                <button type="button" class="small ${sinkState.guess === true ? 'primary' : ''}" data-sink-guess="1">🎈 Yüzer</button>
-                <button type="button" class="small ${sinkState.guess === false ? 'primary' : ''}" data-sink-guess="0">⚓ Batar</button>
+                <span><b>Tahminin (${salty ? 'Tuzlu' : 'Tatlı'}):</b></span>
+                <button type="button" class="small ${guess === true ? 'primary' : ''}" data-sink-guess="1">🎈 Yüzer</button>
+                <button type="button" class="small ${guess === false ? 'primary' : ''}" data-sink-guess="0">⚓ Batar</button>
               </div>
-              <button type="button" class="primary fg-drop-btn" data-sink-drop="1" ${sinkState.guess === null ? 'disabled' : ''}>💧 2. Suya Bırak &amp; Gözlemle!</button>
+              <button type="button" class="primary fg-drop-btn" data-sink-drop="1" ${guess === null ? 'disabled' : ''}>💧 Suya Bırak!</button>
             </div>
-            <div class="fg-tank">
-              <div class="fg-air">
-                ${!testedCur && !sinkState.dropping ? `<div class="fg-held-item">${cur.icon}<span>${cur.name}</span></div>` : ''}
-              </div>
+            <div class="fg-tank ${salty ? 'salty' : ''}">
+              <div class="fg-air">${!tested[key] && !dropping ? `<div class="fg-held-item">${cur.icon}<span>${cur.name}</span></div>` : ''}</div>
               <div class="fg-water">
-                <div class="fg-wave"></div>
                 <div class="fg-float-row">${floaters.map(f => `<span class="fg-in-water floater" title="${f.name}">${f.icon}</span>`).join('')}</div>
                 <div class="fg-sink-row">${sinkers.map(s => `<span class="fg-in-water sinker" title="${s.name}">${s.icon}</span>`).join('')}</div>
-                ${sinkState.dropping ? `<div class="fg-drop-anim ${cur.floats ? 'to-top' : 'to-bot'}">${cur.icon}</div>` : ''}
+                ${dropping ? `<div class="fg-drop-anim ${curFloats ? 'to-top' : 'to-bot'}">${cur.icon}</div>` : ''}
               </div>
               <div class="fg-sand"></div>
             </div>
           </div>
           <div class="fg-notebook">
-            <h5>📒 Bilim İnsanı Veri Defteri (${doneCount}/6)</h5>
-            <div class="fg-msg">${sinkState.msg}</div>
-            <table class="fg-tbl">
-              <thead><tr><th>Nesne</th><th>Tahminin</th><th>Sonuç</th></tr></thead>
-              <tbody>
-                ${SINK_ITEMS.map(it => {
-                  const t = sinkState.tested[it.id];
-                  return `<tr><td>${it.icon} ${it.name}</td><td>${t ? (t.guess ? '🎈 Yüzer' : '⚓ Batar') : '—'}</td><td>${t ? (it.floats ? '🎈 Yüzdü' : '⚓ Battı') + (t.hit ? ' 🌟' : '') : 'Bekliyor'}</td></tr>`;
+            <h5>📒 Deney Kayıtları (${doneKeys}/16 test · ${hits} doğru tahmin)</h5>
+            <div class="fg-msg">${msg}</div>
+            <div class="fg-raft-box">
+              <h6>⛵ Kaptan'ın Salı Görevi (Tatlı Suda Yüzebilen 3 Malzeme Seç!)</h6>
+              <div class="row">
+                ${['wood', 'nail', 'cork', 'marble', 'ice', 'coin'].map(id => {
+                  const it = SINK_ITEMS.find(x => x.id === id);
+                  const on = raftPick.includes(id);
+                  return `<button type="button" class="small ${on ? 'primary' : ''}" data-raft-id="${id}" ${raftDone ? 'disabled' : ''}>${it.icon} ${it.name}</button>`;
                 }).join('')}
-              </tbody>
-            </table>
-            ${doneCount === 6 ? `<div class="fg-conclusion">🎯 <b>Çıkarım Rozeti Kazanıldı!</b> 6 nesneden <b>${hitCount}</b> tanesini doğru tahmin ettin. Malzemenin türü ve yapısı suda yüzüp batmayı belirler!</div>` : ''}
-            <button type="button" class="small" data-sink-reset="1" style="margin-top:8px">🔄 Deneyi Sıfırla</button>
+              </div>
+              <div class="row" style="margin-top:8px">
+                <button type="button" class="small primary" data-raft-test="1" ${raftPick.length !== 3 || raftDone ? 'disabled' : ''}>⛵ Salı Suya İndir (${raftPick.length}/3)</button>
+                <button type="button" class="small" data-sink-reset="1">🔄 Sıfırla</button>
+              </div>
+            </div>
           </div>
         </div>
       </section>`;
     }
 
     slot.onclick = e => {
-      const pick = e.target.closest('[data-sink-pick]');
-      if (pick) {
-        sinkState.sel = pick.dataset.sinkPick;
-        sinkState.guess = null;
-        sinkState.msg = 'Şimdi tahminini seç: Suya bırakınca yüzer mi, batar mı?';
-        sfxPop();
-        draw();
-        return;
-      }
+      const m = e.target.closest('[data-sink-mode]');
+      if (m) { salty = m.dataset.sinkMode === '1'; guess = null; sfxPop(); msg = salty ? '🧂 Suya bol tuz eklendi! Bakalım yumurta ve üzüme ne olacak?' : '💧 Tatlı su moduna geçildi.'; draw(); return; }
+      const p = e.target.closest('[data-sink-pick]');
+      if (p) { sel = p.dataset.sinkPick; guess = null; sfxPop(); draw(); return; }
       const g = e.target.closest('[data-sink-guess]');
-      if (g) {
-        sinkState.guess = g.dataset.sinkGuess === '1';
-        sfxPop();
-        draw();
-        return;
-      }
+      if (g) { guess = g.dataset.sinkGuess === '1'; sfxPop(); draw(); return; }
       if (e.target.closest('[data-sink-drop]')) {
-        if (sinkState.guess === null || sinkState.dropping) return;
-        const cur = SINK_ITEMS.find(x => x.id === sinkState.sel);
-        sinkState.dropping = true;
-        sfxSplash();
-        draw();
+        if (guess === null || dropping) return;
+        const cur = SINK_ITEMS.find(x => x.id === sel);
+        const resFloats = salty ? cur.salty : cur.fresh;
+        dropping = true; sfxSplash(); draw();
         setTimeout(() => {
-          sinkState.dropping = false;
-          const hit = sinkState.guess === cur.floats;
-          sinkState.tested[cur.id] = { guess: sinkState.guess, floats: cur.floats, hit };
-          sinkState.msg = (hit ? '🌟 Süper tahmin! ' : '🔬 İlginç gözlem! ') + cur.fact;
+          dropping = false;
+          const hit = guess === resFloats;
+          tested[cur.id + '_' + (salty ? 's' : 'f')] = { hit, floats: resFloats };
+          msg = (hit ? '🌟 Tam isabet! ' : '🔬 Sürpriz sonuç! ') + cur.fact;
           if (hit) sfxGood();
-          const doneCount = Object.keys(sinkState.tested).length;
-          if (doneCount === SINK_ITEMS.length) {
-            sfxWin();
-            saveGameProgress('game-u1-sink', Object.values(sinkState.tested).filter(x => x.hit).length, SINK_ITEMS.length);
-          }
-          // Sıradaki test edilmemiş nesneye otomatik geç
-          const next = SINK_ITEMS.find(x => !sinkState.tested[x.id]);
-          if (next) { sinkState.sel = next.id; sinkState.guess = null; }
+          if (raftDone && Object.keys(tested).length >= 6) saveGameProgress('game-u1-sink', 1, 1);
+          const next = SINK_ITEMS.find(x => !tested[x.id + '_' + (salty ? 's' : 'f')]);
+          if (next) { sel = next.id; guess = null; }
           draw();
-        }, 550);
+        }, 500);
         return;
       }
-      if (e.target.closest('[data-sink-reset]')) {
-        sinkState.sel = 'wood'; sinkState.guess = null; sinkState.tested = {}; sinkState.msg = 'Yeni deney başladı! Nesne seç ve tahmin et.';
-        draw();
+      const rBtn = e.target.closest('[data-raft-id]');
+      if (rBtn) {
+        const id = rBtn.dataset.raftId;
+        if (raftPick.includes(id)) raftPick = raftPick.filter(x => x !== id);
+        else if (raftPick.length < 3) raftPick.push(id);
+        sfxPop(); draw(); return;
       }
+      if (e.target.closest('[data-raft-test]')) {
+        const ok = raftPick.every(id => SINK_ITEMS.find(x => x.id === id).fresh);
+        if (ok) {
+          raftDone = true; sfxWin();
+          msg = '⛵🎉 Harika Mühendis! Tahta, mantar ve buz tatlı suda yüzdüğü için salın batmadı!';
+          saveGameProgress('game-u1-sink', 1, 1);
+        } else {
+          sfxBad();
+          msg = '⚓ Eyvah, salın battı! Seçtiğin malzemelerden biri ağır ve batıyor. Yukarıdaki tankta tek tek test edip tekrar dene!';
+          raftPick = [];
+        }
+        draw(); return;
+      }
+      if (e.target.closest('[data-sink-reset]')) { sel = 'wood'; salty = false; guess = null; tested = {}; raftPick = []; raftDone = false; msg = 'Deney sıfırlandı!'; draw(); }
     };
     draw();
   }
 
   // ═══════════════════════════════════════════════════════════════
-  // OYUN 2: 🎈 Bilim İnsanı Özellikleri Balon Patlatma (Canvas!)
+  // OYUN 2: 🎈 Arcade Balon Avı (3 Can, 35 sn Sayaç, Combo x2/x3!)
   // ═══════════════════════════════════════════════════════════════
-  const BALLOON_GOOD = ['Meraklıdır', 'Sabırlıdır', 'Gözlem Yapar', 'Araştırmacıdır', 'Tarafsızdır', 'Paylaşımcıdır', 'Soru Sorar', 'Deney Yapar'];
-  const BALLOON_BAD = ['Hemen Pes Eder', 'Kanıtsız İnanır', 'Soru Sormaz', 'Veriyi Gizler'];
+  const BAL_GOOD = ['Meraklıdır', 'Sabırlıdır', 'Gözlem Yapar', 'Kanıt Arar', 'Tarafsızdır', 'Paylaşımcıdır', 'Tekrar Dener', 'Ölçüm Yapar', 'Soru Sorar'];
+  const BAL_BAD = ['Hemen Pes Eder', 'Kanıtsız İnanır', 'Sonucu Uydurur', 'Veriyi Gizler', 'Tek Başına Yapar', 'Hiç Şüphe Etmez'];
 
   function mountBalloonsGame(slot) {
-    let running = false;
-    let score = 0;
-    let caught = 0;
-    let feedback = 'Başlamak için "Oyunu Başlat"a bas ve yalnız BİLİM İNSANI özelliklerini patlat!';
-    let balloons = [];
-    let particles = [];
-    let rafId = null;
-    let lastTime = 0;
-    let spawnTimer = 0;
+    let running = false, score = 0, caught = 0, lives = 3, timeLeft = 35, combo = 0;
+    let balloons = [], particles = [], timerId = null, lastTime = 0, spawnTimer = 0;
     const COLORS = ['#ef4444', '#f59e0b', '#10b981', '#0ea5e9', '#8b5cf6', '#ec4899'];
 
     slot.innerHTML = `<section class="fg-card sun">
-      ${gameHeader('game-u1-balloons', '🎈 GERÇEK ZAMANLI CANVAS OYUNU', 'Oyun 2 · Bilim İnsanı Balon Avı', 'Gökyüzünde süzülen balonlardan sadece gerçek bilim insanı özelliklerine dokunup patlat! (Hedef: 8 doğru balon)')}
+      ${gameHeader('game-u1-balloons', '🎈 ARCADE CANVAS OYUNU · ZAMAN YARIŞI', 'Oyun 2 · Bilim İnsanı Balon Avı (3 Can · 35 Sn)', 'Dikkat! Çeldirici balonlar hızlanıyor: 35 saniyede 3 canın bitmeden 10 doğru balonu patlat! Seri yakalarsan Combo x2/x3 puan alırsın!')}
       <div class="fg-bal-bar">
+        <span>❤️ Can: <b id="fgBalLives">❤️❤️❤️</b></span>
+        <span>⏱️ Süre: <b id="fgBalTime">35 sn</b></span>
+        <span>🔥 Seri: <b id="fgBalCombo">x1</b></span>
         <span>⭐ Puan: <b id="fgBalScore">0</b></span>
-        <span>🎯 Yakalanan: <b id="fgBalCaught">0 / 8</b></span>
+        <span>🎯 <b id="fgBalCaught">0 / 10</b></span>
         <div class="row">
-          <button type="button" class="small primary" id="fgBalStart">▶ Oyunu Başlat</button>
+          <button type="button" class="small primary" id="fgBalStart">▶ Başlat</button>
           <button type="button" class="small" id="fgBalReset">🔄 Sıfırla</button>
         </div>
       </div>
-      <div class="fg-msg" id="fgBalMsg">${feedback}</div>
-      <div class="fg-canvas-wrap">
-        <canvas id="fgBalCanvas" width="680" height="320" aria-label="Balon patlatma oyunu"></canvas>
-      </div>
+      <div class="fg-msg" id="fgBalMsg">Şaşırtmacalara dikkat! Örneğin "Tek Başına Yapar" veya "Sonucu Uydurur" YANLIŞTIR!</div>
+      <div class="fg-canvas-wrap"><canvas id="fgBalCanvas" width="680" height="330"></canvas></div>
     </section>`;
 
     const canvas = slot.querySelector('#fgBalCanvas');
     const ctx = canvas.getContext('2d');
     const scoreEl = slot.querySelector('#fgBalScore');
     const caughtEl = slot.querySelector('#fgBalCaught');
+    const livesEl = slot.querySelector('#fgBalLives');
+    const timeEl = slot.querySelector('#fgBalTime');
+    const comboEl = slot.querySelector('#fgBalCombo');
     const msgEl = slot.querySelector('#fgBalMsg');
     const startBtn = slot.querySelector('#fgBalStart');
 
+    function syncHUD() {
+      scoreEl.textContent = score;
+      caughtEl.textContent = caught + ' / 10';
+      livesEl.textContent = lives > 0 ? '❤️'.repeat(lives) : '💔';
+      timeEl.textContent = timeLeft + ' sn';
+      comboEl.textContent = 'x' + (combo >= 4 ? 3 : combo >= 2 ? 2 : 1);
+    }
+
+    function stopGame(win, reason) {
+      running = false;
+      if (timerId) { clearInterval(timerId); timerId = null; }
+      startBtn.textContent = win ? '🏆 Kazandın!' : '▶ Tekrar Dene';
+      msgEl.textContent = reason;
+      if (win) { sfxWin(); saveGameProgress('game-u1-balloons', caught, 10); }
+      else sfxBad();
+    }
+
     function spawnBalloon() {
-      const isGood = Math.random() < 0.68;
-      const pool = isGood ? BALLOON_GOOD : BALLOON_BAD;
-      const label = pool[Math.floor(Math.random() * pool.length)];
+      const isGood = Math.random() < 0.58;
+      const pool = isGood ? BAL_GOOD : BAL_BAD;
+      const speedBoost = 1 + caught * 0.08;
       balloons.push({
         x: 68 + Math.random() * (canvas.width - 136),
-        y: canvas.height + 42,
-        r: 40,
-        vy: 42 + Math.random() * 34,
-        sway: Math.random() * Math.PI * 2,
+        y: canvas.height + 44,
+        r: 42,
+        vy: (58 + Math.random() * 44) * speedBoost,
+        sway: Math.random() * 6,
         color: COLORS[Math.floor(Math.random() * COLORS.length)],
-        label,
+        label: pool[Math.floor(Math.random() * pool.length)],
         isGood
       });
     }
 
     function burst(x, y, color) {
-      for (let i = 0; i < 16; i++) {
-        const ang = (Math.PI * 2 * i) / 16;
-        const sp = 50 + Math.random() * 90;
+      for (let i = 0; i < 18; i++) {
+        const ang = (Math.PI * 2 * i) / 18;
+        const sp = 60 + Math.random() * 100;
         particles.push({ x, y, vx: Math.cos(ang) * sp, vy: Math.sin(ang) * sp, life: 0.55, color });
       }
     }
@@ -3647,66 +3833,44 @@ document.addEventListener('input', e => {
     function drawScene(dt) {
       ctx.clearRect(0, 0, canvas.width, canvas.height);
       const grad = ctx.createLinearGradient(0, 0, 0, canvas.height);
-      grad.addColorStop(0, '#bae6fd');
-      grad.addColorStop(1, '#f0f9ff');
-      ctx.fillStyle = grad;
-      ctx.fillRect(0, 0, canvas.width, canvas.height);
+      grad.addColorStop(0, '#bae6fd'); grad.addColorStop(1, '#f0f9ff');
+      ctx.fillStyle = grad; ctx.fillRect(0, 0, canvas.width, canvas.height);
 
-      // Bulutlar
       ctx.fillStyle = 'rgba(255,255,255,0.85)';
-      [[110, 58, 28], [320, 44, 22], [560, 72, 30]].forEach(([cx, cy, r]) => {
-        ctx.beginPath(); ctx.arc(cx, cy, r, 0, Math.PI * 2); ctx.arc(cx + r * 0.8, cy + 4, r * 0.75, 0, Math.PI * 2); ctx.arc(cx - r * 0.8, cy + 5, r * 0.7, 0, Math.PI * 2); ctx.fill();
+      [[100, 56, 26], [340, 40, 22], [570, 68, 28]].forEach(([cx, cy, r]) => {
+        ctx.beginPath(); ctx.arc(cx, cy, r, 0, Math.PI * 2); ctx.arc(cx + r * 0.8, cy + 4, r * 0.7, 0, Math.PI * 2); ctx.arc(cx - r * 0.8, cy + 5, r * 0.65, 0, Math.PI * 2); ctx.fill();
       });
 
-      if (!running && caught < 8 && balloons.length === 0) {
-        ctx.fillStyle = '#0f2438';
-        ctx.font = 'bold 18px Segoe UI, sans-serif';
-        ctx.textAlign = 'center';
-        ctx.fillText('Hazırsan "▶ Oyunu Başlat" butonuna bas!', canvas.width / 2, canvas.height / 2);
+      if (!running && balloons.length === 0) {
+        ctx.fillStyle = '#0f2438'; ctx.font = 'bold 18px Segoe UI, sans-serif'; ctx.textAlign = 'center';
+        ctx.fillText(caught >= 10 ? '🏆 TEBRİKLER! Puanın: ' + score : 'Hazırsan "▶ Başlat" butonuna bas!', canvas.width / 2, canvas.height / 2);
         return;
       }
 
       for (const b of balloons) {
-        if (running) {
-          b.y -= b.vy * dt;
-          b.sway += dt * 2;
-          b.x += Math.sin(b.sway) * 14 * dt;
-        }
-        // İp
-        ctx.strokeStyle = '#64748b';
-        ctx.lineWidth = 1.6;
-        ctx.beginPath(); ctx.moveTo(b.x, b.y + b.r); ctx.quadraticCurveTo(b.x + 6, b.y + b.r + 18, b.x - 3, b.y + b.r + 34); ctx.stroke();
-
-        // Balon gövdesi
+        if (running) { b.y -= b.vy * dt; b.sway += dt * 2.4; b.x += Math.sin(b.sway) * 20 * dt; }
+        ctx.strokeStyle = '#64748b'; ctx.lineWidth = 1.6;
+        ctx.beginPath(); ctx.moveTo(b.x, b.y + b.r); ctx.quadraticCurveTo(b.x + 6, b.y + b.r + 18, b.x - 3, b.y + b.r + 32); ctx.stroke();
         ctx.fillStyle = b.color;
-        ctx.beginPath(); ctx.ellipse(b.x, b.y, b.r * 0.92, b.r * 1.06, 0, 0, Math.PI * 2); ctx.fill();
+        ctx.beginPath(); ctx.ellipse(b.x, b.y, b.r * 0.94, b.r * 1.06, 0, 0, Math.PI * 2); ctx.fill();
         ctx.fillStyle = 'rgba(255,255,255,0.28)';
         ctx.beginPath(); ctx.ellipse(b.x - 13, b.y - 14, 9, 15, -0.4, 0, Math.PI * 2); ctx.fill();
-
-        // Yazı
-        ctx.fillStyle = '#ffffff';
-        ctx.font = 'bold 12px Segoe UI, sans-serif';
-        ctx.textAlign = 'center';
-        ctx.textBaseline = 'middle';
+        ctx.fillStyle = '#fff'; ctx.font = 'bold 11.5px Segoe UI, sans-serif'; ctx.textAlign = 'center'; ctx.textBaseline = 'middle';
         const words = b.label.split(' ');
         if (words.length > 1) {
           const mid = Math.ceil(words.length / 2);
           ctx.fillText(words.slice(0, mid).join(' '), b.x, b.y - 7);
           ctx.fillText(words.slice(mid).join(' '), b.x, b.y + 8);
-        } else {
-          ctx.fillText(b.label, b.x, b.y);
-        }
+        } else ctx.fillText(b.label, b.x, b.y);
       }
       balloons = balloons.filter(b => b.y > -60);
 
       for (const p of particles) {
         p.x += p.vx * dt; p.y += p.vy * dt; p.life -= dt;
-        ctx.globalAlpha = Math.max(0, p.life * 1.8);
-        ctx.fillStyle = p.color;
+        ctx.globalAlpha = Math.max(0, p.life * 1.8); ctx.fillStyle = p.color;
         ctx.beginPath(); ctx.arc(p.x, p.y, 4.5, 0, Math.PI * 2); ctx.fill();
       }
-      ctx.globalAlpha = 1;
-      particles = particles.filter(p => p.life > 0);
+      ctx.globalAlpha = 1; particles = particles.filter(p => p.life > 0);
     }
 
     function loop(ts) {
@@ -3715,16 +3879,10 @@ document.addEventListener('input', e => {
       lastTime = ts;
       if (running) {
         spawnTimer += dt;
-        if (spawnTimer >= 1.15 && balloons.length < 6) {
-          spawnBalloon();
-          spawnTimer = 0;
-        }
+        if (spawnTimer >= 0.9 && balloons.length < 7) { spawnBalloon(); spawnTimer = 0; }
       }
       drawScene(dt);
-      if (running || particles.length > 0) {
-        rafId = requestAnimationFrame(loop);
-        activeRafs.push(rafId);
-      }
+      if (running || particles.length > 0) { const id = requestAnimationFrame(loop); activeRafs.push(id); }
     }
 
     canvas.addEventListener('pointerdown', e => {
@@ -3734,85 +3892,89 @@ document.addEventListener('input', e => {
       const py = (e.clientY - rect.top) * (canvas.height / rect.height);
       for (let i = balloons.length - 1; i >= 0; i--) {
         const b = balloons[i];
-        const dist = Math.hypot(px - b.x, py - b.y);
-        if (dist <= b.r + 6) {
+        if (Math.hypot(px - b.x, py - b.y) <= b.r + 6) {
           balloons.splice(i, 1);
           if (b.isGood) {
-            score += 15;
+            combo++;
+            const mult = combo >= 4 ? 3 : combo >= 2 ? 2 : 1;
+            score += 10 * mult;
             caught++;
-            burst(b.x, b.y, b.color);
-            sfxPop();
-            msgEl.textContent = `🌟 Harika! "${b.label}" gerçekten bir bilim insanı özelliğidir! (+15 Puan)`;
-            if (caught >= 8) {
-              running = false;
-              startBtn.textContent = '🏆 Tamamlandı!';
-              sfxWin();
-              saveGameProgress('game-u1-balloons', caught, 8);
-              msgEl.textContent = `🏆 Tebrikler! 8 bilim insanı özelliğini yakaladın! Toplam puanın: ${score}`;
-            }
+            burst(b.x, b.y, b.color); sfxPop();
+            msgEl.textContent = `🌟 "${b.label}" doğru! (+${10 * mult} Puan · Seri x${mult})`;
+            if (caught >= 10) stopGame(true, `🏆 Mükemmel! Süre bitmeden 10 doğru balonu yakaladın! Toplam Puan: ${score}`);
           } else {
-            score = Math.max(0, score - 5);
-            burst(b.x, b.y, '#94a3b8');
-            sfxBad();
-            msgEl.textContent = `🚫 Dikkat! "${b.label}" bilim insanına yakışmaz! (-5 Puan)`;
+            combo = 0; lives--;
+            burst(b.x, b.y, '#64748b'); sfxBad();
+            msgEl.textContent = `💥 Eyvah! "${b.label}" bir tuzaktı! 1 can gitti.`;
+            if (lives <= 0) stopGame(false, '💔 Canların bitti! Sıfırlayıp tekrar dene, şaşırtmacalara dikkat et!');
           }
-          scoreEl.textContent = score;
-          caughtEl.textContent = `${caught} / 8`;
+          syncHUD();
           break;
         }
       }
     });
 
+    function resetAll() {
+      running = false; if (timerId) { clearInterval(timerId); timerId = null; }
+      score = 0; caught = 0; lives = 3; timeLeft = 35; combo = 0; balloons = []; particles = [];
+      startBtn.textContent = '▶ Başlat'; syncHUD(); drawScene(0);
+    }
+
     startBtn.onclick = () => {
-      if (caught >= 8) return;
+      if (caught >= 10 || lives <= 0 || timeLeft <= 0) resetAll();
       running = !running;
       startBtn.textContent = running ? '⏸ Duraklat' : '▶ Devam Et';
       if (running) {
+        if (!timerId) {
+          timerId = setInterval(() => {
+            if (!running) return;
+            timeLeft--;
+            syncHUD();
+            if (timeLeft <= 0) stopGame(false, '⏱️ Süre doldu! Sıfırlayıp biraz daha hızlı dene!');
+          }, 1000);
+          activeIntervals.push(timerId);
+        }
         if (balloons.length === 0) spawnBalloon();
         lastTime = performance.now();
-        rafId = requestAnimationFrame(loop);
-        activeRafs.push(rafId);
+        activeRafs.push(requestAnimationFrame(loop));
       }
     };
 
-    slot.querySelector('#fgBalReset').onclick = () => {
-      running = false; score = 0; caught = 0; balloons = []; particles = [];
-      scoreEl.textContent = '0'; caughtEl.textContent = '0 / 8';
-      startBtn.textContent = '▶ Oyunu Başlat';
-      msgEl.textContent = 'Oyun sıfırlandı! Başlamak için "▶ Oyunu Başlat"a bas.';
-      drawScene(0);
-    };
-
-    drawScene(0);
+    slot.querySelector('#fgBalReset').onclick = () => { resetAll(); msgEl.textContent = 'Oyun sıfırlandı! Başlamak için "▶ Başlat"a bas.'; };
+    syncHUD(); drawScene(0);
   }
 
   // ═══════════════════════════════════════════════════════════════
-  // OYUN 3: 🔭 Bilim Kahramanları Zaman Kapsülü
+  // OYUN 3: 🚀 Bilim Kahramanları & Doğru Ölçüm Aleti Seçimi
   // ═══════════════════════════════════════════════════════════════
-  const HEROES = [
-    { id: 'ali', name: 'Ali Kuşçu', icon: '🔭', clue: '"İstanbul\'da yıldızları ve Ay\'ın hareketlerini inceledim, haritasını çıkardım!"', reply: 'Gökyüzüne merakla bakmayı unutma küçük gökbilimci!' },
-    { id: 'aziz', name: 'Aziz Sancar', icon: '🧬', clue: '"Hücrelerin bozulan DNA\'yı nasıl onardığını bularak Nobel Kimya Ödülü kazandım!"', reply: 'Çok çalışmak ve merak etmek her kapıyı açar!' },
-    { id: 'marie', name: 'Marie Curie', icon: '⚛️', clue: '"Radyoaktiviteyi keşfettim ve iki farklı alanda Nobel Ödülü alan ilk bilim insanıyım!"', reply: 'Bilinmeyenden korkma, onu anlamaya çalış!' },
-    { id: 'cahit', name: 'Cahit Arf', icon: '📐', clue: '"Matematikte kendi adımla anılan teoremler buldum, her şeyi sorguladım!"', reply: 'Ezberleme, nedenini kendin keşfet!' },
-    { id: 'sina', name: 'İbn-i Sina', icon: '🩺', clue: '"Tıp alanında yüzlerce yıl dünyada okutulan dev eserler yazdım!"', reply: 'Sağlık ve bilim insanlık içindir!' }
+  const HERO_CHALLENGES = [
+    { id: 'ali', name: 'Ali Kuşçu', icon: '🔭', clue: '"Ay\'ın haritasını çizdim ve gök cisimlerini gözlemledim!"', toolQ: 'Gökyüzünü ve uzak yıldızları incelemek için hangi aracı kullanırız?', toolAns: 'Teleskop', tools: ['Teleskop', 'Termometre', 'Kronometre'] },
+    { id: 'aziz', name: 'Aziz Sancar', icon: '🧬', clue: '"Hücrelerin bozulan DNA\'yı nasıl onardığını bularak Nobel Kimya Ödülü kazandım!"', toolQ: 'Çok küçük hücreleri ve yapıları görmek için ne gerekir?', toolAns: 'Mikroskop', tools: ['Mikroskop', 'Pusula', 'Cetvel'] },
+    { id: 'marie', name: 'Marie Curie', icon: '⚛️', clue: '"Radyoaktiviteyi keşfettim, iki farklı alanda Nobel kazanan ilk bilim insanıyım!"', toolQ: 'Deneylerde maddelerin kütlesini hassasça ölçmek için ne kullanılır?', toolAns: 'Eşit Kollu / Hassas Terazi', tools: ['Eşit Kollu / Hassas Terazi', 'Dürbün', 'Saat'] },
+    { id: 'cahit', name: 'Cahit Arf', icon: '📐', clue: '"Matematikte kendi adımla anılan teoremler kurdum, ezber değil mantık aradım!"', toolQ: 'Bir cismin uzunluğunu ölçüp veri kaydetmek için hangisi kullanılır?', toolAns: 'Cetvel / Metre', tools: ['Cetvel / Metre', 'Stetoskop', 'Büyüteç'] },
+    { id: 'sina', name: 'İbn-i Sina', icon: '🩺', clue: '"Tıp alanında yüzlerce yıl dünyada okutulan kitaplar yazdım!"', toolQ: 'Hastanın vücut sıcaklığını (ateşini) ölçmek için ne kullanılır?', toolAns: 'Termometre', tools: ['Termometre', 'Mıknatıs', 'Elek'] }
   ];
-  const heroState = { idx: 0, solved: [], msg: 'Yukarıdaki zaman kapsülü kime ait? Doğru bilim kahramanının kapısına bas!' };
 
   function mountHeroesGame(slot) {
+    let idx = 0, phase = 'hero', solved = [], msg = '1. Adım: Mesajı oku, doğru kahramana tıkla. 2. Adım: Kullanacağı ölçüm aracını seç!';
+
     function draw() {
-      const done = heroState.solved.length >= HEROES.length;
-      const cur = HEROES[heroState.idx];
+      const done = solved.length >= HERO_CHALLENGES.length;
+      const cur = HERO_CHALLENGES[idx];
       slot.innerHTML = `<section class="fg-card mint">
-        ${gameHeader('game-u1-heroes', '🚀 ZAMAN KAPSÜLÜ OYUNU', 'Oyun 3 · Bilim Kahramanını Bul!', 'Zaman kapsülünden gelen mesajı oku, doğru bilim insanının kartına dokunup kapısını aç!')}
-        <div class="fg-capsule">${done ? '🎉 Tüm bilim kahramanlarını tanıdın! Süper Bilim Tarihçisi oldun!' : `📩 <b>Gelen Mesaj (${heroState.idx + 1}/${HEROES.length}):</b> ${cur.clue}`}</div>
-        <div class="fg-msg">${heroState.msg}</div>
+        ${gameHeader('game-u1-heroes', '🚀 2 AŞAMALI ZAMAN KAPSÜLÜ', 'Oyun 3 · Bilim Kahramanı & Ölçüm Aracı Görevi', 'Önce mesajın sahibini bul, sonra onun araştırması için doğru ölçüm/gözlem aracını seç!')}
+        <div class="fg-capsule">${done ? '🏆 Tüm kahramanları ve bilimsel araçlarını çözdün!' : `📩 <b>Görev ${idx + 1}/${HERO_CHALLENGES.length}:</b> ${cur.clue}`}</div>
+        <div class="fg-msg">${msg}</div>
+        ${!done && phase === 'tool' ? `<div class="fg-tool-box">
+          <p><b>2. Adım (${cur.icon} ${cur.name}):</b> ${cur.toolQ}</p>
+          <div class="row">${cur.tools.map(t => `<button type="button" class="small primary" data-hero-tool="${t}">🔧 ${t}</button>`).join('')}</div>
+        </div>` : ''}
         <div class="fg-heroes-grid">
-          ${HEROES.map(h => {
-            const ok = heroState.solved.includes(h.id);
-            return `<button type="button" class="fg-hero-card ${ok ? 'open' : ''}" data-hero-pick="${h.id}" ${ok || done ? 'disabled' : ''}>
-              <div class="fg-hero-ico">${h.icon}</div>
-              <strong>${h.name}</strong>
-              <small>${ok ? '💬 "' + h.reply + '"' : '❓ Kapıyı Çal'}</small>
+          ${HERO_CHALLENGES.map(h => {
+            const ok = solved.includes(h.id);
+            const active = !done && phase === 'tool' && cur.id === h.id;
+            return `<button type="button" class="fg-hero-card ${ok ? 'open' : active ? 'sel' : ''}" data-hero-pick="${h.id}" ${ok || done || phase === 'tool' ? 'disabled' : ''}>
+              <div class="fg-hero-ico">${h.icon}</div><strong>${h.name}</strong><small>${ok ? '✅ Tamamlandı' : active ? '🔧 Araç Bekliyor' : '❓ Seç'}</small>
             </button>`;
           }).join('')}
         </div>
@@ -3823,73 +3985,67 @@ document.addEventListener('input', e => {
     slot.onclick = e => {
       const p = e.target.closest('[data-hero-pick]');
       if (p) {
-        const cur = HEROES[heroState.idx];
-        if (p.dataset.heroPick === cur.id) {
-          heroState.solved.push(cur.id);
-          heroState.msg = `🌟 Doğru! ${cur.name} kapıyı açtı: "${cur.reply}"`;
-          sfxGood();
-          if (heroState.idx < HEROES.length - 1) heroState.idx++;
-          else { sfxWin(); saveGameProgress('game-u1-heroes', HEROES.length, HEROES.length); }
-        } else {
-          sfxBad();
-          heroState.msg = '🤔 Bu mesaj başka bir kahramana ait, ipucunu tekrar oku!';
-        }
-        draw();
-        return;
+        const cur = HERO_CHALLENGES[idx];
+        if (p.dataset.heroPick === cur.id) { phase = 'tool'; sfxPop(); msg = `✅ Harika! Şimdi ${cur.name} için doğru ölçüm/gözlem aracını seç!`; }
+        else { sfxBad(); msg = '🤔 İpucunu tekrar oku, başka bir kahraman!'; }
+        draw(); return;
       }
-      if (e.target.closest('[data-hero-reset]')) {
-        heroState.idx = 0; heroState.solved = []; heroState.msg = 'Yeni tur başladı! Mesajı oku ve kahramanı seç.';
-        draw();
+      const tb = e.target.closest('[data-hero-tool]');
+      if (tb) {
+        const cur = HERO_CHALLENGES[idx];
+        if (tb.dataset.heroTool === cur.toolAns) {
+          solved.push(cur.id); phase = 'hero'; sfxGood();
+          msg = `🌟 Süper! ${cur.name} ve "${cur.toolAns}" eşleşti!`;
+          if (idx < HERO_CHALLENGES.length - 1) idx++;
+          else { sfxWin(); saveGameProgress('game-u1-heroes', HERO_CHALLENGES.length, HERO_CHALLENGES.length); }
+        } else { sfxBad(); msg = '❌ Bu araç o iş için uygun değil, tekrar dene!'; }
+        draw(); return;
       }
+      if (e.target.closest('[data-hero-reset]')) { idx = 0; phase = 'hero'; solved = []; msg = 'Yeni tur başladı!'; draw(); }
     };
     draw();
   }
 
   // ═══════════════════════════════════════════════════════════════
-  // OYUN 4: 🔬 İnteraktif Mikroskop Laboratuvarı (Zoom + Canvas!)
+  // OYUN 4: 🔬 Gerçekçi Çift Ayarlı Mikroskop Labı (Zoom + Odak!)
   // ═══════════════════════════════════════════════════════════════
   const SLIDES = [
-    { id: 'yogurt', name: '🥛 Yoğurt Damlası', group: 'mikro', hint: 'Sütü yoğurda dönüştüren yararlı bakteriler göründü!', desc: '1000x büyütmede minicik çubuk bakteriler kıpırdıyor!' },
-    { id: 'pond', name: '💧 Gölet Suyu', group: 'mikro', hint: 'Tek hücreli amip yüzüyor! Çıplak gözle görülmez.', desc: '1000x büyütmede şeffaf amipler şekil değiştirip yüzüyor!' },
-    { id: 'bread', name: '🍞 Bayat Ekmek', group: 'mantar', hint: 'Bunlar küf mantarı sporları! Mantar bitki değildir.', desc: '400x büyütmede ince iplikçikler ve renkli küf sporları belirdi!' },
-    { id: 'leaf', name: '🌿 Yeşil Yaprak', group: 'bitki', hint: 'Düzenli yeşil hücreler! Bitkiler kendi besinini üretir.', desc: '400x büyütmede yeşil kloroplastlı bitki hücreleri sıralı dizilmiş!' }
+    { id: 'yogurt', name: '🥛 Yoğurt Damlası', group: 'mikro', targetFocus: 65, q: 'Yoğurt mayalayan bakteriler nasıldır?', qOpts: ['Yararlı mikroskobik canlıdır', 'Kendi besinini yapan bitkidir'], qAns: 0, desc: 'Netleşti! Sütü yoğurt yapan çubuk bakteriler yüzüyor!' },
+    { id: 'pond', name: '💧 Gölet Suyu', group: 'mikro', targetFocus: 40, q: 'Gölet suyundaki amipi çıplak gözle görebilir miyiz?', qOpts: ['Hayır, sadece mikroskopla görülür', 'Evet, büyüteç yeterlidir'], qAns: 0, desc: 'Netleşti! Tek hücreli amip şekil değiştirerek hareket ediyor!' },
+    { id: 'bread', name: '🍞 Bayat Ekmek', group: 'mantar', targetFocus: 75, q: 'Küf mantarları kendi besinini üretebilir mi?', qOpts: ['Hayır, bitki değildir ve hazır beslenir', 'Evet, yapraklarıyla üretir'], qAns: 0, desc: 'Netleşti! Küf mantarı iplikçikleri ve spor keseleri göründü!' },
+    { id: 'yeast', name: '🥖 Hamur Mayası', group: 'mantar', targetFocus: 55, q: 'Ekmeğin kabarmasını sağlayan maya hangi gruptadır?', qOpts: ['Mantarlar', 'Hayvanlar'], qAns: 0, desc: 'Netleşti! Tomurcuklanan maya mantarları kabarcık çıkarıyor!' },
+    { id: 'leaf', name: '🌿 Yeşil Yaprak', group: 'bitki', targetFocus: 50, q: 'Yeşil yapraklı bitkilerin en büyük özelliği nedir?', qOpts: ['Güneş ışığıyla kendi besinini üretir', 'Dışarıdan et ve ot yer'], qAns: 0, desc: 'Netleşti! Düzenli yeşil kloroplastlı bitki hücreleri parlıyor!' },
+    { id: 'onion', name: '🧅 Soğan Zarı', group: 'bitki', targetFocus: 30, q: 'Soğan zarı hangi canlı grubunun bir parçasıdır?', qOpts: ['Bitkiler', 'Mikroskobik canlılar'], qAns: 0, desc: 'Netleşti! Tuğla duvarı gibi dizilmiş soğan bitkisi hücreleri!' }
   ];
 
   function mountMicroscopeGame(slot) {
-    let slideId = 'yogurt';
-    let zoom = 1;
-    let found = {};
-    let msg = 'Bir lam seç ve ZOOM sürgüsünü sağa kaydırarak gizli dünyayı keşfet!';
+    let slideId = 'yogurt', zoom = 100, focus = 15, found = {}, step1GroupOk = false, msg = 'Hem ZOOM (≥500x) hem de İNCE ODAK ayarını yeşil hedefe getirerek görüntüyü netleştir!';
 
     function renderUI() {
       const s = SLIDES.find(x => x.id === slideId);
-      const done = Object.keys(found).length;
+      const focusDiff = Math.abs(focus - s.targetFocus);
+      const isSharp = zoom >= 500 && focusDiff <= 12;
       slot.innerHTML = `<section class="fg-card sky">
-        ${gameHeader('game-u2-microscope', '🔬 GERÇEKÇİ MİKROSKOP LABI', 'Oyun 4 · Mikroskobu Büyüt, Canlıyı Keşfet!', '1x\'te görünmeyen canlıları görmek için yakınlaştırma sürgüsünü 400x–1000x\'e çek, sonra canlı grubunu seç!')}
+        ${gameHeader('game-u2-microscope', '🔬 ÇİFT AYARLI MİKROSKOP LABI', 'Oyun 4 · Zoom + İnce Odak Ayarını Bul, 6 Lamı Çöz!', 'Gerçek mikroskop gibi: Hem Zoom\'u (500x+) büyüt hem de İnce Odak sürgüsünü tam netlik noktasına getir!')}
         <div class="fg-micro-layout">
           <div class="fg-micro-left">
             <div class="fg-slides">
               ${SLIDES.map(sl => `<button type="button" class="small ${sl.id === slideId ? 'primary' : ''}" data-mic-slide="${sl.id}">${found[sl.id] ? '✅ ' : ''}${sl.name}</button>`).join('')}
             </div>
-            <div class="fg-lens-wrap">
-              <canvas id="fgMicCanvas" width="240" height="240"></canvas>
-              <div class="fg-zoom-badge" id="fgMicZoomLbl">${zoom}x</div>
-            </div>
-            <label class="fg-zoom-bar">
-              <span>🔍 Yakınlaştır: <b id="fgMicVal">${zoom}x</b></span>
-              <input type="range" id="fgMicRange" min="1" max="1000" step="10" value="${zoom}">
-            </label>
+            <div class="fg-lens-wrap"><canvas id="fgMicCanvas" width="240" height="240"></canvas><div class="fg-zoom-badge" id="fgMicZoomLbl">${zoom}x · ${isSharp ? '✨ NET' : '🌫️ Bulanık'}</div></div>
+            <label class="fg-zoom-bar"><span>🔍 1. Büyütme (Zoom ≥ 500x): <b id="fgMicVal">${zoom}x</b></span><input type="range" id="fgMicRange" min="1" max="1000" step="20" value="${zoom}"></label>
+            <label class="fg-zoom-bar"><span>🎯 2. İnce Odak Ayarı (Netlik): <b id="fgMicFocVal">${focus}</b></span><input type="range" id="fgMicFoc" min="0" max="100" step="1" value="${focus}"></label>
           </div>
           <div class="fg-micro-right">
-            <div class="fg-msg" id="fgMicMsg">${zoom >= 350 ? '✨ ' + s.desc : msg}</div>
-            <p class="fg-q-label"><b>Mercekte gördüğün bu canlı hangi aileye ait?</b></p>
+            <div class="fg-msg" id="fgMicMsg">${isSharp ? '✨ ' + s.desc : msg}</div>
+            <p class="fg-q-label"><b>Aşama 1: Bu lamdaki canlı hangi grupta?</b></p>
             <div class="fg-group-btns">
-              <button type="button" class="small" data-mic-grp="mikro" ${zoom < 300 ? 'disabled' : ''}>🦠 Mikroskobik Canlı</button>
-              <button type="button" class="small" data-mic-grp="mantar" ${zoom < 300 ? 'disabled' : ''}>🍄 Mantar</button>
-              <button type="button" class="small" data-mic-grp="bitki" ${zoom < 300 ? 'disabled' : ''}>🌻 Bitki</button>
+              <button type="button" class="small ${step1GroupOk ? 'primary' : ''}" data-mic-grp="mikro" ${!isSharp || step1GroupOk ? 'disabled' : ''}>🦠 Mikroskobik</button>
+              <button type="button" class="small ${step1GroupOk ? 'primary' : ''}" data-mic-grp="mantar" ${!isSharp || step1GroupOk ? 'disabled' : ''}>🍄 Mantar</button>
+              <button type="button" class="small ${step1GroupOk ? 'primary' : ''}" data-mic-grp="bitki" ${!isSharp || step1GroupOk ? 'disabled' : ''}>🌻 Bitki</button>
             </div>
-            <small class="muted">${zoom < 300 ? '⚠️ İpucu: Canlıyı seçebilmek için önce sürgüyü en az 300x\'e büyüt!' : '✅ Netleşti! Şimdi doğru canlı grubuna bas.'}</small>
-            <div class="fg-progress-pills">Keşfedilen Lamlar: <b>${done} / ${SLIDES.length}</b></div>
+            ${step1GroupOk ? `<div class="fg-tool-box"><p><b>Aşama 2 Bilim Sorusu:</b> ${s.q}</p><div class="row">${s.qOpts.map((op, oi) => `<button type="button" class="small primary" data-mic-q="${oi}">${op}</button>`).join('')}</div></div>` : ''}
+            <div class="fg-progress-pills">Çözülen Lamlar: <b>${Object.keys(found).length} / ${SLIDES.length}</b></div>
           </div>
         </div>
       </section>`;
@@ -3900,159 +4056,144 @@ document.addEventListener('input', e => {
       function anim() {
         if (!document.body.contains(canvas)) return;
         t += 0.04;
+        const sNow = SLIDES.find(x => x.id === slideId);
+        const fDiff = Math.abs(focus - sNow.targetFocus);
+        const sharpNow = zoom >= 500 && fDiff <= 12;
+        const blurPx = zoom < 250 ? 7 : Math.max(0, Math.round(fDiff / 4));
+        canvas.style.filter = `blur(${blurPx}px)`;
+
         ctx.clearRect(0, 0, 240, 240);
-        ctx.fillStyle = slideId === 'yogurt' ? '#fefce8' : slideId === 'pond' ? '#ecfeff' : slideId === 'bread' ? '#fef3c7' : '#dcfce7';
+        ctx.fillStyle = slideId === 'yogurt' ? '#fefce8' : slideId === 'pond' ? '#ecfeff' : (slideId === 'bread' || slideId === 'yeast') ? '#fef3c7' : '#dcfce7';
         ctx.fillRect(0, 0, 240, 240);
 
-        const clarity = Math.min(1, Math.max(0, (zoom - 80) / 380));
-        if (clarity < 0.15) {
-          ctx.fillStyle = '#94a3b8';
-          ctx.font = 'bold 14px Segoe UI, sans-serif';
-          ctx.textAlign = 'center';
-          ctx.fillText('Çıplak gözle detay görünmüyor...', 120, 120);
+        if (zoom < 220) {
+          ctx.fillStyle = '#64748b'; ctx.font = 'bold 13px Segoe UI, sans-serif'; ctx.textAlign = 'center';
+          ctx.fillText('Zoomu 500x üstüne çek!', 120, 120);
         } else {
-          ctx.globalAlpha = clarity;
           if (slideId === 'yogurt') {
             ctx.fillStyle = '#0284c7';
             for (let i = 0; i < 9; i++) {
-              const bx = 40 + (i * 23 + Math.sin(t + i) * 16) % 165;
-              const by = 45 + (i * 31 + Math.cos(t * 1.2 + i) * 14) % 150;
-              ctx.save(); ctx.translate(bx, by); ctx.rotate(t * 0.4 + i);
-              ctx.beginPath(); ctx.roundRect(-12, -4, 24, 8, 4); ctx.fill(); ctx.restore();
+              const bx = 40 + (i * 23 + Math.sin(t + i) * 16) % 165, by = 45 + (i * 31 + Math.cos(t * 1.2 + i) * 14) % 150;
+              ctx.save(); ctx.translate(bx, by); ctx.rotate(t * 0.4 + i); ctx.beginPath(); ctx.roundRect(-12, -4, 24, 8, 4); ctx.fill(); ctx.restore();
             }
           } else if (slideId === 'pond') {
             for (let i = 0; i < 4; i++) {
-              const ax = 60 + i * 38 + Math.sin(t + i) * 18;
-              const ay = 75 + (i % 2) * 70 + Math.cos(t * 0.9 + i) * 16;
-              ctx.fillStyle = 'rgba(20,184,166,0.45)';
-              ctx.strokeStyle = '#0f766e';
-              ctx.lineWidth = 2;
-              ctx.beginPath();
-              for (let a = 0; a < Math.PI * 2; a += 0.4) {
-                const rad = 16 + Math.sin(a * 3 + t * 2 + i) * 4;
-                const px = ax + Math.cos(a) * rad, py = ay + Math.sin(a) * rad;
-                a === 0 ? ctx.moveTo(px, py) : ctx.lineTo(px, py);
-              }
+              const ax = 60 + i * 38 + Math.sin(t + i) * 18, ay = 75 + (i % 2) * 70 + Math.cos(t * 0.9 + i) * 16;
+              ctx.fillStyle = 'rgba(20,184,166,0.45)'; ctx.strokeStyle = '#0f766e'; ctx.lineWidth = 2; ctx.beginPath();
+              for (let a = 0; a < Math.PI * 2; a += 0.4) { const rad = 16 + Math.sin(a * 3 + t * 2 + i) * 4; const px = ax + Math.cos(a) * rad, py = ay + Math.sin(a) * rad; a === 0 ? ctx.moveTo(px, py) : ctx.lineTo(px, py); }
               ctx.closePath(); ctx.fill(); ctx.stroke();
-              ctx.fillStyle = '#0f766e'; ctx.beginPath(); ctx.arc(ax, ay, 4, 0, Math.PI * 2); ctx.fill();
             }
-          } else if (slideId === 'bread') {
+          } else if (slideId === 'bread' || slideId === 'yeast') {
             ctx.strokeStyle = '#65a30d'; ctx.lineWidth = 2.2;
             for (let i = 0; i < 6; i++) {
               const x0 = 40 + i * 32;
-              ctx.beginPath(); ctx.moveTo(x0, 220); ctx.quadraticCurveTo(x0 + Math.sin(t + i) * 12, 140, x0 + 8, 75 + (i % 2) * 28); ctx.stroke();
-              ctx.fillStyle = '#166534'; ctx.beginPath(); ctx.arc(x0 + 8, 75 + (i % 2) * 28, 10, 0, Math.PI * 2); ctx.fill();
+              if (slideId === 'bread') { ctx.beginPath(); ctx.moveTo(x0, 220); ctx.quadraticCurveTo(x0 + Math.sin(t + i) * 12, 140, x0 + 8, 75 + (i % 2) * 28); ctx.stroke(); ctx.fillStyle = '#166534'; ctx.beginPath(); ctx.arc(x0 + 8, 75 + (i % 2) * 28, 10, 0, Math.PI * 2); ctx.fill(); }
+              else { ctx.fillStyle = '#d97706'; ctx.beginPath(); ctx.arc(45 + i * 28, 100 + Math.sin(t + i) * 22, 13, 0, Math.PI * 2); ctx.fill(); ctx.beginPath(); ctx.arc(57 + i * 28, 88 + Math.sin(t + i) * 22, 7, 0, Math.PI * 2); ctx.fill(); }
             }
           } else {
-            ctx.strokeStyle = '#15803d'; ctx.lineWidth = 1.6;
+            ctx.strokeStyle = slideId === 'onion' ? '#9333ea' : '#15803d'; ctx.lineWidth = 1.6;
             for (let r = 0; r < 5; r++) for (let c = 0; c < 5; c++) {
-              ctx.fillStyle = 'rgba(74,222,128,0.45)';
-              ctx.fillRect(20 + c * 40, 20 + r * 40, 36, 36);
-              ctx.strokeRect(20 + c * 40, 20 + r * 40, 36, 36);
-              ctx.fillStyle = '#166534';
-              ctx.beginPath(); ctx.arc(38 + c * 40 + Math.sin(t + r) * 3, 38 + r * 40, 5, 0, Math.PI * 2); ctx.fill();
+              ctx.fillStyle = slideId === 'onion' ? 'rgba(216,180,254,0.45)' : 'rgba(74,222,128,0.45)';
+              ctx.fillRect(20 + c * 40, 20 + r * 40, 36, 36); ctx.strokeRect(20 + c * 40, 20 + r * 40, 36, 36);
+              ctx.fillStyle = slideId === 'onion' ? '#6b21a8' : '#166534'; ctx.beginPath(); ctx.arc(38 + c * 40, 38 + r * 40, 5, 0, Math.PI * 2); ctx.fill();
             }
           }
-          ctx.globalAlpha = 1;
         }
-        // Mercek artı işareti
         ctx.strokeStyle = 'rgba(15,36,56,0.18)'; ctx.lineWidth = 1;
         ctx.beginPath(); ctx.moveTo(120, 0); ctx.lineTo(120, 240); ctx.moveTo(0, 120); ctx.lineTo(240, 120); ctx.stroke();
-        const id = requestAnimationFrame(anim);
-        activeRafs.push(id);
+        const badge = slot.querySelector('#fgMicZoomLbl');
+        if (badge) badge.textContent = `${zoom}x · ${sharpNow ? '✨ NET!' : '🌫️ Odakla'}`;
+        activeRafs.push(requestAnimationFrame(anim));
       }
-      const id = requestAnimationFrame(anim);
-      activeRafs.push(id);
+      activeRafs.push(requestAnimationFrame(anim));
 
-      const range = slot.querySelector('#fgMicRange');
-      range.oninput = () => {
-        zoom = Number(range.value);
+      const updateFocusUI = () => {
+        const sNow = SLIDES.find(x => x.id === slideId);
+        const sharpNow = zoom >= 500 && Math.abs(focus - sNow.targetFocus) <= 12;
         slot.querySelector('#fgMicVal').textContent = zoom + 'x';
-        slot.querySelector('#fgMicZoomLbl').textContent = zoom + 'x';
-        const btns = slot.querySelectorAll('[data-mic-grp]');
-        btns.forEach(b => b.disabled = zoom < 300);
-        if (zoom >= 350) slot.querySelector('#fgMicMsg').textContent = '✨ ' + s.desc;
+        slot.querySelector('#fgMicFocVal').textContent = focus;
+        if (!step1GroupOk) slot.querySelectorAll('[data-mic-grp]').forEach(b => b.disabled = !sharpNow);
+        if (sharpNow) slot.querySelector('#fgMicMsg').textContent = '✨ ' + sNow.desc;
       };
+      slot.querySelector('#fgMicRange').oninput = e => { zoom = Number(e.target.value); updateFocusUI(); };
+      slot.querySelector('#fgMicFoc').oninput = e => { focus = Number(e.target.value); updateFocusUI(); };
     }
 
     slot.onclick = e => {
       const sb = e.target.closest('[data-mic-slide]');
-      if (sb) { slideId = sb.dataset.micSlide; zoom = 1; sfxPop(); renderUI(); return; }
+      if (sb) { slideId = sb.dataset.micSlide; zoom = 100; focus = 15; step1GroupOk = false; sfxPop(); renderUI(); return; }
       const gb = e.target.closest('[data-mic-grp]');
       if (gb) {
         const s = SLIDES.find(x => x.id === slideId);
-        if (gb.dataset.micGrp === s.group) {
-          found[s.id] = true;
-          msg = '🌟 Süper tespit! ' + s.hint;
-          sfxGood();
-          if (Object.keys(found).length === SLIDES.length) {
-            sfxWin();
-            saveGameProgress('game-u2-microscope', SLIDES.length, SLIDES.length);
-          }
+        if (gb.dataset.micGrp === s.group) { step1GroupOk = true; sfxGood(); msg = '✅ Grup doğru! Şimdi Aşama 2 sorusunu cevapla!'; renderUI(); }
+        else { sfxBad(); slot.querySelector('#fgMicMsg').textContent = '🤔 Dikkat! Bu canlı farklı bir grupta.'; }
+        return;
+      }
+      const qb = e.target.closest('[data-mic-q]');
+      if (qb) {
+        const s = SLIDES.find(x => x.id === slideId);
+        if (Number(qb.dataset.micQ) === s.qAns) {
+          found[s.id] = true; step1GroupOk = false; sfxGood();
+          msg = '🌟 Süper! Lam deftere kaydedildi!';
+          if (Object.keys(found).length === SLIDES.length) { sfxWin(); saveGameProgress('game-u2-microscope', SLIDES.length, SLIDES.length); }
           const next = SLIDES.find(x => !found[x.id]);
-          if (next) { slideId = next.id; zoom = 1; }
+          if (next) { slideId = next.id; zoom = 100; focus = 15; }
           renderUI();
-        } else {
-          sfxBad();
-          slot.querySelector('#fgMicMsg').textContent = '🤔 Merceğe dikkatli bak! Bu canlı farklı bir grupta.';
-        }
+        } else { sfxBad(); slot.querySelector('#fgMicMsg').textContent = '❌ Tekrar düşün!'; }
       }
     };
     renderUI();
   }
 
   // ═══════════════════════════════════════════════════════════════
-  // OYUN 5: 🕵️ 5 Duyu Dedektifi "Gizemli Kutu" Oyunu
+  // OYUN 5: 🕵️ 5 Duyu Dedektifi (Sadece 3 İpucu Hakkı · 5 Yakın Şık!)
   // ═══════════════════════════════════════════════════════════════
   const MYSTERIES = [
     {
-      ans: 'Limon', icon: '🍋', opts: [{ n: '🍋 Limon', ok: true }, { n: '⚽ Top', ok: false }, { n: '🪨 Taş', ok: false }],
-      clues: { eye: 'Kutu kapalı! İçini göremiyorsun, başka bir duyu dene.', ear: 'Kutuyu sallayınca hafifçe yuvarlanıyor, ses çıkarmıyor.', nose: 'Mis gibi keskin narenciye kokusu geliyor!', hand: 'Kabuğu hafif pütürlü ve yuvarlak!', tongue: 'İnanılmaz ekşi! Yüzünü buruşturdun!' }
+      ans: 'Ceviz', icon: '🌰', opts: ['🌰 Ceviz', '🔮 Cam Bilye', '🪨 Çakıl Taşı', '🥚 Yumurta', '🍋 Limon'],
+      clues: { eye: 'Kutu kapalı, gölgesi yuvarlak ve küçük.', ear: 'Sallayınca kutunun içinde TAK TAK tıkırdıyor, hafif!', nose: 'Çok hafif, odunsu ve doğal kabuk kokusu var!', hand: 'Sert, girintili çıkıntılı kırışık bir kabuğu var!', tongue: 'Kabuğun dışından tadı anlaşılmaz.' }
     },
     {
-      ans: 'Ceviz', icon: '🌰', opts: [{ n: '🧸 Peluş Ayı', ok: false }, { n: '🌰 Ceviz', ok: true }, { n: '🍓 Çilek', ok: false }],
-      clues: { eye: 'Kutu hâlâ kapalı! Diğer duyularını kullan.', ear: 'Sallayınca kutunun duvarına TAK TAK vuruyor!', nose: 'Çok hafif odunsu bir koku var.', hand: 'Sert, kırışık kabuklu ve küçük!', tongue: 'Sert kabuklu bir şeyi dışından yalamak olmaz, açmadan bilemezsin!' }
+      ans: 'Misket (Cam Bilye)', icon: '🔮', opts: ['🌰 Ceviz', '🔮 Misket (Cam Bilye)', '🍓 Çilek', '🧶 Yün Yumak', '🍋 Limon'],
+      clues: { eye: 'Kutu kapalı, aralıktan parlak cam gibi parlıyor!', ear: 'Sallayınca çok sert ve tiz "ÇINNN" sesi çıkarıyor!', nose: 'Hiçbir kokusu YOK!', hand: 'Çok sert, tamamen pürüzsüz ve soğuk!', tongue: 'Yutulabilir, tadına kesinlikle bakılmaz!' }
     },
     {
-      ans: 'Yavru Kedi', icon: '🐱', opts: [{ n: '🐱 Yavru Kedi', ok: true }, { n: '🌵 Kaktüs', ok: false }, { n: '⏰ Çalar Saat', ok: false }],
-      clues: { eye: 'Kutu kapalı ama kapaktan bir bıyık ucu çıktı!', ear: 'İçeriden "Mırıl mırıl... Miyav!" sesi geliyor!', nose: 'Tüylü ve tertemiz kokuyor.', hand: 'Yumuşacık, sıcacık ve kıpır kıpır!', tongue: 'Hoop! Hayvanların tadına bakılmaz!' }
+      ans: 'Ekşi Limon', icon: '🍋', opts: ['🍊 Portakal', '🍋 Ekşi Limon', '⚽ Tenis Topu', '🌰 Ceviz', '🍌 Muz'],
+      clues: { eye: 'Kutu kapalı ama kapaktan sarı bir ışık sızıyor!', ear: 'Sallayınca ağır ve tok bir ses çıkıyor.', nose: 'Keskin, ferah narenciye kokusu geliyor (portakaldan daha keskin)!', hand: 'Hafif pütürlü ve iki ucu hafif çıkıntılı!', tongue: 'BİR DAMLA TATTIN: Yüzün buruştu, inanılmaz EKŞİ!' }
     },
     {
-      ans: 'Taze Nane', icon: '🌿', opts: [{ n: '🍪 Kurabiye', ok: false }, { n: '🌿 Taze Nane', ok: true }, { n: '🔑 Anahtar', ok: false }],
-      clues: { eye: 'Kutu kapalı ama aralıktan yeşil bir yaprak göz kırpıyor!', ear: 'Hışırtı dışında hiç ses yok.', nose: 'Çok ferah, serinletici bir koku burnunu açtı!', hand: 'İnce, yumuşak ve tüylü yapraklar hissediyorsun.', tongue: 'Ağzında serin ve ferah bir tat bıraktı!' }
+      ans: 'Yavru Kedi', icon: '🐱', opts: ['🧸 Peluş Ayı', '🐱 Yavru Kedi', '🦔 Kirpi', '🐰 Oyuncak Tavşan', '🌿 Nane'],
+      clues: { eye: 'Kutu kapalı, yan delikten hareket eden bir kuyruk göründü!', ear: 'İçeriden "Mırıl mırıl... Miyav!" sesi geliyor!', nose: 'Temiz, hafif süt ve tüy kokusu var.', hand: 'Yumuşacık, SICACIK ve kalbi atıyor!', tongue: 'Canlı bir hayvana dil değdirilmez!' }
+    },
+    {
+      ans: 'Taze Nane', icon: '🌿', opts: ['🌿 Taze Nane', '🥬 Marul', '🌸 Gül', '🍪 Kurabiye', '🧼 Sabun'],
+      clues: { eye: 'Kutu kapalı, sadece yeşil gölge var.', ear: 'Sallayınca ses çıkarmıyor, çok hafif.', nose: 'Burnunu açan serin, mentollü nane kokusu!', hand: 'İnce, yumuşacık ve kenarları tırtıklı yapraklar.', tongue: 'Çiğneyince ağzı buz gibi serinletiyor!' }
     }
   ];
 
   function mountMysteryGame(slot) {
-    let round = 0;
-    let log = [];
-    let wonRounds = 0;
-    let opened = false;
+    let round = 0, usedSenses = [], log = [], wonRounds = 0, opened = false;
 
     function draw() {
       const m = MYSTERIES[round];
+      const left = 3 - usedSenses.length;
       slot.innerHTML = `<section class="fg-card rose">
-        ${gameHeader('game-u2-mystery', '🕵️ 5 DUYU DEDEKTİFİ', 'Oyun 5 · Gizemli Kutuda Ne Var?', 'Kutunun içindeki sürprizi 5 duyu butonuna basarak araştır, sonra tahmin et! (Tur ' + (round + 1) + '/' + MYSTERIES.length + ')')}
+        ${gameHeader('game-u2-mystery', '🕵️ STRATEJİK 5 DUYU DEDEKTİFİ', 'Oyun 5 · Gizemli Kutu (Sadece 3 Duyu Hakkı!)', 'ZOR MOD: Her kutuda en fazla 3 duyu kullanabilirsin! Örneğin Misket ile Cevizi sadece "Dokun" diyerek ayıramazsın, doğru duyuları seç! (Tur ' + (round + 1) + '/' + MYSTERIES.length + ')')}
         <div class="fg-mys-layout">
           <div class="fg-box-stage">
             <div class="fg-mystery-box ${opened ? 'opened' : ''}">${opened ? m.icon : '🎁'}</div>
+            <div><b>Kalan Duyu Hakkın: ${'🔍'.repeat(left)}${left === 0 ? '0 (Tahmin Zamanı!)' : ''}</b></div>
             <div class="fg-sense-row">
-              <button type="button" class="small" data-sense="eye">👁️ Bak</button>
-              <button type="button" class="small" data-sense="ear">👂 Dinle</button>
-              <button type="button" class="small" data-sense="nose">👃 Kokla</button>
-              <button type="button" class="small" data-sense="hand">🖐️ Dokun</button>
-              <button type="button" class="small" data-sense="tongue">👅 Tat</button>
+              ${[['eye','👁️ Bak'],['ear','👂 Dinle'],['nose','👃 Kokla'],['hand','🖐️ Dokun'],['tongue','👅 Tat']].map(([k, lbl]) =>
+                `<button type="button" class="small ${usedSenses.includes(k) ? 'primary' : ''}" data-sense="${k}" ${usedSenses.includes(k) || left <= 0 || opened ? 'disabled' : ''}>${lbl}</button>`
+              ).join('')}
             </div>
           </div>
           <div class="fg-mys-right">
-            <div class="fg-clue-log">
-              ${log.length ? log.map(x => `<div class="fg-clue-item">${x}</div>`).join('') : '<small class="muted">İpucu toplamak için soldaki duyu organı butonlarına bas!</small>'}
-            </div>
-            <p class="fg-q-label"><b>Tahminin nedir Dedektif?</b></p>
-            <div class="row">
-              ${m.opts.map(o => `<button type="button" class="small ${opened && o.ok ? 'primary' : ''}" data-mys-pick="${o.ok ? '1' : '0'}" ${opened ? 'disabled' : ''}>${o.n}</button>`).join('')}
-            </div>
-            ${opened ? `<div class="fg-msg" style="margin-top:8px">🎉 Kutuyu açtın! İçinden <b>${m.icon} ${m.ans}</b> çıktı! ${round < MYSTERIES.length - 1 ? `<button type="button" class="small primary" data-mys-next="1">Sonraki Kutu →</button>` : '<b>🏆 Tüm gizemli kutuları çözdün!</b>'}</div>` : ''}
+            <div class="fg-clue-log">${log.length ? log.map(x => `<div class="fg-clue-item">${x}</div>`).join('') : '<small class="muted">En akıllıca 3 duyuyu seç! Hangisi bu nesneyi diğerlerinden kesin ayırır?</small>'}</div>
+            <p class="fg-q-label"><b>5 yakın seçenekten hangisi kutuda?</b></p>
+            <div class="row">${m.opts.map(o => `<button type="button" class="small ${opened && o.includes(m.ans) ? 'primary' : ''}" data-mys-pick="${o}" ${opened ? 'disabled' : ''}>${o}</button>`).join('')}</div>
+            ${opened ? `<div class="fg-msg" style="margin-top:8px">🎉 Harika Dedektif! Kutuda <b>${m.icon} ${m.ans}</b> vardı! ${round < MYSTERIES.length - 1 ? `<button type="button" class="small primary" data-mys-next="1">Sonraki Kutu →</button>` : '<b>🏆 5/5 Kutuyu Çözdün!</b>'}</div>` : ''}
           </div>
         </div>
       </section>`;
@@ -4060,168 +4201,151 @@ document.addEventListener('input', e => {
 
     slot.onclick = e => {
       const sb = e.target.closest('[data-sense]');
-      if (sb) {
+      if (sb && usedSenses.length < 3) {
         const s = sb.dataset.sense;
+        usedSenses.push(s);
         const icons = { eye: '👁️ Göz', ear: '👂 Kulak', nose: '👃 Burun', hand: '🖐️ Deri', tongue: '👅 Dil' };
-        const txt = `<b>${icons[s]}:</b> ${MYSTERIES[round].clues[s]}`;
-        if (!log.includes(txt)) log.push(txt);
-        sfxPop();
-        draw();
-        return;
+        log.push(`<b>${icons[s]}:</b> ${MYSTERIES[round].clues[s]}`);
+        sfxPop(); draw(); return;
       }
       const pb = e.target.closest('[data-mys-pick]');
       if (pb) {
-        if (pb.dataset.mysPick === '1') {
-          opened = true; wonRounds++;
-          sfxGood();
-          if (wonRounds === MYSTERIES.length) {
-            sfxWin();
-            saveGameProgress('game-u2-mystery', MYSTERIES.length, MYSTERIES.length);
-          }
-          draw();
+        const m = MYSTERIES[round];
+        if (pb.dataset.mysPick.includes(m.ans)) {
+          opened = true; wonRounds++; sfxGood();
+          if (wonRounds === MYSTERIES.length) { sfxWin(); saveGameProgress('game-u2-mystery', MYSTERIES.length, MYSTERIES.length); }
         } else {
           sfxBad();
-          log.push('<b>❌ İpucu:</b> Bu değil! Bir duyu daha kullanıp tekrar dene.');
-          draw();
+          log.push('<b>❌ Yanlış!</b> İpuçlarını tekrar düşün (örn. koku, ses ve doku farkı).');
         }
-        return;
+        draw(); return;
       }
-      if (e.target.closest('[data-mys-next]')) {
-        round++; log = []; opened = false; sfxPop(); draw();
-      }
+      if (e.target.closest('[data-mys-next]')) { round++; usedSenses = []; log = []; opened = false; sfxPop(); draw(); }
     };
     draw();
   }
 
   // ═══════════════════════════════════════════════════════════════
-  // OYUN 6: 🦋 Kelebek Yaşam Döngüsü Zaman Çarkı & Uçurma
+  // OYUN 6: 🦋 3 Canlı Yaşam Döngüsü (Kelebek · Kurbağa · Fasulye!)
   // ═══════════════════════════════════════════════════════════════
-  const BF_STAGES = [
-    { step: 1, title: '1. Yumurta', desc: 'Anne kelebek yaprağın üzerine minik yumurtalar bırakır.', svg: '<ellipse cx="180" cy="110" rx="14" ry="18" fill="#fef08a" stroke="#ca8a04" stroke-width="2"/><ellipse cx="206" cy="118" rx="11" ry="15" fill="#fef08a" stroke="#ca8a04" stroke-width="2"/>' },
-    { step: 2, title: '2. Tırtıl (Larva)', desc: 'Yumurtadan çıkan tırtıl bol bol yaprak yiyip hızla büyür!', svg: '<g><circle cx="135" cy="112" r="14" fill="#4ade80" stroke="#15803d" stroke-width="2"/><circle cx="160" cy="108" r="15" fill="#22c55e" stroke="#15803d" stroke-width="2"/><circle cx="186" cy="110" r="15" fill="#4ade80" stroke="#15803d" stroke-width="2"/><circle cx="212" cy="104" r="16" fill="#22c55e" stroke="#15803d" stroke-width="2"/><circle cx="217" cy="99" r="3" fill="#0f172a"/><circle cx="222" cy="104" r="2.5" fill="#0f172a"/></g>' },
-    { step: 3, title: '3. Pupa (Koza)', desc: 'Tırtıl dalın altına tutunur, etrafına koza örüp dönüşüm geçirir.', svg: '<line x1="185" y1="30" x2="185" y2="62" stroke="#78350f" stroke-width="3"/><path d="M185 60 C212 72 214 128 185 144 C156 128 158 72 185 60 Z" fill="#d97706" stroke="#78350f" stroke-width="2"/><path d="M168 90 Q185 96 202 90 M166 110 Q185 116 204 110" stroke="#92400e" fill="none" stroke-width="1.5"/>' },
-    { step: 4, title: '4. Yetişkin Kelebek!', desc: 'Koza açılır ve rengarenk kanatlı kelebek çiçeklere uçar!', svg: '<g><path d="M180 95 C130 40 95 65 115 105 C98 130 135 150 180 112 Z" fill="#f43f5e" stroke="#881337" stroke-width="2"/><path d="M180 95 C230 40 265 65 245 105 C262 130 225 150 180 112 Z" fill="#fb923c" stroke="#881337" stroke-width="2"/><circle cx="136" cy="88" r="7" fill="#fef08a"/><circle cx="224" cy="88" r="7" fill="#fef08a"/><rect x="176" y="78" width="8" height="44" rx="4" fill="#1e293b"/></g>' }
-  ];
+  const CYCLES = {
+    butterfly: {
+      name: '🦋 Kelebek (4 Aşama)',
+      steps: ['🥚 Yumurta', '🐛 Tırtıl (Larva)', '🫛 Pupa (Koza)', '🦋 Yetişkin Kelebek'],
+      descs: ['Anne kelebek yaprağa yumurta bırakır.', 'Yumurtadan çıkan tırtıl yaprak yiyip büyür.', 'Tırtıl koza örer ve pupa dönemine geçer.', 'Kozadan kanatlı yetişkin kelebek çıkar!']
+    },
+    frog: {
+      name: '🐸 Kurbağa (5 Aşama)',
+      steps: ['🫧 Suda Yumurta', '🐟 İribaş (Kuyruklu)', '🦵 Bacaklı İribaş', '🐸 Genç Kurbağa', '👑 Yetişkin Kurbağa'],
+      descs: ['Kurbağalar yumurtalarını suya bırakır.', 'Yumurtadan balık gibi yüzen solungaçlı iribaş çıkar.', 'Önce arka bacakları, sonra ön bacakları uzar.', 'Kuyruğu kısalır, akciğerleriyle nefes almaya başlar.', 'Karada ve suda yaşayabilen yetişkin kurbağa olur!']
+    },
+    bean: {
+      name: '🌱 Fasulye Bitkisi (5 Aşama)',
+      steps: ['🫘 Kuru Tohum', '🌱 Çimlenme (Kök & Filiz)', '🌿 Genç Fide', '🌼 Çiçekli Bitki', '🫛 Tohumlu Meyve'],
+      descs: ['Tohum uygun su, sıcaklık ve hava bekler.', 'Tohum kabuğu çatlar, kök ve ilk filiz çıkar (çimlenme).', 'Yapraklar büyür, bitki kendi besinini üretir.', 'Bitki çiçek açar ve tozlaşma olur.', 'Çiçekten içinde yeni tohumlar olan fasulye oluşur!']
+    }
+  };
 
   function mountButterflyGame(slot) {
-    let stage = 1;
-    let built = [];
-    const shuffled = [3, 1, 4, 2];
+    let cid = 'butterfly', stage = 1, built = [], doneCycles = {};
+    const shufMap = { butterfly: [3, 1, 4, 2], frog: [4, 2, 5, 1, 3], bean: [3, 5, 1, 4, 2] };
 
     function draw() {
-      const cur = BF_STAGES[stage - 1];
-      const allDone = built.length === 4;
+      const cy = CYCLES[cid];
+      const allDone = built.length === cy.steps.length;
       slot.innerHTML = `<section class="fg-card mint">
-        ${gameHeader('game-u2-butterfly', '🦋 YAŞAM DÖNGÜSÜ ÇARKI', 'Oyun 6 · Kelebeği Büyüt ve Sıraya Diz!', 'Önce zaman çubuğunu kaydırıp dönüşümü izle, sonra aşağıdaki aşamaları 1\'den 4\'e sırayla tıkla!')}
-        <div class="fg-bf-stage">
-          <svg viewBox="0 0 360 175" width="100%" style="max-width:380px;background:#f0fdf4;border-radius:12px;border:1.5px solid #86efac">
-            <path d="M30 35 Q180 15 330 40" stroke="#78350f" stroke-width="5" fill="none"/>
-            <path d="M80 135 Q180 85 280 135 Q180 160 80 135 Z" fill="#86efac" stroke="#16a34a" stroke-width="2"/>
-            ${cur.svg}
-          </svg>
-          <div class="fg-bf-info">
-            <h5>${cur.title}</h5>
-            <p>${cur.desc}</p>
-            <label class="fg-zoom-bar"><span>⏳ Zaman Çubuğu: <b>Aşama ${stage}/4</b></span>
-              <input type="range" id="fgBfRange" min="1" max="4" step="1" value="${stage}">
-            </label>
-          </div>
+        ${gameHeader('game-u2-butterfly', '🦋🐸🌱 3 CANLI YAŞAM DÖNGÜSÜ', 'Oyun 6 · Kelebek, Kurbağa ve Fasulye Döngülerini Kur!', 'Sekmelerden 3 canlıyı da seç, zaman çubuğuyla aşamaları incele ve her birini doğru sıraya diz! (' + Object.keys(doneCycles).length + '/3 Canlı Tamam)')}
+        <div class="row">
+          ${Object.entries(CYCLES).map(([k, v]) => `<button type="button" class="small ${cid === k ? 'primary' : ''}" data-cy-tab="${k}">${doneCycles[k] ? '✅ ' : ''}${v.name}</button>`).join('')}
+        </div>
+        <div class="fg-bf-info" style="margin-top:6px">
+          <h5>${cy.steps[stage - 1]}</h5>
+          <p>${cy.descs[stage - 1]}</p>
+          <label class="fg-zoom-bar"><span>⏳ Zaman Çubuğu: <b>Aşama ${stage}/${cy.steps.length}</b></span>
+            <input type="range" id="fgBfRange" min="1" max="${cy.steps.length}" step="1" value="${stage}">
+          </label>
         </div>
         <div class="fg-bf-quiz">
-          <p class="fg-q-label"><b>Şimdi sıra sende! Kelebeğin yaşam döngüsünü doğru sırayla (1 → 2 → 3 → 4) tıkla:</b></p>
+          <p class="fg-q-label"><b>Sıraya Diz (1 → ${cy.steps.length}):</b></p>
           <div class="row">
-            ${shuffled.map(st => {
-              const sObj = BF_STAGES[st - 1];
+            ${shufMap[cid].map(st => {
               const picked = built.includes(st);
-              return `<button type="button" class="small ${picked ? 'primary' : ''}" data-bf-step="${st}" ${picked || allDone ? 'disabled' : ''}>${picked ? '✓ ' : ''}${sObj.title.replace(/^\d+\.\s*/, '')}</button>`;
+              return `<button type="button" class="small ${picked ? 'primary' : ''}" data-bf-step="${st}" ${picked || allDone ? 'disabled' : ''}>${picked ? '✓ ' : ''}${cy.steps[st - 1]}</button>`;
             }).join('')}
           </div>
-          <div class="fg-msg" style="margin-top:8px">${allDone ? '🦋 Harikasın! Yumurta → Tırtıl → Pupa (Koza) → Kelebek döngüsünü tamamladın!' : 'Şu an seçilenler: ' + (built.length ? built.map(x => BF_STAGES[x - 1].title).join(' → ') : 'Henüz başlamadın (1. aşamayı seç)')}</div>
+          <div class="fg-msg" style="margin-top:8px">${allDone ? '🎉 Harika! Bu canlının yaşam döngüsünü tamamladın! Diğer canlı sekmelerini de tamamla!' : 'Sıran: ' + (built.length ? built.map(x => cy.steps[x - 1]).join(' → ') : '1. aşamayı seç')}</div>
         </div>
       </section>`;
-
-      slot.querySelector('#fgBfRange').oninput = e => {
-        stage = Number(e.target.value);
-        sfxPop();
-        draw();
-      };
+      slot.querySelector('#fgBfRange').oninput = e => { stage = Number(e.target.value); sfxPop(); draw(); };
     }
 
     slot.onclick = e => {
+      const tb = e.target.closest('[data-cy-tab]');
+      if (tb) { cid = tb.dataset.cyTab; stage = 1; built = []; sfxPop(); draw(); return; }
       const b = e.target.closest('[data-bf-step]');
       if (!b) return;
       const st = Number(b.dataset.bfStep);
       const expected = built.length + 1;
       if (st === expected) {
-        built.push(st);
-        stage = st;
-        sfxGood();
-        if (built.length === 4) {
-          sfxWin();
-          saveGameProgress('game-u2-butterfly', 4, 4);
+        built.push(st); stage = st; sfxGood();
+        if (built.length === CYCLES[cid].steps.length) {
+          doneCycles[cid] = true;
+          if (Object.keys(doneCycles).length === 3) { sfxWin(); saveGameProgress('game-u2-butterfly', 3, 3); }
         }
         draw();
-      } else {
-        sfxBad();
-        slot.querySelector('.fg-msg').textContent = `🤔 Şu an ${expected}. aşamayı arıyoruz! Zaman çubuğundan kontrol edebilirsin.`;
-      }
+      } else { sfxBad(); slot.querySelector('.fg-msg').textContent = `🤔 Şu an ${expected}. aşamayı arıyoruz!`; }
     };
     draw();
   }
 
   // ═══════════════════════════════════════════════════════════════
-  // OYUN 7: ⛏️ Kayaç Çekici & Yer Altı Maden Kazısı
+  // OYUN 7: ⛏️ Sert Kayaç Kazısı (2 Vuruş) + 8 Maden/Kayaç Atölyesi
   // ═══════════════════════════════════════════════════════════════
   const ROCK_STEPS = [
-    { name: 'Kayaç', icon: '🪨', info: 'Büyük kayaç! Üzerine tıkla; rüzgar, yağmur ve sıcaklık farkıyla parçalansın!' },
-    { name: 'Taş', icon: '🪨🔹', info: 'Kayaç parçalandı ve TAŞ oldu! Bir kez daha vur!' },
-    { name: 'Çakıl', icon: '⚪🔘', info: 'Taşlar ufalandı ve ÇAKIL oldu! Son bir dokunuş!' },
-    { name: 'Kum', icon: '🏖️✨', info: 'Harika! Kayaç → Taş → Çakıl → KUM sırasını bizzat keşfettin!' }
+    { name: 'Büyük Kayaç', icon: '🪨', info: 'Tıkla! Rüzgar, yağmur ve sıcaklık farkıyla parçalansın!' },
+    { name: 'Taş', icon: '🪨🔹', info: 'Kayaç TAŞ oldu! Bir kez daha vur!' },
+    { name: 'Çakıl', icon: '⚪🔘', info: 'Taşlar ÇAKIL oldu! Son vuruş!' },
+    { name: 'Kum', icon: '🏖️✨', info: 'Harika! Kayaç → Taş → Çakıl → KUM sırası tamam!' }
   ];
   const MINES = [
-    { id: 'bor', name: 'Bor', icon: '🚀', use: 'Cam, deterjan & roket yakıtı' },
-    { id: 'bakir', name: 'Bakır', icon: '🔌', use: 'Elektrik kablosu & tencere' },
-    { id: 'demir', name: 'Demir', icon: '🌉', use: 'Köprü, inşaat & araba' },
-    { id: 'mermer', name: 'Mermer', icon: '🏛️', use: 'Heykel, bina & tezgah' },
-    { id: 'komur', name: 'Taş Kömürü', icon: '🔥', use: 'Isınma & enerji santrali' },
-    { id: 'altin', name: 'Altın', icon: '💍', use: 'Mücevher & elektronik devre' }
+    { id: 'bor', name: 'Bor', icon: '🚀', hp: 2, use: 'Cam, deterjan & roket yakıtı' },
+    { id: 'bakir', name: 'Bakır', icon: '🔌', hp: 1, use: 'Elektrik kablosu & tencere' },
+    { id: 'demir', name: 'Demir', icon: '🌉', hp: 2, use: 'Köprü, inşaat & araba' },
+    { id: 'mermer', name: 'Mermer', icon: '🏛️', hp: 1, use: 'Heykel, bina & tezgah' },
+    { id: 'komur', name: 'Taş Kömürü', icon: '🔥', hp: 1, use: 'Isınma & enerji santrali' },
+    { id: 'altin', name: 'Altın', icon: '💍', hp: 2, use: 'Mücevher & elektronik devre' },
+    { id: 'krom', name: 'Krom', icon: '🥄', hp: 2, use: 'Paslanmaz çelik & çatal-kaşık' },
+    { id: 'boksit', name: 'Boksit (Alüminyum)', icon: '✈️', hp: 1, use: 'Uçak gövdesi & hafif kutu' }
   ];
 
   function mountDigGame(slot) {
-    let rockIdx = 0;
-    let dug = {};
-    let selMine = null;
-    let matched = {};
-    let msg = 'Toprak karolarına tıklayıp kaz, çıkardığın madeni kullanım alanıyla eşleştir!';
+    let rockIdx = 0, hits = {}, selMine = null, matched = {}, msg = 'Sert kayalı karolar (🪨) 2 kazma darbesi ister! Hepsini kazıp doğru kullanım alanına gönder!';
 
     function draw() {
       const r = ROCK_STEPS[rockIdx];
       const matchCount = Object.keys(matched).length;
       slot.innerHTML = `<section class="fg-card sun">
-        ${gameHeader('game-u3-dig', '⛏️ YER ALTI MADEN ATÖLYESİ', 'Oyun 7 · Kayacı Parçala & Maden Kazısı Yap!', 'Solda kayacı kum olana kadar ufala; sağda toprağı kazıp madenleri kullanım alanına gönder!')}
+        ${gameHeader('game-u3-dig', '⛏️ ZORLU YER ALTI KAZI ATÖLYESİ', 'Oyun 7 · Kayaç Çekici & 8 Maden Kazısı', 'Solda kayacı ufala; sağda sert karoları 2 darbede kırıp çıkardığın 8 madeni kullanım alanıyla eşleştir!')}
         <div class="fg-dig-layout">
           <div class="fg-rock-box">
             <h5>💨 Rüzgar &amp; Yağmur Çekici</h5>
-            <button type="button" class="fg-rock-btn" data-rock-hit="1" ${rockIdx >= 3 ? 'disabled' : ''}>
-              <span class="fg-rock-ico">${r.icon}</span>
-              <strong>${r.name}</strong>
-            </button>
+            <button type="button" class="fg-rock-btn" data-rock-hit="1" ${rockIdx >= 3 ? 'disabled' : ''}><span class="fg-rock-ico">${r.icon}</span><strong>${r.name}</strong></button>
             <p class="fg-rock-info">${r.info}</p>
             ${rockIdx >= 3 ? `<button type="button" class="small" data-rock-reset="1">🔄 Kayacı Yenile</button>` : ''}
           </div>
           <div class="fg-mine-area">
-            <h5>⛏️ Yer Altı Kazı Haritası (${matchCount}/6 Eşleşti)</h5>
-            <div class="fg-mine-grid">
+            <h5>⛏️ Yer Altı Kazı Haritası (${matchCount}/8 Eşleşti)</h5>
+            <div class="fg-mine-grid" style="grid-template-columns:repeat(4,minmax(0,1fr))">
               ${MINES.map(m => {
-                const isDug = dug[m.id], isDone = matched[m.id], isSel = selMine === m.id;
+                const h = hits[m.id] || 0, isDug = h >= m.hp, isDone = matched[m.id], isSel = selMine === m.id;
                 return `<button type="button" class="fg-tile ${isDug ? 'dug' : ''} ${isSel ? 'sel' : ''} ${isDone ? 'done' : ''}" data-dig-tile="${m.id}">
-                  ${isDug ? `<span class="fg-tile-ico">${m.icon}</span><small>${m.name}</small>` : '🟫 Kaz!'}
+                  ${isDug ? `<span class="fg-tile-ico">${m.icon}</span><small>${m.name}</small>` : (m.hp - h === 2 ? '🪨 Sert Kaya (2x)' : '🟫 Toprak Kaz!')}
                 </button>`;
               }).join('')}
             </div>
             <div class="fg-msg">${msg}</div>
             <div class="fg-use-grid">
-              ${MINES.slice().reverse().map(m => {
+              ${[MINES[5], MINES[1], MINES[7], MINES[0], MINES[6], MINES[3], MINES[2], MINES[4]].map(m => {
                 const isDone = matched[m.id];
                 return `<button type="button" class="small ${isDone ? 'primary' : ''}" data-dig-use="${m.id}" ${isDone ? 'disabled' : ''}>${isDone ? '✓ ' + m.name + ': ' : ''}${m.use}</button>`;
               }).join('')}
@@ -4232,92 +4356,63 @@ document.addEventListener('input', e => {
     }
 
     slot.onclick = e => {
-      if (e.target.closest('[data-rock-hit]')) {
-        if (rockIdx < 3) { rockIdx++; sfxSplash(); if (rockIdx === 3) sfxGood(); draw(); }
-        return;
-      }
+      if (e.target.closest('[data-rock-hit]')) { if (rockIdx < 3) { rockIdx++; sfxSplash(); if (rockIdx === 3) sfxGood(); draw(); } return; }
       if (e.target.closest('[data-rock-reset]')) { rockIdx = 0; draw(); return; }
       const tile = e.target.closest('[data-dig-tile]');
       if (tile) {
-        const id = tile.dataset.digTile;
-        if (!dug[id]) {
-          dug[id] = true;
-          selMine = id;
-          const m = MINES.find(x => x.id === id);
-          msg = `⛏️ Kazıdan <b>${m.icon} ${m.name}</b> çıkardın! Şimdi aşağıdan kullanım alanını seç.`;
-          sfxPop();
-        } else if (!matched[id]) {
-          selMine = id;
-          const m = MINES.find(x => x.id === id);
-          msg = `Seçili maden: <b>${m.icon} ${m.name}</b>. Kullanım alanına tıkla!`;
-        }
-        draw();
-        return;
+        const id = tile.dataset.digTile, m = MINES.find(x => x.id === id);
+        hits[id] = (hits[id] || 0);
+        if (hits[id] < m.hp) {
+          hits[id]++; sfxSplash();
+          if (hits[id] >= m.hp) { selMine = id; sfxPop(); msg = `⛏️ Kazıdan <b>${m.icon} ${m.name}</b> çıktı! Kullanım alanına tıkla.`; }
+          else msg = '💥 Sert kaya çatladı! Bir kez daha vur!';
+        } else if (!matched[id]) { selMine = id; msg = `Seçili maden: <b>${m.icon} ${m.name}</b>.`; }
+        draw(); return;
       }
       const ub = e.target.closest('[data-dig-use]');
       if (ub) {
-        if (!selMine) { msg = 'Önce yukarıdaki kahverengi topraklardan birini kaz!'; draw(); return; }
+        if (!selMine) { msg = 'Önce yukarıdan bir karo kazıp maden çıkar!'; draw(); return; }
         if (ub.dataset.digUse === selMine) {
-          matched[selMine] = true;
-          const m = MINES.find(x => x.id === selMine);
-          msg = `🌟 Harika! <b>${m.name}</b> artık ${m.use} için kullanılıyor!`;
-          selMine = null;
-          sfxGood();
-          if (Object.keys(matched).length === MINES.length) {
-            sfxWin();
-            saveGameProgress('game-u3-dig', MINES.length, MINES.length);
-            msg = '🏆 Tebrikler Yer Bilimci! Tüm madenleri çıkarıp doğru alanlarda kullandın!';
-          }
-          draw();
-        } else {
-          sfxBad();
-          msg = '🤔 Bu kullanım alanı başka bir madene ait, tekrar dene!';
-          draw();
-        }
+          matched[selMine] = true; const m = MINES.find(x => x.id === selMine);
+          msg = `🌟 Doğru! <b>${m.name}</b> → ${m.use}!`; selMine = null; sfxGood();
+          if (Object.keys(matched).length === MINES.length) { sfxWin(); saveGameProgress('game-u3-dig', MINES.length, MINES.length); msg = '🏆 Tüm 8 madeni çıkarıp doğru işledin!'; }
+        } else { sfxBad(); msg = '🤔 Bu alan başka bir madene ait!'; }
+        draw();
       }
     };
     draw();
   }
 
   // ═══════════════════════════════════════════════════════════════
-  // OYUN 8: 🦕 Paleontolog Canvas Fırça Kazısı & Zaman Makinesi
+  // OYUN 8: 🦕 Canvas Fırça Kazısı + Ortam Çıkarımı + Zaman Makinesi
   // ═══════════════════════════════════════════════════════════════
   const FOSSILS = [
-    { id: 'dino', name: 'Dinozor İskeleti Fosili', icon: '🦖🦴', desc: 'Milyonlarca yıl önce yaşamış dev bir kara sürüngeninin taşlaşmış kemikleri!' },
-    { id: 'shell', name: 'Ammonit Deniz Kabuğu Fosili', icon: '🐚🪨', desc: 'Eskiden deniz olan bölgelerde bulunan kıvrımlı deniz canlısı fosili!' },
-    { id: 'leaf', name: 'Antik Eğrelti Otu Fosili', icon: '🌿🪨', desc: 'Çamur tabakası arasında izi taşlaşarak günümüze ulaşmış eski bir bitki!' }
+    { id: 'dino', name: 'Dinozor İskeleti Fosili', icon: '🦖🦴', desc: 'Milyonlarca yıl önce karada yaşamış bir dinozorun taşlaşmış kemikleri!', q: 'Bu fosilin bulunduğu yer milyonlarca yıl önce nasıl bir alandı?', opts: ['Dinozorların yaşadığı eski bir kara parçası', 'Buzlarla kaplı okyanus dibi'], ans: 0 },
+    { id: 'shell', name: 'Ammonit Deniz Kabuğu Fosili', icon: '🐚🪨', desc: 'Yüksek bir dağın tepesinde kıvrımlı bir deniz kabuğu fosili buldun!', q: 'Dağın tepesinde deniz kabuğu fosili çıkması neyi kanıtlar?', opts: ['O dağın milyonlarca yıl önce DENİZ ALTINDA olduğunu', 'Deniz kabuklarının uçabildiğini'], ans: 0 },
+    { id: 'leaf', name: 'Antik Eğrelti Otu Fosili', icon: '🌿🪨', desc: 'Çölleşmiş bir arazide tropikal eğrelti otu yaprağı fosili buldun!', q: 'Çölde yeşil bitki fosili bulmak bize ne anlatır?', opts: ['Eskiden oranın yağışlı ve yemyeşil bir orman olduğunu', 'Fosillerin 1 haftada oluştuğunu'], ans: 0 }
   ];
   const TIME_STEPS = [
     '1️⃣ 0 Gün: Canlı ölür, sert kemik veya kabuğu kalır.',
     '2️⃣ 100 Yıl: Üzeri kum, kil ve çamurla örtülür; havayla teması kesilir.',
     '3️⃣ 1 Milyon Yıl: Katmanlar ağırlaşır, basınç ve mineraller kalıntıyı sertleştirir.',
-    '4️⃣ 65 Milyon Yıl: Kalıntı tamamen taşlaşıp FOSİL olur; paleontologlar bulur!'
+    '4️⃣ 65 Milyon Yıl: Kalıntı taşlaşıp FOSİL olur; paleontologlar bulur!'
   ];
 
   function mountFossilGame(slot) {
-    let fIdx = 0;
-    let timeStep = 1;
-    let revealed = false;
-    let pct = 0;
+    let fIdx = 0, timeStep = 1, revealed = false, quizDone = {}, pct = 0;
 
     function draw() {
-      const f = FOSSILS[fIdx];
+      const f = FOSSILS[fIdx], solvedThis = quizDone[f.id];
       slot.innerHTML = `<section class="fg-card rose">
-        ${gameHeader('game-u3-fossil', '🦕 GERÇEK CANVAS FIRÇA KAZISI', 'Oyun 8 · Paleontolog Fırçasıyla Kumları Temizle!', 'Farenle veya parmağınla kum tabakasını fırçala, saklı fosili ortaya çıkar! (' + (fIdx + 1) + '/' + FOSSILS.length + ')')}
+        ${gameHeader('game-u3-fossil', '🦕 CANVAS KAZI & PALEONTOLOG ÇIKARIMI', 'Oyun 8 · Kumu Fırçala, Fosili Bul, İklimi Çöz!', '1) Kumu fırçala. 2) Çıkan fosile göre o bölgenin milyonlarca yıl önce nasıl bir yer olduğunu bul! (' + Object.keys(quizDone).length + '/' + FOSSILS.length + ')')}
         <div class="fg-fossil-layout">
           <div class="fg-excavation">
-            <div class="fg-fossil-under">
-              <div class="fg-fossil-big">${f.icon}</div>
-              <strong>${f.name}</strong>
-              <small>${f.desc}</small>
-            </div>
+            <div class="fg-fossil-under"><div class="fg-fossil-big">${f.icon}</div><strong>${f.name}</strong><small>${f.desc}</small></div>
             <canvas id="fgFossilCanvas" width="320" height="220"></canvas>
-            <div class="fg-brush-bar">
-              <span>🧹 Temizlenen: <b id="fgFosPct">${pct}%</b></span>
-              ${revealed ? `<span class="fg-won">🎉 Fosil Bulundu!</span>` : '<small>Fırçayı kumun üstünde sürükle!</small>'}
-            </div>
+            <div class="fg-brush-bar"><span>🧹 Temizlenen: <b id="fgFosPct">${pct}%</b></span>${revealed ? `<span class="fg-won">🎉 Ortaya Çıktı!</span>` : '<small>Fırçayı sürükle!</small>'}</div>
+            ${revealed ? `<div class="fg-tool-box" style="width:100%"><p><b>Paleontolog Sorusu:</b> ${f.q}</p><div class="row">${f.opts.map((op, i) => `<button type="button" class="small ${solvedThis && i === f.ans ? 'primary' : ''}" data-fos-q="${i}" ${solvedThis ? 'disabled' : ''}>${op}</button>`).join('')}</div></div>` : ''}
             <div class="row" style="margin-top:6px">
-              ${fIdx < FOSSILS.length - 1 && revealed ? `<button type="button" class="small primary" id="fgFosNext">Sonraki Kazı Alanı →</button>` : ''}
+              ${fIdx < FOSSILS.length - 1 && solvedThis ? `<button type="button" class="small primary" id="fgFosNext">Sonraki Kazı Alanı →</button>` : ''}
               <button type="button" class="small" id="fgFosReset">🔄 Kumu Yenile</button>
             </div>
           </div>
@@ -4326,75 +4421,53 @@ document.addEventListener('input', e => {
             <p class="fg-tm-text">${TIME_STEPS[timeStep - 1]}</p>
             <input type="range" id="fgTmRange" min="1" max="4" step="1" value="${timeStep}">
             <div class="fg-tm-labels"><span>0 Gün</span><span>100 Yıl</span><span>1 Mn Yıl</span><span>65 Mn Yıl</span></div>
-            <div class="fg-tm-box">
-              ${timeStep === 1 ? '🦕 Sert kemik &amp; kabuk' : timeStep === 2 ? '🏜️ Kum &amp; çamurla örtüldü' : timeStep === 3 ? '🪨 Basınçla sertleşiyor' : '🦴🔍 Paleontolog fosili buldu!'}
-            </div>
+            <div class="fg-tm-box">${timeStep === 1 ? '🦕 Sert kemik &amp; kabuk' : timeStep === 2 ? '🏜️ Kum &amp; çamurla örtüldü' : timeStep === 3 ? '🪨 Basınçla taşlaşıyor' : '🦴🔍 Paleontolog fosili buldu!'}</div>
           </div>
         </div>
       </section>`;
 
-      const canvas = slot.querySelector('#fgFossilCanvas');
-      const ctx = canvas.getContext('2d');
+      const canvas = slot.querySelector('#fgFossilCanvas'), ctx = canvas.getContext('2d');
       if (!revealed) {
-        // Kum tabakasını çiz
-        ctx.fillStyle = '#d6b37c';
-        ctx.fillRect(0, 0, canvas.width, canvas.height);
-        for (let i = 0; i < 420; i++) {
-          ctx.fillStyle = i % 2 === 0 ? '#c2995f' : '#e5c99b';
-          ctx.fillRect((i * 37) % 316, (i * 53) % 216, 4, 4);
-        }
-        ctx.fillStyle = '#78350f';
-        ctx.font = 'bold 15px Segoe UI, sans-serif';
-        ctx.textAlign = 'center';
+        ctx.fillStyle = '#d6b37c'; ctx.fillRect(0, 0, canvas.width, canvas.height);
+        for (let i = 0; i < 420; i++) { ctx.fillStyle = i % 2 === 0 ? '#c2995f' : '#e5c99b'; ctx.fillRect((i * 37) % 316, (i * 53) % 216, 4, 4); }
+        ctx.fillStyle = '#78350f'; ctx.font = 'bold 15px Segoe UI, sans-serif'; ctx.textAlign = 'center';
         ctx.fillText('🖌️ KUMU FIRÇALAYARAK KAZ!', 160, 110);
-      } else {
-        ctx.clearRect(0, 0, canvas.width, canvas.height);
-        canvas.style.pointerEvents = 'none';
-      }
+      } else { ctx.clearRect(0, 0, canvas.width, canvas.height); canvas.style.pointerEvents = 'none'; }
 
       let brushing = false;
       function scrub(ev) {
         if (!brushing) return;
         const rect = canvas.getBoundingClientRect();
-        const x = (ev.clientX - rect.left) * (canvas.width / rect.width);
-        const y = (ev.clientY - rect.top) * (canvas.height / rect.height);
-        ctx.globalCompositeOperation = 'destination-out';
-        ctx.beginPath();
-        ctx.arc(x, y, 22, 0, Math.PI * 2);
-        ctx.fill();
-        ctx.globalCompositeOperation = 'source-over';
+        const x = (ev.clientX - rect.left) * (canvas.width / rect.width), y = (ev.clientY - rect.top) * (canvas.height / rect.height);
+        ctx.globalCompositeOperation = 'destination-out'; ctx.beginPath(); ctx.arc(x, y, 22, 0, Math.PI * 2); ctx.fill(); ctx.globalCompositeOperation = 'source-over';
       }
       function checkClear() {
         const data = ctx.getImageData(0, 0, canvas.width, canvas.height).data;
         let cleared = 0, total = 0;
         for (let i = 3; i < data.length; i += 64) { total++; if (data[i] < 40) cleared++; }
         pct = Math.min(100, Math.round((cleared / total) * 100));
-        const pctEl = slot.querySelector('#fgFosPct');
-        if (pctEl) pctEl.textContent = pct + '%';
-        if (pct >= 55 && !revealed) {
-          revealed = true;
-          sfxWin();
-          saveGameProgress('game-u3-fossil', fIdx + 1, FOSSILS.length);
-          ctx.clearRect(0, 0, canvas.width, canvas.height);
-          draw();
-        }
+        const pctEl = slot.querySelector('#fgFosPct'); if (pctEl) pctEl.textContent = pct + '%';
+        if (pct >= 55 && !revealed) { revealed = true; sfxGood(); ctx.clearRect(0, 0, canvas.width, canvas.height); draw(); }
       }
-
       canvas.onpointerdown = e => { brushing = true; canvas.setPointerCapture(e.pointerId); scrub(e); };
       canvas.onpointermove = e => scrub(e);
       canvas.onpointerup = () => { brushing = false; checkClear(); };
 
-      const tm = slot.querySelector('#fgTmRange');
-      tm.oninput = () => { timeStep = Number(tm.value); sfxPop(); draw(); };
-
-      const nxt = slot.querySelector('#fgFosNext');
-      if (nxt) nxt.onclick = () => { fIdx++; pct = 0; revealed = false; sfxPop(); draw(); };
+      slot.querySelector('#fgTmRange').oninput = e => { timeStep = Number(e.target.value); sfxPop(); draw(); };
+      const nxt = slot.querySelector('#fgFosNext'); if (nxt) nxt.onclick = () => { fIdx++; pct = 0; revealed = false; sfxPop(); draw(); };
       slot.querySelector('#fgFosReset').onclick = () => { pct = 0; revealed = false; draw(); };
+      slot.querySelectorAll('[data-fos-q]').forEach(b => b.onclick = () => {
+        if (Number(b.dataset.fosQ) === f.ans) {
+          quizDone[f.id] = true; sfxGood();
+          if (Object.keys(quizDone).length === FOSSILS.length) { sfxWin(); saveGameProgress('game-u3-fossil', FOSSILS.length, FOSSILS.length); }
+          draw();
+        } else { sfxBad(); toast('🤔 İpucu: Fosiller bize o bölgenin milyonlarca yıl önceki hâlini gösterir!'); }
+      });
     }
     draw();
   }
 
-  const GAME_MAP = {
+  window.FEN3_GAME_MAP = {
     'game-u1-sink': mountSinkGame,
     'game-u1-balloons': mountBalloonsGame,
     'game-u1-heroes': mountHeroesGame,
@@ -4406,19 +4479,496 @@ document.addEventListener('input', e => {
   };
 
   document.addEventListener('click', e => {
-    const m = e.target.closest('[data-fg-mute]');
-    if (!m) return;
+    if (!e.target.closest('[data-fg-mute]')) return;
     fen3Muted = !fen3Muted;
     document.querySelectorAll('[data-fg-mute]').forEach(b => { b.textContent = fen3Muted ? '🔇 Ses Kapalı' : '🔊 Ses Açık'; });
   });
 
   window.eduMountGames = function () {
     window.fen3CleanupGames();
+    const banner = document.getElementById('fen3ScoreBanner');
+    if (banner) banner.innerHTML = window.fen3ScoreBannerHTML();
     document.querySelectorAll('.fen-game-slot[data-game-id]').forEach(slot => {
-      const fn = GAME_MAP[slot.dataset.gameId];
+      const fn = window.FEN3_GAME_MAP[slot.dataset.gameId];
       if (fn) fn(slot);
     });
   };
+})();
+// ── 3. Sınıf Fen Bilimleri · İnteraktif Web Oyunları Motoru (Bölüm 2: Ünite 4–8) ──
+(() => {
+  const H = () => window.FEN3_HELPER;
+
+  // ═══════════════════════════════════════════════════════════════
+  // OYUN 9: 🧊💧☁️ Madde Hâlleri, Nitelikleri & Kap Deneyi (Ünite 4)
+  // ═══════════════════════════════════════════════════════════════
+  const MATTERS = [
+    { id: 'tas', name: '🪨 Kaya Taşı', state: 'kati', trait: 'Sert', traits: ['Sert', 'Akışkan', 'Sıkıştırılabilir'] },
+    { id: 'sunger', name: '🧽 Bulaşık Süngeri', state: 'kati', trait: 'Esnek', traits: ['Esnek', 'Kırılgan', 'Gaz gibi yayılır'] },
+    { id: 'cam', name: '🥃 Cam Bardak', state: 'kati', trait: 'Kırılgan', traits: ['Kırılgan', 'Esnek', 'Akışkan'] },
+    { id: 'su', name: '💧 İçme Suyu', state: 'sivi', trait: 'Akışkan · Kabın şeklini alır', traits: ['Akışkan · Kabın şeklini alır', 'Belirli şekli vardır', 'Kırılgan'] },
+    { id: 'yag', name: '🫒 Zeytinyağı', state: 'sivi', trait: 'Akışkan · Kabın şeklini alır', traits: ['Akışkan · Kabın şeklini alır', 'Sert', 'Sıkıştırılır'] },
+    { id: 'buhar', name: '💨 Çaydanlık Buharı', state: 'gaz', trait: 'Bulunduğu ortama yayılır', traits: ['Bulunduğu ortama yayılır', 'Sert ve sabit şekilli', 'Sadece dibe çöker'] },
+    { id: 'hava', name: '🎈 Balon İçi Hava', state: 'gaz', trait: 'Sıkıştırılabilir & yayılır', traits: ['Sıkıştırılabilir & yayılır', 'Kırılgan', 'Sert'] }
+  ];
+
+  function mountMatterGame(slot) {
+    let idx = 0, step = 'state', done = {}, cupType = 'tall', cupMat = 'su', msg = '1) Maddenin hâlini seç (Katı/Sıvı/Gaz), 2) Doğru özelliğini yakala!';
+
+    function draw() {
+      const m = MATTERS[idx], finished = Object.keys(done).length >= MATTERS.length;
+      slot.innerHTML = `<section class="fg-card sky">
+        ${H().gameHeader('game-u4-matter', '🧊💧☁️ ÇİFT EKSENLİ MADDE LABI', 'Oyun 9 · Madde Hâli + Özelliği & Kap Şekli Deneyi', 'Sünger veya pamuk neden KATI sayılır? Hem maddenin hâlini hem niteliğini çöz, sağda da kap değiştirme deneyini dene!')}
+        <div class="fg-sink-layout">
+          <div class="fg-notebook">
+            <h5>🔬 Madde Dedektifi (${Object.keys(done).length}/${MATTERS.length})</h5>
+            ${finished ? `<div class="fg-conclusion">🏆 Tüm maddelerin hem hâlini hem niteliğini doğru çözdün!</div>` : `
+              <div class="fg-capsule" style="margin-bottom:8px">İncelenen Madde: <b>${m.name}</b></div>
+              <div class="fg-msg">${msg}</div>
+              <p class="fg-q-label"><b>1. Hangi hâldedir?</b></p>
+              <div class="row">
+                <button type="button" class="small ${step === 'trait' && m.state === 'kati' ? 'primary' : ''}" data-mat-st="kati" ${step === 'trait' ? 'disabled' : ''}>🧊 Katı</button>
+                <button type="button" class="small ${step === 'trait' && m.state === 'sivi' ? 'primary' : ''}" data-mat-st="sivi" ${step === 'trait' ? 'disabled' : ''}>💧 Sıvı</button>
+                <button type="button" class="small ${step === 'trait' && m.state === 'gaz' ? 'primary' : ''}" data-mat-st="gaz" ${step === 'trait' ? 'disabled' : ''}>☁️ Gaz</button>
+              </div>
+              ${step === 'trait' ? `<p class="fg-q-label"><b>2. Bu maddeye ait doğru nitelik hangisi?</b></p>
+              <div class="row">${m.traits.map(tr => `<button type="button" class="small primary" data-mat-tr="${tr}">${tr}</button>`).join('')}</div>` : ''}
+            `}
+          </div>
+          <div class="fg-notebook">
+            <h5>🏺 Kap Değiştirme Deneyi</h5>
+            <div class="row" style="margin-bottom:8px">
+              <button type="button" class="small ${cupMat === 'tas' ? 'primary' : ''}" data-cup-mat="tas">🪨 Taş (Katı)</button>
+              <button type="button" class="small ${cupMat === 'su' ? 'primary' : ''}" data-cup-mat="su">💧 Su (Sıvı)</button>
+              <button type="button" class="small ${cupMat === 'gaz' ? 'primary' : ''}" data-cup-mat="gaz">☁️ Gaz</button>
+            </div>
+            <div class="row" style="margin-bottom:10px">
+              <button type="button" class="small ${cupType === 'tall' ? 'primary' : ''}" data-cup-type="tall">🧪 Dar Uzun Şişe</button>
+              <button type="button" class="small ${cupType === 'wide' ? 'primary' : ''}" data-cup-type="wide">🥣 Geniş Kase</button>
+            </div>
+            <div class="fg-cup-stage">
+              <div class="fg-cup ${cupType}">
+                <div class="fg-cup-fill ${cupMat}"></div>
+              </div>
+              <small>${cupMat === 'tas' ? 'Katının kendi sabit şekli vardır, kaba göre değişmez!' : cupMat === 'su' ? 'Sıvı akışkandır, konulduğu kabın şeklini alır!' : 'Gazlar bulunduğu kabın her yerine tamamen yayılır!'}</small>
+            </div>
+          </div>
+        </div>
+      </section>`;
+    }
+
+    slot.onclick = e => {
+      const sb = e.target.closest('[data-mat-st]');
+      if (sb) {
+        const m = MATTERS[idx];
+        if (sb.dataset.matSt === m.state) { step = 'trait'; H().sfxPop(); msg = '✅ Hâli doğru! Şimdi bu maddenin niteliğini seç!'; }
+        else { H().sfxBad(); msg = '🤔 Yanlış hâl! Akıyor mu, sabit şekli mi var, yoksa yayılıyor mu?'; }
+        draw(); return;
+      }
+      const tb = e.target.closest('[data-mat-tr]');
+      if (tb) {
+        const m = MATTERS[idx];
+        if (tb.dataset.matTr === m.trait) {
+          done[m.id] = true; step = 'state'; H().sfxGood();
+          msg = `🌟 Harika! ${m.name} doğru sınıflandırıldı!`;
+          if (idx < MATTERS.length - 1) idx++;
+          else { H().sfxWin(); H().saveGameProgress('game-u4-matter', MATTERS.length, MATTERS.length); }
+        } else { H().sfxBad(); msg = '❌ Bu özellik ona ait değil, tekrar dene!'; }
+        draw(); return;
+      }
+      const cm = e.target.closest('[data-cup-mat]'); if (cm) { cupMat = cm.dataset.cupMat; H().sfxPop(); draw(); return; }
+      const ct = e.target.closest('[data-cup-type]'); if (ct) { cupType = ct.dataset.cupType; H().sfxPop(); draw(); }
+    };
+    draw();
+  }
+
+  // ═══════════════════════════════════════════════════════════════
+  // OYUN 10: 🧲♻️ Çok Adımlı Karışım Fabrikası & Geri Dönüşüm (Ünite 4)
+  // ═══════════════════════════════════════════════════════════════
+  const MIXTURES = [
+    { name: 'Demir Tozu + İnce Kum', steps: ['magnet'], hint: 'Demiri kumun içinden ne çeker?', desc: 'Mıknatıs demir tozlarını tek seferde topladı!' },
+    { name: 'Haşlanmış Makarna + Sıcak Su', steps: ['strainer'], hint: 'Katı büyük parçayı sıvıdan ayırmak için ne kullanırız?', desc: 'Süzgeç suyu geçirdi, makarna üstte kaldı!' },
+    { name: 'Nohut + Un Karışımı', steps: ['sieve'], hint: 'Farklı büyüklükteki iki katıyı nasıl ayırırız?', desc: 'Elek unu aşağı eledi, iri nohutlar üstte kaldı!' },
+    { name: '🔥 ZORLU BOSS: Demir Tozu + Talaş + Kum (2 Adımlı!)', steps: ['magnet', 'float'], hint: 'Önce demiri mıknatısla çek, sonra suya atıp hafif talaşı yüzdür!', desc: 'İki aşamalı karışımı ustalıkla ayırdın!' }
+  ];
+  const TRASH_ITEMS = [
+    { name: '📰 Eski Gazete', bin: 'kagit' }, { name: '🧴 Pet Şişe', bin: 'plastik' },
+    { name: '🍾 Cam Kavanoz', bin: 'cam' }, { name: '🥫 İçecek Kutusu', bin: 'metal' },
+    { name: '🔋 Bitmiş Pil', bin: 'pil' }, { name: '🍌 Muz Kabuğu', bin: 'organik' }
+  ];
+
+  function mountSeparateGame(slot) {
+    let mIdx = 0, curStep = 0, mixDone = false;
+    let tIdx = 0, tHits = 0, trashDone = false;
+    let msg = 'ZORLU KARIŞIMLAR: Son karışım 2 adımlı! Doğru ayırma aracını sırayla seç!';
+
+    function draw() {
+      const mx = MIXTURES[mIdx];
+      const tr = TRASH_ITEMS[tIdx];
+      slot.innerHTML = `<section class="fg-card mint">
+        ${H().gameHeader('game-u4-separate', '🧲♻️ KARIŞIM AYIRMA & GERİ DÖNÜŞÜM', 'Oyun 10 · Karışımları Ayır + Atıkları Ayrıştır!', 'Solda çok adımlı karışımları doğru aletlerle ayır; sağda atıkları doğru geri dönüşüm kutularına gönder!')}
+        <div class="fg-sink-layout">
+          <div class="fg-notebook">
+            <h5>🧪 Karışım Ayırma (${mIdx + (mixDone ? 1 : 0)}/${MIXTURES.length})</h5>
+            <div class="fg-capsule" style="margin-bottom:8px">${mixDone ? '🏆 Tüm karışımlar ayrıldı!' : `<b>Karışım ${mIdx + 1}:</b> ${mx.name}${mx.steps.length > 1 ? ` (Adım ${curStep + 1}/2)` : ''}`}</div>
+            <div class="fg-msg">${msg}</div>
+            <div class="row" style="margin-top:8px">
+              <button type="button" class="small primary" data-sep-tool="magnet" ${mixDone ? 'disabled' : ''}>🧲 Mıknatıs</button>
+              <button type="button" class="small primary" data-sep-tool="sieve" ${mixDone ? 'disabled' : ''}>🕳️ Elek</button>
+              <button type="button" class="small primary" data-sep-tool="strainer" ${mixDone ? 'disabled' : ''}>☕ Süzgeç</button>
+              <button type="button" class="small primary" data-sep-tool="float" ${mixDone ? 'disabled' : ''}>💧 Suda Yüzdürme</button>
+            </div>
+          </div>
+          <div class="fg-notebook">
+            <h5>♻️ Geri Dönüşüm Bandı (${tHits}/${TRASH_ITEMS.length})</h5>
+            <div class="fg-capsule" style="margin-bottom:8px">${trashDone ? '🌿 Süpersin! Tüm atıklar geri dönüştürüldü!' : `Banttaki Atık: <b>${tr.name}</b>`}</div>
+            <div class="row">
+              ${[['kagit','📄 Kağıt'],['plastik','🧴 Plastik'],['cam','🍾 Cam'],['metal','🥫 Metal'],['pil','🔋 Atık Pil'],['organik','🍌 Organik']].map(([b, lbl]) =>
+                `<button type="button" class="small" data-bin="${b}" ${trashDone ? 'disabled' : ''}>${lbl}</button>`
+              ).join('')}
+            </div>
+          </div>
+        </div>
+      </section>`;
+    }
+
+    slot.onclick = e => {
+      const tb = e.target.closest('[data-sep-tool]');
+      if (tb) {
+        const mx = MIXTURES[mIdx];
+        if (tb.dataset.sepTool === mx.steps[curStep]) {
+          curStep++; H().sfxGood();
+          if (curStep >= mx.steps.length) {
+            msg = '🌟 ' + mx.desc;
+            if (mIdx < MIXTURES.length - 1) { mIdx++; curStep = 0; }
+            else { mixDone = true; if (trashDone) { H().sfxWin(); H().saveGameProgress('game-u4-separate', 2, 2); } }
+          } else { msg = '✅ 1. adım tamam! Şimdi 2. adım için aracı seç!'; }
+        } else { H().sfxBad(); msg = '❌ Bu araç ayırmadı! İpucu: ' + mx.hint; }
+        draw(); return;
+      }
+      const bb = e.target.closest('[data-bin]');
+      if (bb) {
+        if (bb.dataset.bin === TRASH_ITEMS[tIdx].bin) {
+          tHits++; H().sfxGood();
+          if (tIdx < TRASH_ITEMS.length - 1) tIdx++;
+          else { trashDone = true; if (mixDone) { H().sfxWin(); H().saveGameProgress('game-u4-separate', 2, 2); } }
+        } else { H().sfxBad(); msg = '⚠️ Yanlış geri dönüşüm kutusu! Atığın malzemesine dikkat et.'; }
+        draw();
+      }
+    };
+    draw();
+  }
+
+  // ═══════════════════════════════════════════════════════════════
+  // OYUN 11: 🏎️ Canvas Kuvvet & Hareket Fizik Parkuru (Ünite 5)
+  // ═══════════════════════════════════════════════════════════════
+  function mountForceGame(slot) {
+    const LEVELS = [
+      { name: 'Parkur 1: Düz Asfalt', friction: 0.985, targetX: 460, w: 95, tip: 'Arabayı sağa it, bayrak alanına girince SOLA iterek (zıt kuvvet) tam içinde durdur!' },
+      { name: 'Parkur 2: Kaygan Buz Pisti!', friction: 0.996, targetX: 490, w: 78, tip: 'Buzda sürtünme azdır, araba zor durur! Erkenden ters kuvvet (fren) uygula!' },
+      { name: 'Parkur 3: Rüzgarlı Tepe', friction: 0.98, wind: -0.05, targetX: 500, w: 72, tip: 'Karşıdan rüzgar arabayı geri itiyor! Daha güçlü itip tam bayrakta durdur!' }
+    ];
+    let lvl = 0, carX = 45, vel = 0, won = {}, shapeMsg = 'Kuvvet testi için aşağıdaki cisimlere tıkla!';
+
+    slot.innerHTML = `<section class="fg-card sun">
+      ${H().gameHeader('game-u5-force', '🏎️ GERÇEK FİZİK & KUVVET PARKURU', 'Oyun 11 · İtme–Çekme ile Hedefe Park Et & Şekil Değiştirme', 'Arabayı sağa iterek bayrağa götür ama UÇURUMA DÜŞMEDEN ters yönde iterek durdur! Hız 0 olunca yeşil alanda olmalısın!')}
+      <div class="row" id="fgLvlRow"></div>
+      <div class="fg-msg" id="fgForceMsg">${LEVELS[0].tip}</div>
+      <div class="fg-canvas-wrap"><canvas id="fgForceCanvas" width="660" height="170" style="border-radius:12px;border:2px solid #cbd5e1;width:100%;max-width:660px"></canvas></div>
+      <div class="row" style="justify-content:center;gap:10px">
+        <button type="button" class="small primary" id="fgPushL">⬅️ Sola İt / Fren</button>
+        <button type="button" class="small primary" id="fgPushR">➡️ Sağa İt (+Hız)</button>
+        <button type="button" class="small" id="fgForceReset">🔄 Baştan Al</button>
+      </div>
+      <div class="fg-notebook" style="margin-top:6px">
+        <h6>🧱 Kuvvetin Şekil Değiştirme Etkisi (Tıkla &amp; Test Et)</h6>
+        <div class="row">
+          <button type="button" class="small" data-sh="hamur">🟡 Oyun Hamuru</button>
+          <button type="button" class="small" data-sh="lastik">🎗️ Paket Lastiği</button>
+          <button type="button" class="small" data-sh="sunger">🧽 Sünger</button>
+          <button type="button" class="small" data-sh="bardak">🥃 Cam Bardak</button>
+        </div>
+        <small id="fgShapeMsg" style="display:block;margin-top:6px">${shapeMsg}</small>
+      </div>
+    </section>`;
+
+    const canvas = slot.querySelector('#fgForceCanvas'), ctx = canvas.getContext('2d');
+    const msgEl = slot.querySelector('#fgForceMsg'), lvlRow = slot.querySelector('#fgLvlRow');
+
+    function renderLvlBtns() {
+      lvlRow.innerHTML = LEVELS.map((lv, i) => `<button type="button" class="small ${lvl === i ? 'primary' : ''}" data-flvl="${i}">${won[i] ? '✅ ' : ''}${lv.name}</button>`).join('');
+      lvlRow.querySelectorAll('[data-flvl]').forEach(b => b.onclick = () => { lvl = Number(b.dataset.flvl); carX = 45; vel = 0; msgEl.textContent = LEVELS[lvl].tip; renderLvlBtns(); });
+    }
+    renderLvlBtns();
+
+    function step() {
+      if (!document.body.contains(canvas)) return;
+      const lv = LEVELS[lvl];
+      if (Math.abs(vel) > 0.02 || (lv.wind && carX > 45)) {
+        vel = (vel + (lv.wind || 0)) * lv.friction;
+        carX += vel;
+        if (carX < 30) { carX = 30; vel = 0; }
+        if (Math.abs(vel) < 0.06) {
+          vel = 0;
+          if (carX >= lv.targetX && carX <= lv.targetX + lv.w - 30) {
+            if (!won[lvl]) {
+              won[lvl] = true; H().sfxGood();
+              msgEl.textContent = `🏁 MÜKEMMEL! ${lv.name} içinde tam hedefte durdun!`;
+              renderLvlBtns();
+              if (Object.keys(won).length === LEVELS.length) { H().sfxWin(); H().saveGameProgress('game-u5-force', 3, 3); msgEl.textContent = '🏆 3 Fizik Parkurunu da Ustaca Tamamladın!'; }
+            }
+          }
+        }
+        if (carX > 590) {
+          carX = 45; vel = 0; H().sfxBad();
+          msgEl.textContent = '💥 Uçuruma düştün! Çok hızlı ittin, zıt yönde iterek yavaşlatmayı unutma!';
+        }
+      }
+
+      ctx.clearRect(0, 0, 660, 170);
+      ctx.fillStyle = lvl === 1 ? '#e0f2fe' : '#f8fafc'; ctx.fillRect(0, 0, 660, 170);
+      // Yol ve hedef
+      ctx.fillStyle = lvl === 1 ? '#bae6fd' : '#cbd5e1'; ctx.fillRect(0, 125, 595, 22);
+      ctx.fillStyle = '#86efac'; ctx.fillRect(lv.targetX, 125, lv.w, 22);
+      ctx.fillStyle = '#0f172a'; ctx.fillRect(lv.targetX + lv.w - 10, 75, 4, 50);
+      ctx.fillStyle = '#16a34a'; ctx.fillRect(lv.targetX + lv.w - 6, 75, 26, 16);
+      // Uçurum
+      ctx.fillStyle = '#fee2e2'; ctx.fillRect(595, 125, 65, 45);
+      ctx.fillStyle = '#b91c1c'; ctx.font = 'bold 11px Segoe UI, sans-serif'; ctx.fillText('UÇURUM!', 602, 148);
+      // Araba
+      ctx.fillStyle = '#ef4444'; ctx.beginPath(); ctx.roundRect(carX, 96, 48, 22, 6); ctx.fill();
+      ctx.fillStyle = '#38bdf8'; ctx.fillRect(carX + 12, 86, 22, 12);
+      ctx.fillStyle = '#1e293b'; ctx.beginPath(); ctx.arc(carX + 11, 121, 7, 0, Math.PI * 2); ctx.arc(carX + 37, 121, 7, 0, Math.PI * 2); ctx.fill();
+      ctx.fillStyle = '#0f172a'; ctx.font = 'bold 12px Segoe UI, sans-serif';
+      ctx.fillText(`Hız: ${vel.toFixed(1)} | Konum: ${Math.round(carX)}`, 14, 24);
+      if (lv.wind) ctx.fillText('💨 Rüzgar Sola Esiyor!', 480, 24);
+      H().activeRafs.push(requestAnimationFrame(step));
+    }
+    H().activeRafs.push(requestAnimationFrame(step));
+
+    slot.querySelector('#fgPushR').onclick = () => { vel += 2.6; H().sfxPop(); };
+    slot.querySelector('#fgPushL').onclick = () => { vel -= 2.2; H().sfxPop(); };
+    slot.querySelector('#fgForceReset').onclick = () => { carX = 45; vel = 0; msgEl.textContent = LEVELS[lvl].tip; };
+    slot.querySelectorAll('[data-sh]').forEach(b => b.onclick = () => {
+      const m = {
+        hamur: '🟡 Oyun hamuruna kuvvet uygulayınca şekli KALICI olarak değişir!',
+        lastik: '🎗️ Paket lastiğini çekince uzar, bırakınca ESKİ HÂLİNE DÖNER (esnek)!',
+        sunger: '🧽 Süngeri sıkınca şekli değişir, bırakınca eski hâline döner!',
+        bardak: '🥃 Cam bardağa sert kuvvet uygularsan kırılır (esnek değildir)!'
+      };
+      slot.querySelector('#fgShapeMsg').textContent = m[b.dataset.sh]; H().sfxPop();
+    });
+  }
+
+  // ═══════════════════════════════════════════════════════════════
+  // OYUN 12: ⚡ Akıllı Ev Elektrik Güvenliği & Tasarruf (Ünite 6)
+  // ═══════════════════════════════════════════════════════════════
+  function mountElectricGame(slot) {
+    const DEVICES = [
+      { id: 'buz', name: '🧊 Buzdolabı', src: 'sehir' }, { id: 'fener', name: '🔦 El Feneri', src: 'pil' },
+      { id: 'tel', name: '📱 Akıllı Telefon', src: 'batarya' }, { id: 'saat', name: '🕰️ Duvar Saati', src: 'pil' },
+      { id: 'ut', name: '🫧 Çamaşır Mak.', src: 'sehir' }, { id: 'ev', name: '🚗 Elektrikli Araba', src: 'batarya' }
+    ];
+    const HAZARDS = [
+      { id: 'h1', txt: '💦 Islak elle prize dokunuluyor!', fix: 'Kurulanıp kuru elle dokunuldu ✅' },
+      { id: 'h2', txt: '⚡ Kablosu soyulmuş priz!', fix: 'Tamir edildi / fiş çekildi ✅' },
+      { id: 'h3', txt: '🔌 Tek prize 6 fiş birden takılmış!', fix: 'Fazla fişler çıkarıldı ✅' },
+      { id: 'h4', txt: '🍴 Prize metal çatal sokulmaya çalışılıyor!', fix: 'Metal cisim uzaklaştırıldı ✅' }
+    ];
+    const WASTES = [
+      { id: 'w1', txt: '☀️ Gündüz yanan salon lambası (Kapat)', save: 25 },
+      { id: 'w2', txt: '📺 Kimsenin izlemediği açık TV (Kapat)', save: 25 },
+      { id: 'w3', txt: '🧊 Kapağı açık kalmış buzdolabı (Kapat)', save: 25 },
+      { id: 'w4', txt: '💡 Eski akkor ampul (LED ile değiştir)', save: 25 }
+    ];
+    let devIdx = 0, devDone = false, fixedH = {}, fixedW = {}, msg = '1) Cihazın kaynağını seç. 2) Evdeki tüm elektrik tehlikelerini temizle. 3) Tasarruf sayacını %100 yap!';
+
+    function draw() {
+      const hCount = Object.keys(fixedH).length, wPct = Object.values(fixedW).reduce((a, b) => a + b, 0);
+      const cur = DEVICES[devIdx];
+      slot.innerHTML = `<section class="fg-card rose">
+        ${H().gameHeader('game-u6-electric', '⚡ AKILLI EV MÜHENDİSİ', 'Oyun 12 · Elektrik Kaynağı, Güvenlik & Tasarruf Görevi', 'Üç görevi de tamamla: Kaynakları bağla, 4 tehlikeyi yok et ve enerji israfını %100 tasarrufa çevir!')}
+        <div class="fg-msg">${msg}</div>
+        <div class="fg-grid-3">
+          <div class="fg-notebook">
+            <h6>1. Elektrik Kaynağı (${devDone ? 6 : devIdx}/6)</h6>
+            <div class="fg-capsule" style="margin-bottom:8px">${devDone ? '✅ Tüm cihazlar bağlandı!' : `Cihaz: <b>${cur.name}</b>`}</div>
+            <div class="row">
+              <button type="button" class="small primary" data-el-src="sehir" ${devDone ? 'disabled' : ''}>🔌 Şehir Elektriği</button>
+              <button type="button" class="small primary" data-el-src="pil" ${devDone ? 'disabled' : ''}>🔋 Pil</button>
+              <button type="button" class="small primary" data-el-src="batarya" ${devDone ? 'disabled' : ''}>⚡ Batarya/Akü</button>
+            </div>
+          </div>
+          <div class="fg-notebook">
+            <h6>2. Tehlike Avcısı (${hCount}/4)</h6>
+            <div class="fg-list-col">
+              ${HAZARDS.map(h => `<button type="button" class="small ${fixedH[h.id] ? 'primary' : ''}" data-el-haz="${h.id}" ${fixedH[h.id] ? 'disabled' : ''}>${fixedH[h.id] ? h.fix : h.txt}</button>`).join('')}
+            </div>
+          </div>
+          <div class="fg-notebook">
+            <h6>3. Tasarruf Sayacı (%${wPct})</h6>
+            <div class="fg-banner-bar" style="margin-bottom:8px"><i style="width:${wPct}%"></i></div>
+            <div class="fg-list-col">
+              ${WASTES.map(w => `<button type="button" class="small ${fixedW[w.id] ? 'primary' : ''}" data-el-was="${w.id}" ${fixedW[w.id] ? 'disabled' : ''}>${fixedW[w.id] ? '💚 Tasarruf edildi!' : w.txt}</button>`).join('')}
+            </div>
+          </div>
+        </div>
+      </section>`;
+    }
+
+    function checkWin() {
+      if (devDone && Object.keys(fixedH).length === 4 && Object.keys(fixedW).length === 4) {
+        H().sfxWin(); H().saveGameProgress('game-u6-electric', 3, 3);
+        msg = '🏆 TEBRİKLER! Hem elektrik güvenliği kahramanı hem enerji tasarruf şampiyonu oldun!';
+      }
+    }
+
+    slot.onclick = e => {
+      const sb = e.target.closest('[data-el-src]');
+      if (sb) {
+        if (sb.dataset.elSrc === DEVICES[devIdx].src) {
+          H().sfxGood();
+          if (devIdx < DEVICES.length - 1) devIdx++;
+          else devDone = true;
+          checkWin();
+        } else { H().sfxBad(); msg = '❌ Bu cihaz başka bir elektrik kaynağı ile çalışır!'; }
+        draw(); return;
+      }
+      const hb = e.target.closest('[data-el-haz]');
+      if (hb) { fixedH[hb.dataset.elHaz] = true; H().sfxGood(); msg = '🛡️ Harika! Evdeki bir elektrik tehlikesini ortadan kaldırdın!'; checkWin(); draw(); return; }
+      const wb = e.target.closest('[data-el-was]');
+      if (wb) { const w = WASTES.find(x => x.id === wb.dataset.elWas); fixedW[w.id] = w.save; H().sfxGood(); msg = '💚 Enerji tasarrufu sağlandı!'; checkWin(); draw(); }
+    };
+    draw();
+  }
+
+  // ═══════════════════════════════════════════════════════════════
+  // OYUN 13: 🌱 5 Günlük Stratejik Ata Tohumu Sera Oyunu (Ünite 7)
+  // ═══════════════════════════════════════════════════════════════
+  const FARM_DAYS = [
+    { event: '1. Gün: Toprak kuruyor ve güneş az. Fidenin çimlenmesi için ne yapmalısın?', opts: [{ txt: '💧 Ölçülü sula & güneşe al', ok: true, dw: 25, ds: 20, dh: 0 }, { txt: '❄️ Karanlık dolaba koy', ok: false, dw: -10, ds: -30, dh: 0 }] },
+    { event: '2. Gün: Kavurucu sıcak! Toprak çok kurudu, yapraklar büküldü.', opts: [{ txt: '💧 Sula & hafif gölgeye çek', ok: true, dw: 20, ds: -10, dh: 0 }, { txt: '🔥 Daha çok güneşte beklet', ok: false, dw: -35, ds: 15, dh: 0 }] },
+    { event: '3. Gün: Gece çok yağmur yağdı, saksının içi göl gibi su doldu!', opts: [{ txt: '🕳️ Fazla suyu süz & toprağı havalandır', ok: true, dw: -20, ds: 10, dh: 20 }, { txt: '🚿 Üzerine bir kova daha su dök', ok: false, dw: 35, ds: -10, dh: -25 }] },
+    { event: '4. Gün: Toprak sertleşip kabuk bağladı, kökler nefes alamıyor!', opts: [{ txt: '🪱 Toprağı çapala & doğal humus ekle', ok: true, dw: 0, ds: 0, dh: 25 }, { txt: '🪨 Üstünü taşla bastır', ok: false, dw: 0, ds: 0, dh: -30 }] },
+    { event: '5. Gün: Çiçekler açtı! Ata tohumlu domatesin büyümesi için son karar:', opts: [{ txt: '☀️ Dengeli güneş, su ve hava sağla', ok: true, dw: 5, ds: 10, dh: 10 }, { txt: '🧪 Kimyasal atık dök', ok: false, dw: -40, ds: -20, dh: -40 }] }
+  ];
+
+  function mountFarmGame(slot) {
+    let day = 0, water = 50, sun = 55, air = 60, msg = 'Ata tohumu domatesini 5 gün boyunca dengede tut! Su, Güneş veya Toprak Havası 15\'in altına düşerse fide solar!';
+
+    function draw() {
+      const dead = water < 15 || sun < 15 || air < 15 || water > 95;
+      const won = day >= FARM_DAYS.length && !dead;
+      const d = FARM_DAYS[Math.min(day, FARM_DAYS.length - 1)];
+      slot.innerHTML = `<section class="fg-card mint">
+        ${H().gameHeader('game-u7-farm', '🌱 STRATEJİK SERA SİMÜLASYONU', 'Oyun 13 · Toprağı Tanı & 5 Günde Ata Tohumunu Büyüt!', 'Bitkinin yaşaması için Su, Güneş ve Toprak Havası dengesini 5 gün boyunca koru!')}
+        <div class="fg-farm-meters">
+          <div>💧 Su: <b>%${water}</b><div class="fg-banner-bar"><i style="width:${water}%"></i></div></div>
+          <div>☀️ Işık/Sıcaklık: <b>%${sun}</b><div class="fg-banner-bar"><i style="width:${sun}%"></i></div></div>
+          <div>🪱 Toprak Havası/Humus: <b>%${air}</b><div class="fg-banner-bar"><i style="width:${air}%"></i></div></div>
+        </div>
+        <div class="fg-farm-stage">
+          <div class="fg-plant-icon">${dead ? '🥀' : won ? '🍅🌿🍅' : day >= 3 ? '🌼🌿' : day >= 1 ? '🌱' : '🫘'}</div>
+          <div>
+            <div class="fg-capsule">${dead ? '🥀 Eyvah! Denge bozulduğu için fide soldu. Tekrar dene!' : won ? '🍅🏆 HARİKA ÇİFTÇİ! Ata tohumu domateslerin kızardı!' : d.event}</div>
+            <div class="fg-msg" style="margin-top:8px">${msg}</div>
+            ${!dead && !won ? `<div class="row" style="margin-top:8px">${d.opts.map((op, i) => `<button type="button" class="small primary" data-farm-opt="${i}">${op.txt}</button>`).join('')}</div>` : ''}
+            <button type="button" class="small" data-farm-reset="1" style="margin-top:8px">🔄 Yeni Tohum Ek</button>
+          </div>
+        </div>
+      </section>`;
+    }
+
+    slot.onclick = e => {
+      const ob = e.target.closest('[data-farm-opt]');
+      if (ob) {
+        const op = FARM_DAYS[day].opts[Number(ob.dataset.farmOpt)];
+        water = Math.max(0, Math.min(100, water + op.dw));
+        sun = Math.max(0, Math.min(100, sun + op.ds));
+        air = Math.max(0, Math.min(100, air + op.dh));
+        if (op.ok) {
+          day++; H().sfxGood();
+          msg = day >= FARM_DAYS.length ? '🍅 Müthiş! Toprak, su, ışık ve havayı mükemmel yönettin!' : '✅ Doğru karar! Fide güçlenerek büyüdü!';
+          if (day >= FARM_DAYS.length) { H().sfxWin(); H().saveGameProgress('game-u7-farm', 5, 5); }
+        } else { H().sfxBad(); msg = '⚠️ Dikkat! Bu seçim bitkinin dengesini bozdu!'; }
+        draw(); return;
+      }
+      if (e.target.closest('[data-farm-reset]')) { day = 0; water = 50; sun = 55; air = 60; msg = 'Yeni ata tohumu ekildi!'; draw(); }
+    };
+    draw();
+  }
+
+  // ═══════════════════════════════════════════════════════════════
+  // OYUN 14: 🌍 Yaşam Alanları, Çeşitlilik Sayacı & Doğa Koruma (Ünite 8)
+  // ═══════════════════════════════════════════════════════════════
+  function mountHabitatGame(slot) {
+    const CREATURES = [
+      { id: 'c1', name: '🌵 Kaktüs', hab: 'col' }, { id: 'c2', name: '🐻‍❄️ Kutup Ayısı', hab: 'kutup' },
+      { id: 'c3', name: '🐿️ Sincap', hab: 'orman' }, { id: 'c4', name: '🐙 Ahtapot', hab: 'deniz' },
+      { id: 'c5', name: '🐪 Deve', hab: 'col' }, { id: 'c6', name: '🐧 Penguen', hab: 'kutup' }
+    ];
+    const DIV_QUIZ = [
+      { title: 'Bahçe A: 12 tane Papatya (🌼×12) | Bahçe B: 2 Papatya, 2 Arı, 1 Kirpi, 1 Çam (🌼🌼🐝🐝🦔🌲)', q: 'Hangisinde CANLI ÇEŞİTLİLİĞİ daha fazladır?', opts: ['Bahçe B (4 farklı tür var!)', 'Bahçe A (toplam 12 canlı var!)'], ans: 0 },
+      { title: 'Akvaryum X: 20 tane aynı Japon Balığı | Akvaryum Y: 3 Balık, 2 Yengeç, 2 Denizyıldızı, 3 Yosun', q: 'Hangisinde TOPLAM CANLI SAYISI fazla, hangisinde ÇEŞİTLİLİK fazladır?', opts: ['Sayı: X (20) · Çeşitlilik: Y (4 tür)', 'Sayı: Y · Çeşitlilik: X'], ans: 0 }
+    ];
+    let cIdx = 0, cDone = false, divIdx = 0, divDone = false, msg = '1) Canlıları kanıtlarına uygun yaşam alanına yerleştir. 2) "Toplam Sayı" ile "Canlı Çeşitliliği" farkını çöz!';
+
+    function draw() {
+      const cur = CREATURES[cIdx];
+      const dq = DIV_QUIZ[divIdx];
+      slot.innerHTML = `<section class="fg-card sky">
+        ${H().gameHeader('game-u8-habitat', '🌍 EKOSİSTEM & ÇEŞİTLİLİK DEDEKTİFİ', 'Oyun 14 · Yaşam Alanı Bul + Sayı vs Çeşitlilik Bulmacası', 'Canlı çeşitliliği ile toplam canlı sayısı aynı şey değildir! İki görevi de çözüp Doğa Koruyucusu ol!')}
+        <div class="fg-msg">${msg}</div>
+        <div class="fg-sink-layout">
+          <div class="fg-notebook">
+            <h6>1. Yaşam Alanını Bul (${cDone ? 6 : cIdx}/6)</h6>
+            <div class="fg-capsule" style="margin-bottom:8px">${cDone ? '✅ Tüm canlılar yuvalarına yerleşti!' : `Canlı: <b>${cur.name}</b>`}</div>
+            <div class="row">
+              <button type="button" class="small primary" data-hab="col" ${cDone ? 'disabled' : ''}>🏜️ Çöl</button>
+              <button type="button" class="small primary" data-hab="kutup" ${cDone ? 'disabled' : ''}>❄️ Kutup</button>
+              <button type="button" class="small primary" data-hab="orman" ${cDone ? 'disabled' : ''}>🌲 Orman</button>
+              <button type="button" class="small primary" data-hab="deniz" ${cDone ? 'disabled' : ''}>🌊 Deniz</button>
+            </div>
+          </div>
+          <div class="fg-notebook">
+            <h6>2. Çeşitlilik vs Toplam Sayı (${divDone ? 2 : divIdx}/2)</h6>
+            <div class="fg-capsule" style="margin-bottom:8px">${divDone ? '🏆 Çeşitlilik farkını tamamen çözdün!' : dq.title}</div>
+            ${!divDone ? `<p class="fg-q-label"><b>${dq.q}</b></p><div class="row">${dq.opts.map((op, i) => `<button type="button" class="small primary" data-div-opt="${i}">${op}</button>`).join('')}</div>` : ''}
+          </div>
+        </div>
+      </section>`;
+    }
+
+    slot.onclick = e => {
+      const hb = e.target.closest('[data-hab]');
+      if (hb) {
+        if (hb.dataset.hab === CREATURES[cIdx].hab) {
+          H().sfxGood();
+          if (cIdx < CREATURES.length - 1) cIdx++;
+          else { cDone = true; if (divDone) { H().sfxWin(); H().saveGameProgress('game-u8-habitat', 2, 2); } }
+        } else { H().sfxBad(); msg = '🤔 Bu canlının vücut özellikleri oraya uygun değil!'; }
+        draw(); return;
+      }
+      const db = e.target.closest('[data-div-opt]');
+      if (db) {
+        if (Number(db.dataset.divOpt) === DIV_QUIZ[divIdx].ans) {
+          H().sfxGood(); msg = '🌟 Harika! Çeşitlilik farklı türlerin sayısıdır, toplam adet değildir!';
+          if (divIdx < DIV_QUIZ.length - 1) divIdx++;
+          else { divDone = true; if (cDone) { H().sfxWin(); H().saveGameProgress('game-u8-habitat', 2, 2); } }
+        } else { H().sfxBad(); msg = '❌ Tekrar say! Çeşitlilik = kaç FARKLI tür canlı olduğu!'; }
+        draw();
+      }
+    };
+    draw();
+  }
+
+  Object.assign(window.FEN3_GAME_MAP, {
+    'game-u4-matter': mountMatterGame,
+    'game-u4-separate': mountSeparateGame,
+    'game-u5-force': mountForceGame,
+    'game-u6-electric': mountElectricGame,
+    'game-u7-farm': mountFarmGame,
+    'game-u8-habitat': mountHabitatGame
+  });
 })();
 // ── Bilmediğim Şeyleri Öğren (Anki Flashcards + Kategoriler + AI Kategorizasyon) & Vurgu Kategorileri ──
 
