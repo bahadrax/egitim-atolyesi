@@ -264,7 +264,7 @@ html[data-theme="love"] .bar i{background:linear-gradient(90deg,#e48ab5,#a978d3)
 .unk-chips{display:flex;flex-wrap:wrap;gap:6px;align-items:center;margin:0 0 12px;font-size:12px;color:var(--muted)}
 .unk-chip{font-size:12px;padding:4px 8px;border-radius:999px;border:1px solid #7b5ea7;background:color-mix(in srgb,#7b5ea7 10%,var(--paper));color:var(--ink);font-weight:600}
 .unk-chip small{margin-left:5px;color:var(--muted);font-weight:400}
-.unk-menu{position:fixed;z-index:200;display:flex;flex-direction:column;background:var(--paper);border:1px solid var(--line);border-radius:10px;box-shadow:0 10px 30px #0003;overflow:hidden}
+.unk-menu{position:fixed;z-index:200;display:flex;flex-direction:column;min-width:195px;max-width:calc(100vw - 16px);background:var(--paper);border:1px solid var(--line);border-radius:10px;box-shadow:0 10px 30px #0003;overflow:hidden}
 .unk-menu button{border:0;border-radius:0;text-align:left;padding:9px 14px;font-size:13px;background:transparent}
 .unk-menu button:hover{background:var(--light)}
 .unk-menu .menu-divider{height:1px;background:var(--line);margin:3px 0}
@@ -291,7 +291,7 @@ html[data-theme="love"] .bar i{background:linear-gradient(90deg,#e48ab5,#a978d3)
 .ta-hl.is-underline{background:transparent!important;text-decoration:underline!important;text-decoration-color:var(--hl-c,#fff59d)!important;text-decoration-thickness:2.5px!important;text-underline-offset:3px!important;text-decoration-skip-ink:none!important;padding:0!important;outline:none!important;box-shadow:none!important}
 .ta-hl.is-underline:hover{text-decoration-thickness:3.5px!important}
 
-.hl-popover{position:absolute;z-index:210;display:flex;align-items:center;gap:6px;padding:6px 10px;background:var(--paper,#fff);border:1px solid var(--line,#ddd);border-radius:12px;box-shadow:0 8px 24px #0003}
+.hl-popover{position:fixed;z-index:210;display:flex;flex-wrap:wrap;align-items:center;gap:6px;max-width:calc(100vw - 16px);padding:6px 10px;background:var(--paper,#fff);border:1px solid var(--line,#ddd);border-radius:12px;box-shadow:0 8px 24px #0003}
 .hl-pop-colors{display:flex;gap:5px;align-items:center}
 .hl-color-btn{width:20px;height:20px;min-width:20px;padding:0;border-radius:50%;border:2px solid var(--paper,#fff);cursor:pointer;outline:1px solid var(--line,#ccc);transition:transform .12s}
 .hl-color-btn:hover{transform:scale(1.15)}
@@ -649,7 +649,7 @@ function fileHandleStore(action,value){return new Promise((resolve,reject)=>{con
 async function restoreHTMLFile(){if(typeof window.showSaveFilePicker!=='function')return;try{const handle=await fileHandleStore('get');if(!handle)return;htmlFile=handle;htmlFilePermission=await handle.queryPermission({mode:'readwrite'});if(htmlFilePermission==='granted')queueHTMLWrite();else htmlFilePermission='prompt';updateSaveStatus();}catch(e){/* Browser recovery storage still works when handle persistence is unavailable. */}}
 function queueHTMLWrite(){if(locked||!ready||!htmlFile||htmlFilePermission!=='granted')return htmlWritePromise||Promise.resolve();const snapshot=JSON.stringify(store),extra=JSON.stringify(imported),signature=snapshot+'\n'+extra;if(signature===htmlActiveSignature){htmlWritePending=null;return htmlWritePromise||Promise.resolve();}if(htmlWritePending?.signature===signature||(!htmlWriting&&signature===htmlLastSignature))return htmlWritePromise||Promise.resolve();htmlWritePending={snapshot,extra,signature};if(!htmlWritePromise){htmlWritePromise=drainHTMLWrites().finally(()=>{htmlWritePromise=null;});}return htmlWritePromise;}
 async function drainHTMLWrites(){htmlWriting=true;updateSaveStatus();try{while(htmlWritePending&&htmlFile&&htmlFilePermission==='granted'&&!locked){const next=htmlWritePending,handle=htmlFile;htmlWritePending=null;htmlActiveSignature=next.signature;let writer;try{writer=await handle.createWritable();await writer.write(portableHTML(next.snapshot,next.extra));await writer.close();htmlLastSignature=next.signature;htmlLastSavedAt=Date.now();htmlFileError='';}catch(e){try{if(writer)await writer.abort();}catch(_){}htmlFilePermission='error';htmlFileError=e.message||'Dosyaya yazılamadı.';toast('HTML’ye yazılamadı. Son değişiklikler tarayıcıda korunuyor. “HTML’ye otomatik kayıt” bölümünden yeniden bağlayın.');break;}}}finally{htmlActiveSignature='';htmlWriting=false;updateSaveStatus();}}
-async function chooseHTMLFile(){if(typeof window.showSaveFilePicker!=='function'){htmlFileDialog();return;}try{const handle=await window.showSaveFilePicker({suggestedName:'Test-Atolyesi.html',types:[{description:'Test Atölyesi HTML dosyası',accept:{'text/html':['.html']}}]});if(htmlWritePromise)await htmlWritePromise;htmlFile=handle;htmlFilePermission='granted';htmlLastSignature='';htmlLastSavedAt=null;htmlWritePending=null;try{await fileHandleStore('put',handle);}catch(e){toast('Dosya bağlantısı bu oturum için açıldı; yeniden açılışta tekrar seçmeniz gerekebilir.');}save();await queueHTMLWrite();htmlFileDialog();}catch(e){if(e.name!=='AbortError'){htmlFileError=e.message;toast('Dosya bağlantısı kurulamadı. Tarayıcı kaydı korunuyor.');}}}
+async function chooseHTMLFile(){if(typeof window.showSaveFilePicker!=='function'){htmlFileDialog();return;}try{const handle=await window.showSaveFilePicker({suggestedName:'Egitim-Atolyesi.html',types:[{description:'Eğitim Atölyesi HTML dosyası',accept:{'text/html':['.html']}}]});if(htmlWritePromise)await htmlWritePromise;htmlFile=handle;htmlFilePermission='granted';htmlLastSignature='';htmlLastSavedAt=null;htmlWritePending=null;try{await fileHandleStore('put',handle);}catch(e){toast('Dosya bağlantısı bu oturum için açıldı; yeniden açılışta tekrar seçmeniz gerekebilir.');}save();await queueHTMLWrite();htmlFileDialog();}catch(e){if(e.name!=='AbortError'){htmlFileError=e.message;toast('Dosya bağlantısı kurulamadı. Tarayıcı kaydı korunuyor.');}}}
 async function resumeHTMLFile(){if(!htmlFile)return chooseHTMLFile();try{htmlFilePermission=await htmlFile.requestPermission({mode:'readwrite'});if(htmlFilePermission==='granted'){htmlLastSignature='';htmlFileError='';save();await queueHTMLWrite();}else toast('HTML’ye yazma izni verilmedi. Tarayıcı kaydı korunuyor.');htmlFileDialog();}catch(e){htmlFilePermission='error';htmlFileError=e.message;htmlFileDialog();}}
 async function disconnectHTMLFile(){const pending=htmlWritePromise;htmlFile=null;htmlFilePermission='none';htmlWritePending=null;htmlLastSignature='';if(pending)await pending;try{await fileHandleStore('delete');}catch(e){}htmlFileDialog();}
 function htmlFileDialog(){if(host){dialog('Cihaza otomatik kayıt','<p>Android uygulamasında profiller, cevaplar, notlar, süreler ve ayarlar her değişiklikte cihazın uygulama depolamasına otomatik kaydedilir; ayrıca dosya bağlamana gerek yoktur.</p><p>Başka bir cihaza taşımak için “Yedek ve taşıma” bölümünden JSON yedeğini ya da kaydı içeren HTML dosyasını paylaş.</p><button data-act="portable">Kaydı içeren HTML paylaş</button>');return;}const supported=typeof window.showSaveFilePicker==='function';dialog('HTML’ye otomatik kayıt',`<p>Her işaretleme önce anında tarayıcıya kaydedilir. Dosya bağlantısı açıldığında cevaplar, notlar, süreler ve görünüm ayarları ayrıca seçtiğiniz HTML dosyasının içine yazılır.</p>${supported?`<div class="file-save-panel"><strong>${htmlFile?esc(htmlFile.name):'Henüz HTML dosyası seçilmedi'}</strong><p>${htmlFilePermission==='granted'?'Bağlı. Her değişiklik dosyaya otomatik yazılır.':htmlFile?'Dosyaya yazmak için izni yenileyin.':'Aşağıdaki düğmeyle kaydedilecek Test-Atolyesi.html dosyasını seçin. Mevcut dosyayı seçerseniz içeriği güncel uygulama ve kayıtlarınızla değiştirilir.'}</p>${htmlLastSavedAt?`<small>Son dosya kaydı: ${esc(new Date(htmlLastSavedAt).toLocaleString('tr-TR'))}</small>`:''}${htmlFileError?`<p class="danger">${esc(htmlFileError)}</p>`:''}</div><div class="row">${htmlFile?'<button class="primary" data-act="resumeHTML">İzni yenile / şimdi kaydet</button>':''}<button ${htmlFile?'':'class="primary"'} data-act="chooseHTML">${htmlFile?'Başka HTML dosyası seç':'HTML dosyasını seç ve bağla'}</button>${htmlFile?'<button data-act="disconnectHTML">Dosya bağlantısını kes</button>':''}</div><p class="file-help">Tarayıcı dosya erişimi için bir kez izin ister. Sonraki açılışlarda yeniden izin gerekirse üst çubukta “HTML iznini yenile” görünür. Dosyaya yazılırken sayfayı kapatmadan önce “HTML kaydı ✓” durumunu bekleyin.</p>`:'<div class="alert">Bu tarayıcı dosyanın üzerine yazma özelliğini sunmuyor. Bu pencerede sessizce HTML dosyasını değiştirmek mümkün değil. Çalışmanız tarayıcıda kaydedilir; aşağıdaki düğme mevcut ilerlemenizi içeren yeni HTML oluşturur. Doğrudan dosyaya kayıt için dosya yazma özelliğini destekleyen bir tarayıcıda açın.</div>'}<button data-act="portable">Kaydı içeren HTML indir</button>`);}
@@ -682,7 +682,7 @@ function resultsLegend(){return `<div class="results-legend" aria-label="Test so
 function study(){const t=currentTest,s=currentState,q=t.questions[s.index],c=counts(t,s),a=s.answers[q.id],flag=s.flags[q.id],peek=!s.checked&&peekOpen(s,q),revealed=s.checked||peek;let result='';if(s.checked){const pct=c.known?Math.round(c.correct/c.known*100):0;result=`<section class="result-strip"><div><strong>%${pct}</strong><p>Cevap anahtarı olan ${c.known} soruda</p></div><span><b>${c.correct}</b> doğru</span><span><b>${c.wrong}</b> yanlış</span><span><b>${c.blank}</b> boş</span>${c.unknown?`<span>${c.unknown} cevap anahtarı bekliyor</span>`:''}<button class="small" data-act="uncheck">Düzenlemeye dön</button></section>`;}
 const options=q.options.map((o,i)=>{const key=typeof o==='string'?String.fromCharCode(65+i):o.id;const text=typeof o==='string'?o:o.text;return `<div class="option-row"><button class="option ${a===key?'selected':''} ${(s.elims?.[q.id]||[]).includes(key)?'elim':''} ${revealed&&q.answer===key?'correct':''} ${revealed&&a===key&&q.answer&&a!==q.answer?'wrong':''}" data-act="answer" data-id="${esc(key)}" aria-pressed="${a===key}" ${revealed||locked?'disabled':''}><b>${esc(key)}</b>${q.image&&text===key?'':`<span dir="auto">${questionMarkup(text)}${typeof o==='object'&&o.blocks?`<div class="rich-content">${blocksHTML(o.blocks)}</div>`:''}</span>`}</button>${q.image&&text===key?'':ttsButton(key,key+' şıkkı')}${unkButton(s,q,key)}</div>`;}).join('');
 return `<div class="study-head"><div><div class="eyebrow">${esc(t.section||currentBook.title)}</div><h2>${esc(t.title)}</h2><p>${c.answered} / ${t.questions.length} işaretli · ${s.checked?'Sonuç incelemesi':'Çalışma oturumu'}</p></div><div class="timer-panel"><div class="clock" id="testClock"></div><button data-act="pause" id="pauseBtn" class="${running?'':'primary'}" ${s.checked||locked?'disabled':''}>${running?'Ⅱ Duraklat':'▶ Devam et'}</button>${typeof courseForBook==='function'&&courseForBook(currentBook.id)?`<button class="small" data-act="eduCourseDrawer" data-book="${esc(currentBook.id)}">📘 Konu Özeti</button>`:''}<button class="small" data-act="settings" aria-label="Süre ayarları">⚙ Süre</button></div></div>${diagnosticGuide(currentBook,t)}${result}<div class="workspace"><article class="question"><header class="question-title"><strong>Soru ${s.index+1} ${q.difficulty?.label?`<b style="color:#c62828;font-weight:800;margin-left:8px">${esc(q.difficulty.label)}</b>`:''} <span style="color:var(--muted);font-weight:400">/ ${t.questions.length}</span>${q.topic?`<small class="q-topic">${esc(q.topic)}</small>`:''}</strong><span class="q-title-tools">${q.image?'':ttsButton('q','Soru','Soruyu oku','Soru')+ttsButton('all','Bütün şıklar','Şıkları oku','Şıklar')}<span class="inline-time" id="qClock"></span></span></header><div class="question-body">${!running&&!s.checked?'<div class="alert">Oturum duraklatıldı. Süreyi başlatmak için “Devam et”e bas.</div>':''}${q.passage?`<div class="passage">${esc(q.passage)}</div>`:''}${q.image?`<img class="q-image" src="${q.image}" alt="${esc(t.title)} — ${q.number||s.index+1}. sorunun özgün görüntüsü" data-act="zoomQ">`:`<div class="q-text" dir="auto">${questionMarkup(q.text)}</div>`}${q.blocks?.length?`<div class="rich-content">${blocksHTML(q.blocks)}</div>`:''}${figuresHTML(q.figures,'question')}<div class="options ${q.image?'answer-row':''}" role="group" aria-label="Cevap seçenekleri">${options}</div>${unkTextChips(s,q)}${typeof hlChips==='function'?hlChips(s,q):''}${peek?peekResultHTML(s,q):''}<div class="q-tools">${!s.checked?`<button class="peek-btn ${peek?'active':''}" data-act="peek" ${locked?'disabled':''} title="Testi bitirmeden yalnız bu soruyu kontrol et (K)">${peek?'Kontrolü gizle':a?'✓ Bu soruyu kontrol et':'✓ Cevabı göster'}</button>`:''}${revealed?oopsButton(s,q):''}<button data-act="clearAnswer" ${revealed||locked?'disabled':''}>Seçimi sil</button><button data-act="flag" ${locked?'disabled':''}>${flag?'◆ İşaretli':'◇ Sonra bak'}</button><button data-act="resetQuestionTime" ${locked?'disabled':''}>Soru süresini sıfırla</button>${s.checked?'<button data-act="solution">'+(showSolution?'Çözümü gizle':'Çözümü göster')+'</button>':''}</div>${revealed&&showSolution?`<section class="solution"><h3>${q.answer?'Doğru cevap: '+esc(q.answer):'Cevap harfi doğrulanamadı'} ${ttsButton('x','Açıklama','Açıklamayı oku','Oku')}</h3>${q.keyDoubt?`<div class="alert key-doubt"><b>⚠ Anahtar şüphesi:</b> ${esc(q.keyDoubt)} Kaynak PDF’yi inceleyip gerekirse “Cevap anahtarını düzelt” ile değiştirebilirsin.</div>`:''}${!q.answer?'<p>Bu sorunun cevap harfi otomatik puanlamaya alınmadı. Kaynak PDF ve kitap açıklamasını inceleyip cevap anahtarını düzeltebilirsin.</p>':''}${q.explanationImage?`<img src="${q.explanationImage}" alt="Kitaptaki çözüm" data-act="zoomSolution">`:(q.explanation||q.explanationBlocks?.length)?`<div class="q-text" dir="auto">${esc(q.explanation||'')}</div><div class="rich-content">${blocksHTML(q.explanationBlocks)}</div>`:'<p>Bu soru için kitapta açıklama bulunmuyor.</p>'}${figuresHTML(q.explanationFigures,'explanation')}<p style="margin-top:15px;margin-bottom:0">${q.sourcePage?'Soru: PDF s. '+q.sourcePage:''}${q.solutionPage?' · Çözüm: PDF s. '+q.solutionPage:''}</p><button class="small" style="margin-top:12px" data-act="editKey">Cevap anahtarını düzelt</button></section>`:''}${aiQuestionPanel()}</div><footer class="q-footer"><button data-act="prev" ${s.index===0?'disabled':''}>← Önceki</button><span class="eyebrow" style="align-self:center">${s.checked?'İNCELEME':'1–5 İLE İŞARETLE'}</span><button class="primary" data-act="${s.index===t.questions.length-1?'check':'next'}">${s.index===t.questions.length-1?'Testi kontrol et ✓':'Sonraki →'}</button></footer></article><aside class="study-aside"><section class="aside-card"><h3>Soru haritası</h3><div class="palette">${t.questions.map((x,i)=>`<button class="${s.answers[x.id]?'answered ':''}${s.flags[x.id]?'flag ':''}${i===s.index?'current ':''}${(s.checked||s.peeks?.[x.id]?.open)&&s.answers[x.id]&&x.answer?(s.answers[x.id]===x.answer?'good':'bad'):''}${s.peeks?.[x.id]?' peeked':''}${(s.unk?.[x.id]?.length||s.unkText?.[x.id]?.length)?' unk':''}${s.oops?.[x.id]?' oops':''}" data-act="jump" data-index="${i}" aria-label="${i+1}. soru${s.answers[x.id]?', işaretli':''}" ${i===s.index?'aria-current="true"':''}>${i+1}</button>`).join('')}</div><div class="legend">Yeşil: işaretli · Nokta: sonra bak<br>Çerçeve: bulunduğun soru · Alt çizgi: tek başına kontrol edildi</div></section><section class="aside-card"><div class="mini-stats"><div><strong>${c.answered}</strong>İşaretli</div><div><strong>${t.questions.length-c.answered}</strong>Boş</div><div><strong>${Object.values(s.flags).filter(Boolean).length}</strong>Sonra bak</div></div><div class="bar" style="margin-top:16px"><i style="width:${c.answered/t.questions.length*100}%"></i></div><button class="primary" style="width:100%;margin-top:12px" data-act="check">Testi kontrol et</button></section><section class="aside-card"><h3>Bu soruya notun</h3><textarea id="qNote" rows="4" placeholder="Kısa bir hatırlatma…" ${locked?'disabled':''}>${esc(s.notes[q.id]||'')}</textarea><span class="legend">Yazdıkça kaydedilir.</span></section><section class="aside-card"><h3>Oturum araçları</h3><div style="display:grid;gap:7px"><button class="small" data-act="resetTestTime">Test sürelerini sıfırla</button><button class="small" data-act="clearTestAnswers">Tüm seçimleri sil</button><button class="small danger" data-act="resetTest">Testi tamamen sıfırla</button><button class="small" data-act="history">Önceki kontroller (${s.history.length})</button></div></section></aside></div>`;}
-function help(){return `<div class="intro"><div><div class="eyebrow">KILAVUZ</div><h1>Kitaptan çalışma alanına.</h1><p>Yeni kitaplarını yapay zekâ ile dönüştür. Ortak format sayesinde aynı uygulamada çalış.</p></div><button class="primary" data-act="prompt">AI yönergesini indir</button></div><button data-act="aiSettings">🤖 Yapay Zekâ Ayarları ve Yardım</button><div class="help-grid">${guideHTML()}<article><h3>01 / Kitabını dönüştür</h3><p>Bu HTML dosyasını ve PDF’yi kullandığın yapay zekâya ver. Dosyanın başındaki importContract alanı tüm şemayı ve kuralları içerir. “Test Atölyesi JSON v1” biçiminde bir dosya iste.</p><p>Yapay zekâ kitabın soru, seçenek, doğru cevap ve varsa açıklamalarını aktarır. Tablolar, maddeler ve ortak parçalar yapısal veri olarak saklanır. Soru ve çözümlerde ana yöntem metindir.</p><button data-act="format">Format örneğini indir</button></article><article><h3>02 / Kitaplığına ekle</h3><p>“Kitap ekle” ile JSON dosyasını seç. Biçimi kontrol edilen kitap otomatik olarak kitaplığına kaydedilir.</p><p>Soru sohbeti ve yardım asistanı kendi Gemini anahtarınızla çalışır. Ham PDF’yi uygulama içinde dönüştürmez. Dönüştürme işlemini seçtiğin yapay zekâ yapar.</p><button data-act="import">＋ Kitap ekle</button></article><article><h3>03 / Süreyi kendin yönet</h3><p>Test süresi ve her soruda geçirdiğin süre ayrı tutulur. “Süre” düğmesinden toplam test veya soru başına sınır belirleyebilirsin. Sınıra gelindiğinde oturum durur.</p><p>Sekme arka plana geçtiğinde oturum otomatik duraklatılır ve kaydedilir. Sekmeyi kapatıp açınca son kaydedilen süreyle duraklatılmış olarak dönersin; kapalı kalınan zaman eklenmez.</p><p>Kısayollar: 1–5 seçenekler, ← → sorular, boşluk duraklat/devam.</p></article><article><h3>04 / Kayıt ve taşınabilirlik</h3><p>HTML dosyasının üzerine otomatik yazmak için sol menüde “HTML’ye otomatik kayıt” bölümünü açın, dosyayı seçin ve tarayıcının yazma iznini verin. Bağlantı kurulduğunda tüm mevcut ilerleme de dosyaya aktarılır. Üstte “HTML kaydı ✓” görünmeden dosya yazımı tamamlanmış sayılmaz.</p><p>Cevaplar ve süreler her saniyede; notlar ve seçimler her değişiklikte tarayıcıya kaydedilir. Dosya bağlantısı kurulmamışsa değişiklikler yalnız tarayıcıda kalır. Dosya yazmayı desteklemeyen tarayıcılarda kaydı içeren HTML indirebilirsiniz.</p><p>“Kaydı içeren HTML indir” tüm kitapların ve mevcut ilerlemenle yeni, tek bir HTML üretir. JSON yedeği ise diğer kopyaya ilerleme taşır. Dosyayı başka tarayıcıda açarsan yedeğini geri yükle.</p><button data-act="backup">Yedek ve taşıma</button></article><article><h3>Kitabın aktarımı hakkında</h3><p>Rauf Şara DHBT 1 kitabının metinleri düzeltilerek aktarılır. Gerekli harita, şema ve tablolar kaynak PDF’den alınan küçük görsellerle korunur. Soru kökü, seçenekler, doğru cevap ve kitaptaki açıklama ayrı alanlarda tutulur. PDF sayfa numaraları kaynak kontrolü için korunur.</p><p>OCR kaynaklı yazım ve dizgi hataları için metin düzeltmeleri uygulanmıştır. Kaynakla karşılaştırılarak yeniden yazılan bölümler ve küçük özgün şekiller bu sürüme eklenmiştir. Okunamayan cevap harfleri “anahtar bekliyor” olarak tutulur; puanlamaya katılmaz. Kaynak PDF’den inceleyebilir, “Cevap anahtarını düzelt” ile doğru harfi kaydedebilirsin.</p></article>${helpExtra()}<article><h3>Görünüm ve okuma ayarları</h3><p>Sol menüdeki “Görünüm ayarları” ile 14–30 px yazı boyutu, yazı tipi, satır aralığı ve açık/beyaz/sepya/koyu tema seçebilirsiniz. Sayfa zemini, kart zemini, metin ve vurgu rengini ayrı değiştirebilirsiniz. Ayarlar anında kaydedilir; yedek ve taşınabilir HTML’ye de eklenir.</p></article><article><h3>Kontrol ve tekrar</h3><p>“Testi kontrol et” tüm seçimlerini değerlendirir. Çözümler ancak kontrolden sonra açılır. Kontrol sonuçları tarihleriyle saklanır.</p><p>“Düzenlemeye dön” ile cevapları değiştirebilir, seçimi silebilir ve yeniden kontrol edebilirsin. Soruya tekrar tıkladığında seçimin kaldırılır.</p></article></div>`;}
+function help(){return `<div class="intro"><div><div class="eyebrow">KILAVUZ</div><h1>Kitaptan çalışma alanına.</h1><p>Yeni kitaplarını yapay zekâ ile dönüştür. Ortak format sayesinde aynı uygulamada çalış.</p></div><button class="primary" data-act="prompt">AI yönergesini indir</button></div><button data-act="aiSettings">🤖 Yapay Zekâ Ayarları ve Yardım</button><div class="help-grid">${guideHTML()}<article><h3>01 / Kitabını dönüştür</h3><p>Bu HTML dosyasını ve PDF’yi kullandığın yapay zekâya ver. Dosyanın başındaki importContract alanı tüm şemayı ve kuralları içerir. “Eğitim Atölyesi JSON v1” biçiminde bir dosya iste.</p><p>Yapay zekâ kitabın soru, seçenek, doğru cevap ve varsa açıklamalarını aktarır. Tablolar, maddeler ve ortak parçalar yapısal veri olarak saklanır. Soru ve çözümlerde ana yöntem metindir.</p><button data-act="format">Format örneğini indir</button></article><article><h3>02 / Kitaplığına ekle</h3><p>“Kitap ekle” ile JSON dosyasını seç. Biçimi kontrol edilen kitap otomatik olarak kitaplığına kaydedilir.</p><p>Soru sohbeti ve yardım asistanı kendi Gemini anahtarınızla çalışır. Ham PDF’yi uygulama içinde dönüştürmez. Dönüştürme işlemini seçtiğin yapay zekâ yapar.</p><button data-act="import">＋ Kitap ekle</button></article><article><h3>03 / Süreyi kendin yönet</h3><p>Test süresi ve her soruda geçirdiğin süre ayrı tutulur. “Süre” düğmesinden toplam test veya soru başına sınır belirleyebilirsin. Sınıra gelindiğinde oturum durur.</p><p>Sekme arka plana geçtiğinde oturum otomatik duraklatılır ve kaydedilir. Sekmeyi kapatıp açınca son kaydedilen süreyle duraklatılmış olarak dönersin; kapalı kalınan zaman eklenmez.</p><p>Kısayollar: 1–5 seçenekler, ← → sorular, boşluk duraklat/devam.</p></article><article><h3>04 / Kayıt ve taşınabilirlik</h3><p>HTML dosyasının üzerine otomatik yazmak için sol menüde “HTML’ye otomatik kayıt” bölümünü açın, dosyayı seçin ve tarayıcının yazma iznini verin. Bağlantı kurulduğunda tüm mevcut ilerleme de dosyaya aktarılır. Üstte “HTML kaydı ✓” görünmeden dosya yazımı tamamlanmış sayılmaz.</p><p>Cevaplar ve süreler her saniyede; notlar ve seçimler her değişiklikte tarayıcıya kaydedilir. Dosya bağlantısı kurulmamışsa değişiklikler yalnız tarayıcıda kalır. Dosya yazmayı desteklemeyen tarayıcılarda kaydı içeren HTML indirebilirsiniz.</p><p>“Kaydı içeren HTML indir” tüm kitapların ve mevcut ilerlemenle yeni, tek bir HTML üretir. JSON yedeği ise diğer kopyaya ilerleme taşır. Dosyayı başka tarayıcıda açarsan yedeğini geri yükle.</p><button data-act="backup">Yedek ve taşıma</button></article><article><h3>Kitabın aktarımı hakkında</h3><p>Rauf Şara DHBT 1 kitabının metinleri düzeltilerek aktarılır. Gerekli harita, şema ve tablolar kaynak PDF’den alınan küçük görsellerle korunur. Soru kökü, seçenekler, doğru cevap ve kitaptaki açıklama ayrı alanlarda tutulur. PDF sayfa numaraları kaynak kontrolü için korunur.</p><p>OCR kaynaklı yazım ve dizgi hataları için metin düzeltmeleri uygulanmıştır. Kaynakla karşılaştırılarak yeniden yazılan bölümler ve küçük özgün şekiller bu sürüme eklenmiştir. Okunamayan cevap harfleri “anahtar bekliyor” olarak tutulur; puanlamaya katılmaz. Kaynak PDF’den inceleyebilir, “Cevap anahtarını düzelt” ile doğru harfi kaydedebilirsin.</p></article>${helpExtra()}<article><h3>Görünüm ve okuma ayarları</h3><p>Sol menüdeki “Görünüm ayarları” ile 14–30 px yazı boyutu, yazı tipi, satır aralığı ve açık/beyaz/sepya/koyu tema seçebilirsiniz. Sayfa zemini, kart zemini, metin ve vurgu rengini ayrı değiştirebilirsiniz. Ayarlar anında kaydedilir; yedek ve taşınabilir HTML’ye de eklenir.</p></article><article><h3>Kontrol ve tekrar</h3><p>“Testi kontrol et” tüm seçimlerini değerlendirir. Çözümler ancak kontrolden sonra açılır. Kontrol sonuçları tarihleriyle saklanır.</p><p>“Düzenlemeye dön” ile cevapları değiştirebilir, seçimi silebilir ve yeniden kontrol edebilirsin. Soruya tekrar tıkladığında seçimin kaldırılır.</p></article></div>`;}
 function updateClocks(){if(view!=='study')return;const s=currentState,q=currentTest.questions[s.index];const el=$('#testClock'),qe=$('#qClock');if(el)el.innerHTML=`${duration(s.limit?Math.max(0,s.limit-s.elapsed):s.elapsed)}<small>${s.limit?'Kalan test süresi':'Toplam çalışma süresi'}${running?' · sürüyor':' · duraklatıldı'}</small>`;if(qe)qe.textContent='◷ '+duration(s.times[q.id]||0)+(s.qLimit?' / '+duration(s.qLimit):'');}
 function pulse(){const now=performance.now(),delta=(now-lastTick)/1000;lastTick=now;if(!running||view!=='study'||locked||!ready)return;const s=currentState,q=currentTest.questions[s.index];let add=delta;if(s.limit)add=Math.min(add,Math.max(0,s.limit-s.elapsed));if(s.qLimit)add=Math.min(add,Math.max(0,s.qLimit-(s.times[q.id]||0)));s.elapsed+=add;s.times[q.id]=(s.times[q.id]||0)+add;if((s.limit&&s.elapsed>=s.limit-.01)||(s.qLimit&&s.times[q.id]>=s.qLimit-.01)){running=false;save();render();toast('Süre sınırına ulaştın. Süre ayarlarını değiştirebilir veya testi kontrol edebilirsin.');}updateClocks();}
 function toggleRun(){pulse();if(locked||currentState.checked)return;const s=currentState,q=currentTest.questions[s.index];if(!running&&((s.limit&&s.elapsed>=s.limit)||(s.qLimit&&(s.times[q.id]||0)>=s.qLimit))){toast('Süre sınırına ulaşıldı. Devam etmek için süreyi sıfırla veya sınırı değiştir.');return;}running=!running;lastTick=performance.now();save();render();}
@@ -696,7 +696,7 @@ function check(){if(locked)return;confirmAction('Testi kontrol et',`${counts(cur
 function download(name,data,type='application/json'){if(host&&typeof host.exportFile==='function'){try{host.exportFile(name,type,data);return;}catch(e){}}const blob=new Blob([data],{type}),url=URL.createObjectURL(blob),a=document.createElement('a');a.href=url;a.download=name;document.body.append(a);a.click();a.remove();setTimeout(()=>URL.revokeObjectURL(url),30000);}
 function backupDialog(){dialog('Yedek ve taşıma','<p>JSON yedeği: tüm ilerlemen, notların, cevap anahtarı düzeltmelerin ve eklediğin kitaplar. Yerleşik DHBT kitabı uygulamada zaten bulunur.</p><p>Taşınabilir HTML: yerleşik kitap ve eklediğin kitaplar dahil, mevcut kayıtlarını içeren tek dosya. Dosya büyük olabilir.</p><p>Doğrudan dosyaya kayıt: “HTML’ye otomatik kayıt” bölümünden HTML dosyanızı seçip bağlayın. Bağlandıktan sonra her işaretleme ve süre değişikliği dosyanın içine yazılır. Üst çubukta dosya kaydının tamamlandığını görebilirsiniz.</p><button data-act="htmlFile">HTML’ye otomatik kayıt</button><div class="row"><button class="primary" data-act="exportBackup">JSON yedeği indir</button><button data-act="restore">Yedekten geri yükle</button><button data-act="portable">Kaydı içeren HTML indir</button></div>');}
 const sample={format:'test-atolyesi',version:1,books:[{id:'kitap-kimligi',title:'Kitabın adı',author:'Yazar',year:2026,contentVersion:1,meta:{purpose:'Kitabın amacı',scope:'Kapsadığı konular',audience:'Hedef kitle',exam:'Hedef sınav',sectionsOverview:'Bölümlerin kısa özeti'},tests:[{id:'test-01',title:'Bölüm 1 · Test 1',section:'Bölüm 1',topic:'Testin konusu',questions:[{id:'q1',number:1,text:'I. Birinci öncül\nII. İkinci öncül\nYukarıdakilerden hangileri doğrudur?',stem:'Yukarıdakilerden hangileri doğrudur?',context:'I. Birinci öncül\nII. İkinci öncül',stemFirst:true,topic:'Konu — alt konu',concepts:['ölçülen kavram'],level:'kavrama',options:[{id:'A',text:'Yalnız I',diagnosis:'II. öncüldeki bilgiyi yanlış biliyor.'},{id:'B',text:'I ve II',diagnosis:'Doğru: iki öncülün de doğru olduğunu biliyor.'},{id:'C',text:'Yalnız II',diagnosis:'I. öncüldeki kuralı bilmiyor.'},{id:'D',text:'Hiçbiri',diagnosis:'Konunun temel kurallarını tanımıyor.'},{id:'E',text:'Belirlenemez',diagnosis:'Öncülleri değerlendirmeden kaçınıyor; konuyu tanımıyor olabilir.'}],answer:'B',explanation:'Yalnız kitapta açıklama varsa aktarılır.',sourcePage:1,solutionPage:2}]}]}]};
-const prompt='TEST ATÖLYESİ — KİTAP DÖNÜŞTÜRME v1\n\nBu HTML ve kaynak kitabı birlikte incele. Aşağıdaki sözleşmeye uygun UTF-8 JSON üret. Soruları, seçenekleri ve açıklamaları metin olarak aktar. OCR hatalarını bağlam ve kaynakla karşılaştırarak düzelt; anlamı veya doğru cevabı değiştirme. Gerekli şekilleri küçük figures/explanationFigures öğeleri olarak koru. Sesli okuma için her sorunun kökünü (stem) ve bilgi kısmını (context) ayrı yaz; YZ analizi için konu (topic), kavramlar (concepts), düzey (level) ve her şıkkın tanısını (options[].diagnosis) ekle; kitabın amacını ve kapsamını meta alanına yaz.\n\n'+JSON.stringify(JSON.parse(document.querySelector('#importContract').textContent),null,2)+'\n\nÖrnek:\n'+JSON.stringify(sample,null,2);
+const prompt='EĞİTİM ATÖLYESİ — KİTAP DÖNÜŞTÜRME v1\n\nBu HTML ve kaynak kitabı birlikte incele. Aşağıdaki sözleşmeye uygun UTF-8 JSON üret. Soruları, seçenekleri ve açıklamaları metin olarak aktar. OCR hatalarını bağlam ve kaynakla karşılaştırarak düzelt; anlamı veya doğru cevabı değiştirme. Gerekli şekilleri küçük figures/explanationFigures öğeleri olarak koru. Sesli okuma için her sorunun kökünü (stem) ve bilgi kısmını (context) ayrı yaz; YZ analizi için konu (topic), kavramlar (concepts), düzey (level) ve her şıkkın tanısını (options[].diagnosis) ekle; kitabın amacını ve kapsamını meta alanına yaz.\n\n'+JSON.stringify(JSON.parse(document.querySelector('#importContract').textContent),null,2)+'\n\nÖrnek:\n'+JSON.stringify(sample,null,2);
 function validateBlocks(bs){if(bs==null)return;if(!Array.isArray(bs))throw Error('blocks bir dizi olmalı.');for(const b of bs){if(!b||!['text','table','list','pre'].includes(b.type))throw Error('İçerik bloğu türü geçersiz.');if(['text','pre'].includes(b.type)&&typeof b.text!=='string')throw Error('Blok metni eksik.');if(b.type==='table'&&(!Array.isArray(b.rows)||b.rows.some(r=>!Array.isArray(r)||r.some(x=>typeof x!=='string'))||(b.headers&&(!Array.isArray(b.headers)||b.headers.some(x=>typeof x!=='string')))))throw Error('Tablo satırları düz metin hücrelerinden oluşmalı.');if(b.type==='list'&&(!Array.isArray(b.items)||b.items.some(x=>typeof x!=='string')))throw Error('Liste maddeleri düz metin olmalı.');}}
 function validateFigures(figures){if(figures==null)return;if(!Array.isArray(figures)||figures.length>30)throw Error('Görsel listesi geçersiz.');for(const f of figures){if(!f||!validImage(f.src)||(f.alt!=null&&typeof f.alt!=='string')||(f.caption!=null&&typeof f.caption!=='string'))throw Error('Şekiller PNG, JPEG veya WebP veri adresi ve metin açıklamasından oluşmalı.');}}
 function figuresHTML(figures,kind){return (figures||[]).map((f,i)=>`<figure class="book-figure"><button class="figure-zoom" data-act="figure" data-kind="${kind}" data-index="${i}" aria-label="${esc((f.alt||'Kitaptaki şekil')+' · Büyüt')}"><img src="${f.src}" alt="${esc(f.alt||'Kitaptaki şekil')}" loading="lazy"></button>${f.caption?`<figcaption>${esc(f.caption)} · Büyütmek için tıkla</figcaption>`:''}</figure>`).join('');}
@@ -708,9 +708,9 @@ function rememberKey(q){if(!originalKeys.has(q))originalKeys.set(q,q.answer??nul
 // Key fixes are personal: restore the book key first so switching profiles never leaks another profile's override.
 function applyKeyOverrides(){for(const b of books)for(const t of b.tests){const keys=state.tests[b.id+'/'+t.id]?.keyOverrides||{};for(const q of t.questions){rememberKey(q);q.answer=Object.hasOwn(keys,q.id)?keys[q.id]:originalKeys.get(q);}}}
 async function init(){try{db=await new Promise((resolve,reject)=>{const req=indexedDB.open('test-atolyesi-books-v1',1);req.onupgradeneeded=()=>req.result.createObjectStore('books',{keyPath:'id'});req.onsuccess=()=>resolve(req.result);req.onerror=()=>reject(req.error);});imported=await idb('get');for(const b of imported){if(b.id==='ales-cikmis-sorular'&&b.tests.some(t=>t.id.includes('-sayisal'))){b.tests=b.tests.filter(t=>t.id.includes('-sozel'));b.title='ALES Çıkmış Sorular · Sözel';await idb('put',b.id,b);}validateBook(b);}books=[...baseBooks(),...imported.filter(b=>b.id!==builtin?.id)];}catch(e){toast('Ek kitap deposu açılamadı. Yerleşik kitap kullanılabilir.');}const embedded=JSON.parse($('#extraBooks')?.textContent||'[]');if(embedded.length){for(const b of embedded){try{validateBook(b);const existing=books.find(x=>x.id===b.id);if(!existing){books.push(b);imported.push(b);if(!locked)await idb('put',b.id,b);}else if(b.contentVersion&&Number(b.contentVersion)>=Number(existing.contentVersion||0)&&JSON.stringify(b)!==JSON.stringify(existing)){books=books.map(x=>x.id===b.id?b:x);imported=imported.map(x=>x.id===b.id?b:x);if(!locked)await idb('put',b.id,b);}}catch(e){toast(e.message);}}}applyKeyOverrides();ready=true;render();await restoreHTMLFile();if(!locked)save();}
-async function importFile(file){if(locked)return;if(file.size>250*1024*1024){toast('Dosya 250 MB sınırını aşıyor.');return;}try{const data=JSON.parse(await file.text());if(inputMode==='backup'){const incomingStore=data.version===2?normalizeStore(data.store):null;if(data.format!=='test-atolyesi-backup'||!Array.isArray(data.books)||(data.version===1?!validProfileState(data.state):!incomingStore))throw Error('Bu dosya geçerli bir Test Atölyesi yedeği değil.');const newBooks=data.books.map(validateBook);if(newBooks.some(b=>b.id===builtin?.id)||new Set(newBooks.map(b=>b.id)).size!==newBooks.length)throw Error('Yedekte ek kitap kimlikleri geçersiz.');if(incomingStore)for(const pr of incomingStore.profiles)validateState(pr.state,newBooks);else validateState(data.state,newBooks);confirmAction('Yedeği geri yükle',incomingStore?'Bu dosyadaki tüm profiller ('+incomingStore.profiles.map(x=>x.name).join(', ')+') mevcut profillerin yerine geçecek. Mevcut ek kitaplar korunur. Önce JSON yedeği alabilirsin.':'Eski biçimli (tek kişilik) yedek, etkin profilin ('+activeProfile().name+') ilerlemesinin yerine geçecek. Mevcut ek kitaplar korunur.',async()=>{try{for(const b of newBooks){await idb('put',b.id,b);imported=imported.filter(x=>x.id!==b.id);imported.push(b);}if(incomingStore){store=incomingStore;state=activeProfile().state;if(typeof ensureEduState==='function')ensureEduState(state);}else{state=data.state;activeProfile().state=state;}lastLocalSnapshot='';books=[...baseBooks(),...imported];applyKeyOverrides();view='library';save();render();toast('Yedek geri yüklendi.');}catch(e){toast('Geri yükleme tamamlanamadı: '+e.message);}});return;}if(data.format!=='test-atolyesi'||data.version!==1||!Array.isArray(data.books)||!data.books.length)throw Error('Test Atölyesi JSON v1 biçiminde bir kitap dosyası seç.');const incoming=data.books.map(validateBook);if(new Set(incoming.map(b=>b.id)).size!==incoming.length)throw Error('Dosyadaki kitap kimlikleri tekil olmalı.');if(incoming.some(b=>b.id===builtin?.id))throw Error('Yerleşik kitabın kimliği yeni bir kitapta kullanılamaz.');const clashes=incoming.filter(b=>books.some(x=>x.id===b.id));const proceed=async()=>{try{for(const b of incoming){if(pendingLib&&pendingLib!==DIGER){b.library=pendingLib;libCur().assign[b.id]=pendingLib;}await idb('put',b.id,b);imported=imported.filter(x=>x.id!==b.id);imported.push(b);}books=[...baseBooks(),...imported];bookId=incoming[0].id;libSave();if(window.cloudBooksChanged)cloudBooksChanged(incoming);save();closeDialog();view='contents';render();toast(incoming.length+' kitap eklendi.');}catch(e){toast('Kitap kaydedilemedi: '+e.message);}};if(clashes.length)confirmAction('Aynı kimlikte kitap var','Bu kitaplar değiştirilecek ve bu kitaplardaki ilerleme sıfırlanacak: '+clashes.map(b=>b.title).join(', '),proceed);else await proceed();}catch(e){toast('Dosya alınamadı: '+e.message);}}
+async function importFile(file){if(locked)return;if(file.size>250*1024*1024){toast('Dosya 250 MB sınırını aşıyor.');return;}try{const data=JSON.parse(await file.text());if(inputMode==='backup'){const incomingStore=data.version===2?normalizeStore(data.store):null;if(data.format!=='test-atolyesi-backup'||!Array.isArray(data.books)||(data.version===1?!validProfileState(data.state):!incomingStore))throw Error('Bu dosya geçerli bir Eğitim Atölyesi yedeği değil.');const newBooks=data.books.map(validateBook);if(newBooks.some(b=>b.id===builtin?.id)||new Set(newBooks.map(b=>b.id)).size!==newBooks.length)throw Error('Yedekte ek kitap kimlikleri geçersiz.');if(incomingStore)for(const pr of incomingStore.profiles)validateState(pr.state,newBooks);else validateState(data.state,newBooks);confirmAction('Yedeği geri yükle',incomingStore?'Bu dosyadaki tüm profiller ('+incomingStore.profiles.map(x=>x.name).join(', ')+') mevcut profillerin yerine geçecek. Mevcut ek kitaplar korunur. Önce JSON yedeği alabilirsin.':'Eski biçimli (tek kişilik) yedek, etkin profilin ('+activeProfile().name+') ilerlemesinin yerine geçecek. Mevcut ek kitaplar korunur.',async()=>{try{for(const b of newBooks){await idb('put',b.id,b);imported=imported.filter(x=>x.id!==b.id);imported.push(b);}if(incomingStore){store=incomingStore;state=activeProfile().state;if(typeof ensureEduState==='function')ensureEduState(state);}else{state=data.state;activeProfile().state=state;}lastLocalSnapshot='';books=[...baseBooks(),...imported];applyKeyOverrides();view='library';save();render();toast('Yedek geri yüklendi.');}catch(e){toast('Geri yükleme tamamlanamadı: '+e.message);}});return;}if(data.format!=='test-atolyesi'||data.version!==1||!Array.isArray(data.books)||!data.books.length)throw Error('Eğitim Atölyesi JSON v1 biçiminde bir kitap dosyası seç.');const incoming=data.books.map(validateBook);if(new Set(incoming.map(b=>b.id)).size!==incoming.length)throw Error('Dosyadaki kitap kimlikleri tekil olmalı.');if(incoming.some(b=>b.id===builtin?.id))throw Error('Yerleşik kitabın kimliği yeni bir kitapta kullanılamaz.');const clashes=incoming.filter(b=>books.some(x=>x.id===b.id));const proceed=async()=>{try{for(const b of incoming){if(pendingLib&&pendingLib!==DIGER){b.library=pendingLib;libCur().assign[b.id]=pendingLib;}await idb('put',b.id,b);imported=imported.filter(x=>x.id!==b.id);imported.push(b);}books=[...baseBooks(),...imported];bookId=incoming[0].id;libSave();if(window.cloudBooksChanged)cloudBooksChanged(incoming);save();closeDialog();view='contents';render();toast(incoming.length+' kitap eklendi.');}catch(e){toast('Kitap kaydedilemedi: '+e.message);}};if(clashes.length)confirmAction('Aynı kimlikte kitap var','Bu kitaplar değiştirilecek ve bu kitaplardaki ilerleme sıfırlanacak: '+clashes.map(b=>b.title).join(', '),proceed);else await proceed();}catch(e){toast('Dosya alınamadı: '+e.message);}}
 function validateState(st,extra){const map=new Map([...baseBooks(),...imported,...extra].map(b=>[b.id,b]));if(st.last&&(typeof st.last.book!=='string'||typeof st.last.test!=='string'))throw Error('Yedekte son oturum geçersiz.');for(const [key,s]of Object.entries(st.tests)){if(!s||!Number.isFinite(s.elapsed)||s.elapsed<0||!Number.isFinite(s.limit)||s.limit<0||!Number.isFinite(s.qLimit)||s.qLimit<0||!Number.isInteger(s.index)||s.index<0)throw Error('Yedekte süre veya soru konumu geçersiz.');for(const f of ['answers','times','flags','notes'])if(!s[f]||typeof s[f]!=='object'||Array.isArray(s[f]))throw Error('Yedekte '+f+' geçersiz.');if(s.history&&(!Array.isArray(s.history)||s.history.some(h=>!h||!['correct','wrong','blank','elapsed'].every(k=>Number.isFinite(h[k])&&h[k]>=0)||typeof h.at!=='string')))throw Error('Yedekte kontrol geçmişi geçersiz.');if(Object.values(s.answers).some(x=>typeof x!=='string'||!/^([A-H])$/.test(x)))throw Error('Yedekte seçenek geçersiz.');if(Object.values(s.times).some(x=>!Number.isFinite(x)||x<0)||Object.values(s.notes).some(x=>typeof x!=='string'))throw Error('Yedekte soru kaydı geçersiz.');}}
-async function portable(){pulse();save();try{download('Test-Atolyesi-kayitli.html',portableHTML(),'text/html;charset=utf-8');toast('Kitapları ve mevcut kayıtları içeren HTML indirildi.');}catch(e){toast('HTML hazırlanamadı. JSON yedeği alabilirsiniz.');}}
+async function portable(){pulse();save();try{download('Egitim-Atolyesi-kayitli.html',portableHTML(),'text/html;charset=utf-8');toast('Kitapları ve mevcut kayıtları içeren HTML indirildi.');}catch(e){toast('HTML hazırlanamadı. JSON yedeği alabilirsiniz.');}}
 
 // ── İçindekiler görünümü (cihaza özel; profil verisine yazılmaz) ─────────────
 const CONTENTS_VIEWS={cards:'▦ Kart',list:'☰ Liste',grid:'▣ Kutucuk'};
@@ -777,13 +777,13 @@ function peekResultHTML(s,q){const a=s.answers[q.id];if(!q.answer)return '';cons
 // Uygulama yapay zekâ değildir; seçilen profilin çözümlerini, şık tanılarıyla birlikte bir dış YZ'ye verilecek pakete çevirir.
 const aiGuideText=()=>$('#aiAnalysisGuide')?.textContent.trim()||'';
 function touchedTest(s){return !!s&&(Object.keys(s.answers||{}).length>0||Object.values(s.notes||{}).some(x=>String(x).trim())||(s.history||[]).length>0||Object.keys(s.peeks||{}).length>0||Object.keys(s.hl||{}).length>0);}
-function analysisPackage(scope){const p=activeProfile(),out={format:'test-atolyesi-analysis',version:1,generatedAt:new Date().toISOString(),readFirst:'ÖNCE readFirstGuide alanını oku. Sonra books[].meta (kitabın amacı/kapsamı), ardından tests[].questions[] içindeki userAnswer, result, options[userAnswer].diagnosis, note ve singleCheck alanlarını değerlendir.',readFirstGuide:aiGuideText(),app:{name:'Test Atölyesi',schema:'importContract (HTML başında) + bu paket'},profile:{name:p.name},summary:{tests:0,answered:0,correct:0,wrong:0,blank:0,notes:0,singleChecks:0},books:[]};
+function analysisPackage(scope){const p=activeProfile(),out={format:'test-atolyesi-analysis',version:1,generatedAt:new Date().toISOString(),readFirst:'ÖNCE readFirstGuide alanını oku. Sonra books[].meta (kitabın amacı/kapsamı), ardından tests[].questions[] içindeki userAnswer, result, options[userAnswer].diagnosis, note ve singleCheck alanlarını değerlendir.',readFirstGuide:aiGuideText(),app:{name:'Eğitim Atölyesi',schema:'importContract (HTML başında) + bu paket'},profile:{name:p.name},summary:{tests:0,answered:0,correct:0,wrong:0,blank:0,notes:0,singleChecks:0},books:[]};
  for(const b of books){if(scope&&scope!==b.id)continue;const tests=[];for(const t of b.tests){const s=state.tests[b.id+'/'+t.id];if(!touchedTest(s))continue;const qs=t.questions.map((q,i)=>{const st=splitStem(q),a=s.answers[q.id]||null,pk=s.peeks?.[q.id],note=String(s.notes?.[q.id]||'').trim(),result=!q.answer?'anahtar-yok':!a?'boş':a===q.answer?'doğru':'yanlış';if(a)out.summary.answered++;if(result==='doğru')out.summary.correct++;else if(result==='yanlış')out.summary.wrong++;else if(result==='boş')out.summary.blank++;if(note)out.summary.notes++;if(pk)out.summary.singleChecks++;const rec={id:q.id,number:q.number||i+1,topic:q.topic,concepts:q.concepts,level:q.level,stem:st.stem,context:st.context||undefined,passage:q.passage||undefined,tables:q.blocks?.length?blocksSpeech(q.blocks):undefined,figures:(q.figures||[]).map(f=>f.alt).filter(Boolean),options:Object.fromEntries(q.options.map((o,j)=>[optionKey(o,j),{text:optionText(o),diagnosis:o.diagnosis||undefined}])),answer:q.answer??null,userAnswer:a,result,timeSec:Math.round(s.times?.[q.id]||0),time:timeInfo(Math.round(s.times?.[q.id]||0),(s.elapsed||0)>0),eliminated:s.elims?.[q.id]?.length?s.elims[q.id]:undefined,notEliminated:q.answer&&s.elims?.[q.id]?.length?q.options.map((o,j)=>optionKey(o,j)).filter(k=>!s.elims[q.id].includes(k)):undefined,answerTrail:s.trail?.[q.id]?.length>1?s.trail[q.id]:undefined,unknownOptions:s.unk?.[q.id]?.length?s.unk[q.id]:undefined,unknownPhrases:s.unkText?.[q.id]?.length?s.unkText[q.id]:undefined,highlights:s.hl?.[q.id]?.length?s.hl[q.id].map(h=>({text:h.t,where:h.w,color:h.color,style:h.style,at:h.at})):undefined,carelessMistake:s.oops?.[q.id]?true:undefined,flaggedForLater:!!s.flags?.[q.id],note:note||undefined,singleCheck:pk?{firstAt:pk.at,answerAtFirstCheck:pk.answer,correctAtFirstCheck:pk.correct,checks:(pk.tries||[]).length}:undefined,keyEditedByUser:Object.hasOwn(s.keyOverrides||{},q.id)||undefined,keyDoubt:q.keyDoubt||undefined,bookExplanation:q.explanation||undefined};if(!rec.figures.length)delete rec.figures;return rec;});out.summary.tests++;tests.push({id:t.id,title:t.title,section:t.section,topic:t.topic,checked:!!s.checked,elapsedSec:Math.round(s.elapsed||0),limits:{testSec:s.limit||0,questionSec:s.qLimit||0},result:s.checked?counts(t,s):null,attempts:(s.history||[]).map(h=>({at:h.at,correct:h.correct,wrong:h.wrong,blank:h.blank,elapsedSec:Math.round(h.elapsed||0),answers:h.answers})),questions:qs});}
   if(tests.length)out.books.push({id:b.id,title:b.title,author:b.author,year:b.year,description:b.description,meta:b.meta,testsInBook:b.tests.length,questionsInBook:b.tests.reduce((n,t)=>n+t.questions.length,0),sections:[...new Set(b.tests.map(t=>t.section).filter(Boolean))],tests});}
  const topics=new Map();for(const b of out.books)for(const t of b.tests)for(const q of t.questions){if(q.result==='anahtar-yok')continue;const k=b.title+' › '+(q.topic||t.topic||t.section||'Konu belirtilmemiş');const r=topics.get(k)||{topic:k,questions:0,correct:0,wrong:0,blank:0};r.questions++;if(q.result==='doğru')r.correct++;else if(q.result==='yanlış')r.wrong++;else r.blank++;topics.set(k,r);}
  out.summary.topics=[...topics.values()].sort((x,y)=>y.wrong-x.wrong||y.blank-x.blank);out.summary.note='summary.topics yalnız ham sayımdır; yorum için soru düzeyindeki şık tanılarını ve notları kullan.';
  return out;}
-const aiPromptText=name=>`Ekteki dosya Test Atölyesi uygulamasından ${name} profilinin çözdüğü testlerin analiz paketidir (format: test-atolyesi-analysis). Önce paketteki readFirstGuide yönergesini baştan sona oku ve ona uy. Kitabın amacını ve kapsamını (books[].meta) değerlendir, ardından soruları, verilen cevapları, seçilen yanlış şıkların tanılarını (options[userAnswer].diagnosis), tek soru kontrollerini ve kullanıcı notlarını birlikte incele. Bana konu konu güçlü olduğum ve bilgi eksiğimin olduğu alanları, örüntüleri, kanıt sorularını ve çalışma önerilerini ayrıntılı bir rapor olarak yaz.`;
+const aiPromptText=name=>`Ekteki dosya Eğitim Atölyesi uygulamasından ${name} profilinin çözdüğü testlerin analiz paketidir (format: test-atolyesi-analysis). Önce paketteki readFirstGuide yönergesini baştan sona oku ve ona uy. Kitabın amacını ve kapsamını (books[].meta) değerlendir, ardından soruları, verilen cevapları, seçilen yanlış şıkların tanılarını (options[userAnswer].diagnosis), tek soru kontrollerini ve kullanıcı notlarını birlikte incele. Bana konu konu güçlü olduğum ve bilgi eksiğimin olduğu alanları, örüntüleri, kanıt sorularını ve çalışma önerilerini ayrıntılı bir rapor olarak yaz.`;
 function analysisDialog(){const p=activeProfile(),pkg=analysisPackage(''),sm=pkg.summary;dialog('Yapay zekâ ile analiz',`<p>Uygulamanın kendisi yapay zekâ değildir ve hiçbir yere veri göndermez. Bu bölüm, <b>${esc(p.name)}</b> profilinin çözdüğü testleri bir yapay zekâya verebileceğin tek bir dosyaya dönüştürür. Dosyada kitap bilgisi, her sorunun kökü ve şıkları, doğru cevap, senin cevabın, seçtiğin yanlış şıkkın ne tür bir bilgi eksikliğine işaret ettiği (şık tanısı), süre, “sonra bak” işareti, tek soru kontrolleri ve notların bulunur. Yapay zekânın nasıl analiz edeceğini anlatan yönerge de dosyanın içindedir.</p><div class="mini-stats analysis-stats"><div><strong>${sm.tests}</strong>Test</div><div><strong>${sm.answered}</strong>Cevap</div><div><strong>${sm.wrong}</strong>Yanlış</div><div><strong>${sm.notes}</strong>Not</div></div>${sm.topics.filter(t=>t.wrong).length?`<p class="file-help"><b>En çok yanlış yapılan konular (ham sayım):</b> ${sm.topics.filter(t=>t.wrong).slice(0,5).map(t=>esc(t.topic.split(' › ').pop())+' ('+t.wrong+'/'+t.questions+')').join(' · ')}</p>`:''}<label for="analysisScope">Kapsam</label><select id="analysisScope"><option value="">Tüm kitaplar</option>${books.map(b=>`<option value="${esc(b.id)}" ${b.id===bookId?'':''}>${esc(b.title)}</option>`).join('')}</select><div class="row" style="margin-top:12px"><button class="primary" data-act="exportAnalysis" ${sm.tests?'':'disabled'}>Analiz paketini indir (JSON)</button><button data-act="copyAiPrompt">İstem metnini kopyala</button><button data-act="aiGuide">YZ yönergesini indir</button></div><p class="file-help">Kullanım: paketi indir → kullandığın yapay zekâya (ChatGPT, Claude, Gemini…) dosyayı ekle → “İstem metnini kopyala” ile gelen metni yapıştır. ${sm.tests?'':'Henüz çözülmüş test yok.'}</p>`);}
 
 // ── Ek görünüm parçaları ─────────────────────────────────────────────────────
@@ -1019,7 +1019,7 @@ document.addEventListener('input',e=>{if(e.target.id==='focusVol')focusSetVol(Nu
 //   st.hl[soru]      → vurgulanan ifadeler [{id, t:'metin', w, color:'#fff59d', style:'highlight'|'underline', at:1731500000000}]
 //   st.oops[soru]    → true: kontrol sonrası "dikkatsizlik / sehven hata" beyanı
 //   st.trail[soru]   → soruda sırayla seçilen şıklar (ör. ['B','D','B']); kararsızlığı gösterir
-const APP_VERSION='6.0';
+const APP_VERSION='6.1';
 const HL_THEME='color-mix(in srgb,var(--note-accent,var(--green)) 32%,transparent)';
 const HL_COLORS=[HL_THEME,'#fff59d','#c8e6c9','#bbdefb','#ffe0b2','#f8bbd0'];
 function getLastHlColor(){try{return localStorage.getItem('test-atolyesi:lastHlColor')||HL_COLORS[0];}catch(e){return HL_COLORS[0];}}
@@ -1035,15 +1035,46 @@ function trailPush(s,qid,a){if(!a)return;const t=marksOf(s,'trail',qid)||[];if(t
 function oopsButton(s,q){if(!q.answer)return '';const on=!!marksOf(s,'oops',q.id);return `<button class="oops-btn ${on?'on':''}" data-act="oops" aria-pressed="${on}" title="Normalde yapmayacağın bir dikkatsizlik/sehven hata olarak işaretle">🤦 ${on?'Dikkatsizlik işaretli':'Dikkatsizlik'}</button>`;}
 
 function unkTextChips(s,q){const list=marksOf(s,'unkText',q.id)||[];if(!list.length)return '';return `<div class="unk-chips" aria-label="Bilmediğin ifadeler"><span>❓ Bilmediğin ifadeler:</span>${list.map((x,i)=>`<button class="unk-chip" data-act="unkTextDel" data-index="${i}" title="Kaldır">${esc(x.t)}<small>${esc(x.w)}</small> ×</button>`).join('')}</div>`;}
-function hlChips(s,q){const list=marksOf(s,'hl',q.id)||[];if(!list.length)return '';return `<div class="hl-chips" aria-label="Vurgulanan ifadeler"><span>🖍️ Vurgular:</span>${list.map((h,i)=>`<button class="hl-chip ${h.style==='underline'?'is-underline':''}" style="--hl-c:${h.color}" data-act="hlChipClick" data-hl-id="${h.id}" title="Rengi / stili değiştir veya kaldır">${esc(h.t)} <small>${esc(h.w)} · ${h.style==='underline'?'alt çizgi':'vurgu'}</small> ×</button>`).join('')}</div>`;}
+function hlChips(s,q){const list=marksOf(s,'hl',q.id)||[];if(!list.length)return '';return `<div class="hl-chips" aria-label="Vurgulanan ifadeler"><span>🖍️ Vurgular:</span>${list.map((h)=>`<button class="hl-chip ${h.style==='underline'?'is-underline':''}" style="--hl-c:${h.color}" data-act="hlChipClick" data-hl-id="${h.id}" title="Rengi / stili değiştir veya kaldır">${esc(h.t)} <small>${esc(h.w)} · ${h.style==='underline'?'alt çizgi':'vurgu'}</small> ×</button>`).join('')}</div>`;}
 
-// İfade seçimi: soru alanı içindeki seçili metni ve bağlamını yakalar
-function selInfo(){const sel=window.getSelection();if(!sel||sel.isCollapsed||view!=='study')return null;const t=sel.toString().replace(/\s+/g,' ').trim();if(t.length<2||t.length>300)return null;const node=sel.anchorNode?.nodeType===1?sel.anchorNode:sel.anchorNode?.parentElement;const area=node?.closest?.('.question-body');if(!area)return null;const opt=node.closest('[data-id].option');const w=opt?opt.dataset.id:node.closest('.solution')?'açıklama':node.closest('.passage')?'parça':'soru';const r=sel.getRangeAt(0).getBoundingClientRect();return{t,w,r};}
+// İfade seçimi: hem soru alanındaki (.question-body) hem konu anlatımındaki (.course-article) seçili metni yakalar.
+function selInfo(){
+  const sel=window.getSelection();
+  if(!sel||sel.isCollapsed)return null;
+  const t=sel.toString().replace(/\s+/g,' ').trim();
+  if(t.length<2||t.length>300)return null;
+  const node=sel.anchorNode?.nodeType===1?sel.anchorNode:sel.anchorNode?.parentElement;
+  if(!node)return null;
+  const r=sel.getRangeAt(0).getBoundingClientRect();
+  const eduArt=node.closest?.('.course-article');
+  if(eduArt&&view==='course'){
+    return{scope:'edu',t,cid:eduArt.dataset.cid,sid:eduArt.dataset.sid,r};
+  }
+  if(view==='study'){
+    const area=node.closest?.('.question-body');
+    if(!area)return null;
+    const opt=node.closest('[data-id].option');
+    const w=opt?opt.dataset.id:node.closest('.solution')?'açıklama':node.closest('.passage')?'parça':'soru';
+    return{scope:'study',t,w,r};
+  }
+  return null;
+}
 
-function addUnkText(info){if(!info||locked)return;const s=currentState,q=currentTest.questions[s.index],list=marksOf(s,'unkText',q.id)||[];if(!list.some(x=>x.t===info.t&&x.w===info.w))list.push({t:info.t,w:info.w});s.unkText[q.id]=list.slice(-30);stampQ(s,q.id);window.getSelection()?.removeAllRanges();hideUnkMenu();save();render();toast('“'+info.t.slice(0,40)+'” bilmediğin ifadelere eklendi.');}
+function addUnkText(info){
+  if(!info||info.scope!=='study'||locked)return;
+  const s=currentState,q=currentTest.questions[s.index],list=marksOf(s,'unkText',q.id)||[];
+  if(!list.some(x=>x.t===info.t&&x.w===info.w))list.push({t:info.t,w:info.w});
+  s.unkText[q.id]=list.slice(-30);
+  stampQ(s,q.id);
+  window.getSelection()?.removeAllRanges();
+  hideUnkMenu();
+  save();
+  render();
+  toast('“'+info.t.slice(0,40)+'” bilmediğin ifadelere eklendi.');
+}
 
 function addHighlight(info){
-  if(!info||locked)return;
+  if(!info||info.scope!=='study'||locked)return;
   const s=currentState,q=currentTest.questions[s.index],list=marksOf(s,'hl',q.id)||[];
   const color=getLastHlColor(),style=getLastHlStyle();
   const hl={id:'hl-'+Date.now()+'-'+Math.random().toString(36).slice(2,7),t:info.t,w:info.w,color,style,at:Date.now()};
@@ -1058,11 +1089,71 @@ function addHighlight(info){
   toast('“'+info.t.slice(0,35)+'” vurgulandı.');
 }
 
+function addEduVocab(info){
+  if(!info||info.scope!=='edu'||locked)return;
+  const now=Date.now();
+  ensureEduState(state).vocab.push({
+    id:'vc-'+now.toString(36)+Math.random().toString(36).slice(2,5),
+    word:info.t,
+    meaning:'Ders notundan eklendi',
+    note:info.sid,
+    source:'Konu Anlatımı',
+    mastered:false,
+    createdAt:now,
+    updatedAt:now
+  });
+  window.getSelection()?.removeAllRanges();
+  hideUnkMenu();
+  eduTouch(true);
+  toast('“'+info.t.slice(0,35)+'” Kelime Havuzuna eklendi.');
+}
+
+function addEduHighlight(info){
+  if(!info||info.scope!=='edu'||locked)return;
+  const e2=ensureEduState(state),k=info.cid+'/'+info.sid;
+  e2.hl[k]=e2.hl[k]||[];
+  const color=getLastHlColor(),style=getLastHlStyle();
+  e2.hl[k].push({id:'ehl-'+Date.now()+'-'+Math.random().toString(36).slice(2,6),t:info.t,color,style,at:Date.now()});
+  window.getSelection()?.removeAllRanges();
+  hideUnkMenu();
+  hideHlPopover();
+  eduTouch(true);
+  render();
+  toast('Ders metni vurgulandı.');
+}
+
 function hideUnkMenu(){$('#unkMenu')?.remove();}
 function hideHlPopover(){$('#hlPopover')?.remove();}
 
+function positionFloating(el,x,y){
+  if(!el)return;
+  const w=el.offsetWidth||220,h=el.offsetHeight||160;
+  el.style.left=Math.max(8,Math.min(innerWidth-w-8,x))+'px';
+  el.style.top=Math.max(8,Math.min(innerHeight-h-8,y))+'px';
+}
+
+function copyTextFallback(t){
+  if(!t)return;
+  if(navigator.clipboard?.writeText){
+    navigator.clipboard.writeText(t).then(()=>toast('Kopyalandı')).catch(()=>legacyCopy(t));
+  } else {
+    legacyCopy(t);
+  }
+}
+function legacyCopy(t){
+  try{
+    const ta=document.createElement('textarea');
+    ta.value=t;ta.style.position='fixed';ta.style.opacity='0';
+    document.body.append(ta);ta.select();
+    const ok=document.execCommand('copy');
+    ta.remove();
+    if(ok)toast('Kopyalandı');
+  }catch(e){}
+}
+
 function renderSystemMenuContent(m){
   if(!m||!m._info)return;
+  m.dataset.mode='sys';
   m.innerHTML=`<div class="sys-menu-head">İşletim Sistemi / Tarayıcı Menüsü</div>
   <button type="button" data-act="sysCopy">📋 Kopyala</button>
   <button type="button" data-act="sysSearch">🔍 Google'da Ara</button>
@@ -1070,38 +1161,42 @@ function renderSystemMenuContent(m){
   <button type="button" data-act="sysPrint">🖨️ Yazdır...</button>
   <div class="menu-divider"></div>
   <button type="button" data-act="sysRelease" class="menu-subtle">🔓 Tarayıcı Sağ Tıkını Aç (Serbest Bırak)</button>`;
+  positionFloating(m,parseFloat(m.style.left)||8,parseFloat(m.style.top)||8);
 }
 
-function showUnkMenu(info,x,y,touch){
+// Tek tip metin bazlı sağ tık / seçim menüsü (Windows & Android tutarlı)
+function showUnkMenu(info,x,y){
   hideUnkMenu();
   hideHlPopover();
   const m=document.createElement('div');
   m.id='unkMenu';
-  m.className='unk-menu'+(touch?' touch':'');
-  if(touch){
-    m.innerHTML=`<button type="button" data-act="unkTextAdd" title="Bu ifadeyi bilmiyorum">?</button>
-    <button type="button" data-act="hlAdd" title="Vurgula">🖍️</button>
-    <button type="button" data-act="showSysMenu" title="Sistem menüsünü göster">⋯</button>`;
+  m.className='unk-menu';
+  m.dataset.mode='main';
+  if(info.scope==='edu'){
+    m.innerHTML=`<button type="button" data-act="eduSelVocab">❓ Kelime Havuzuna Ekle</button>
+    <button type="button" data-act="eduSelHl">🖍️ Vurgula</button>
+    <button type="button" data-act="eduSelSpeak">🔊 Dinle (EN)</button>
+    <div class="menu-divider"></div>
+    <button type="button" data-act="showSysMenu" class="menu-subtle">⋯ Sistem menüsünü göster</button>`;
   } else {
     m.innerHTML=`<button type="button" data-act="unkTextAdd">❓ Bu ifadeyi bilmiyorum</button>
     <button type="button" data-act="hlAdd">🖍️ Vurgula</button>
     <div class="menu-divider"></div>
     <button type="button" data-act="showSysMenu" class="menu-subtle">⋯ Sistem menüsünü göster</button>`;
   }
-  m.style.left=Math.max(8,Math.min(innerWidth-220,x))+'px';
-  m.style.top=Math.max(8,Math.min(innerHeight-150,y))+'px';
   m._info=info;
   document.body.append(m);
+  positionFloating(m,x,y);
 }
 
-function showHlPopover(hl,qid,targetEl){
+function showHlPopover(hl,ctx,targetEl){
   hideHlPopover();
   hideUnkMenu();
   const p=document.createElement('div');
   p.id='hlPopover';
   p.className='hl-popover';
   p._hl=hl;
-  p._qid=qid;
+  p._ctx=ctx;
   const colorBtns=HL_COLORS.map(c=>`<button type="button" class="hl-color-btn ${hl.color===c?'selected':''}" data-act="hlSetColor" data-color="${esc(c)}" style="background:${c===HL_THEME?'var(--note-accent,var(--green))':c}" title="${c===HL_THEME?'Tema rengiyle uyumlu':'Bu rengi seç'}" aria-label="${c===HL_THEME?'Tema rengi':'Renk'}"></button>`).join('');
   p.innerHTML=`<div class="hl-pop-colors">${colorBtns}</div>
   <div class="hl-pop-divider"></div>
@@ -1113,77 +1208,112 @@ function showHlPopover(hl,qid,targetEl){
   <button type="button" class="hl-del-btn" data-act="hlDel" title="Vurguyu sil">× Kaldır</button>`;
   document.body.append(p);
   const r=targetEl.getBoundingClientRect();
-  p.style.left=Math.max(8,Math.min(innerWidth-260,r.left+window.scrollX))+'px';
-  p.style.top=Math.max(8,r.top+window.scrollY-46)+'px';
+  const pw=p.offsetWidth||280,ph=p.offsetHeight||44;
+  const left=Math.max(8,Math.min(innerWidth-pw-8,r.left));
+  const top=r.top-ph-8>=8?r.top-ph-8:Math.min(innerHeight-ph-8,r.bottom+8);
+  p.style.left=left+'px';
+  p.style.top=top+'px';
 }
 
-// Sağ tık: Test Atölyesi özel menüsü açılır; tarayıcı menüsü engellenir ve "Sistem menüsü" butonuna bağlanır.
+// Sağ tık: Eğitim Atölyesi özel menüsü açılır; tarayıcı menüsü engellenir ve "Sistem menüsü" butonuna bağlanır.
 let allowNativeContextMenu=false;
+let selTimer=null;
 document.addEventListener('contextmenu',e=>{
   if(allowNativeContextMenu){allowNativeContextMenu=false;return;}
   const info=selInfo();
   if(!info)return;
   e.preventDefault();
-  showUnkMenu(info,e.clientX,e.clientY,false);
+  clearTimeout(selTimer);
+  showUnkMenu(info,e.clientX,e.clientY);
 });
 
-let selTimer=null;
 document.addEventListener('selectionchange',()=>{
   clearTimeout(selTimer);
   selTimer=setTimeout(()=>{
     if(!matchMedia('(pointer:coarse)').matches)return;
+    const cur=$('#unkMenu');
+    if(cur?.dataset.mode==='sys')return;
     const info=selInfo();
-    if(!info){if(!$('#unkMenu')?.matches(':hover'))hideUnkMenu();return;}
-    showUnkMenu(info,info.r.right+6,info.r.top-44,true);
+    if(!info){if(cur&&!cur.matches(':hover'))hideUnkMenu();return;}
+    if(cur?._info&&cur._info.t===info.t&&cur._info.scope===info.scope)return;
+    const y=info.r.bottom+10+170<=innerHeight?info.r.bottom+10:Math.max(8,info.r.top-175);
+    showUnkMenu(info,info.r.left,y);
   },350);
 });
+
+function saveHlChange(ctx){
+  if(ctx.scope==='edu'){eduTouch(true);render();return;}
+  stampQ(currentState,ctx.qid);save();render();
+}
 
 document.addEventListener('click',e=>{
   const hlEl=e.target.closest('.ta-hl');
   if(hlEl){
     e.stopPropagation();
-    const qid=hlEl.dataset.hlQid,hlid=hlEl.dataset.hlId,s=currentState;
-    const l=marksOf(s,'hl',qid)||[],hl=l.find(x=>x.id===hlid);
-    if(hl){showHlPopover(hl,qid,hlEl);return;}
+    const hlid=hlEl.dataset.hlId;
+    if(hlEl.dataset.hlScope==='edu'){
+      const cid=hlEl.dataset.hlCid,sid=hlEl.dataset.hlSid;
+      const l=ensureEduState(state).hl?.[cid+'/'+sid]||[],hl=l.find(x=>x.id===hlid);
+      if(hl){showHlPopover(hl,{scope:'edu',cid,sid},hlEl);return;}
+    } else {
+      const qid=hlEl.dataset.hlQid,s=currentState;
+      const l=marksOf(s,'hl',qid)||[],hl=l.find(x=>x.id===hlid);
+      if(hl){showHlPopover(hl,{scope:'study',qid},hlEl);return;}
+    }
   }
   const el=e.target.closest('[data-act]');
   const a=el?.dataset.act;
   if(a==='unkTextAdd'){e.stopPropagation();addUnkText($('#unkMenu')?._info);return;}
   if(a==='hlAdd'){e.stopPropagation();addHighlight($('#unkMenu')?._info);return;}
+  if(a==='eduSelVocab'){e.stopPropagation();addEduVocab($('#unkMenu')?._info);return;}
+  if(a==='eduSelHl'){e.stopPropagation();addEduHighlight($('#unkMenu')?._info);return;}
+  if(a==='eduSelSpeak'){e.stopPropagation();const info=$('#unkMenu')?._info;hideUnkMenu();if(info&&typeof eduSpeakText==='function')eduSpeakText(info.t,'en','sel');return;}
   if(a==='showSysMenu'){e.stopPropagation();renderSystemMenuContent($('#unkMenu'));return;}
-  if(a==='sysCopy'){e.stopPropagation();const t=$('#unkMenu')?._info?.t||'';navigator.clipboard?.writeText(t).then(()=>toast('Kopyalandı')).catch(()=>{});hideUnkMenu();return;}
+  if(a==='sysCopy'){e.stopPropagation();copyTextFallback($('#unkMenu')?._info?.t||'');hideUnkMenu();return;}
   if(a==='sysSearch'){e.stopPropagation();const t=$('#unkMenu')?._info?.t||'';if(t)window.open('https://www.google.com/search?q='+encodeURIComponent(t),'_blank');hideUnkMenu();return;}
   if(a==='sysSpeak'){e.stopPropagation();const t=$('#unkMenu')?._info?.t||'';if(t){if(window.ttsSpeak)ttsSpeak(t);else{const u=new SpeechSynthesisUtterance(t);u.lang='tr-TR';window.speechSynthesis?.speak(u);}}hideUnkMenu();return;}
   if(a==='sysPrint'){e.stopPropagation();hideUnkMenu();setTimeout(()=>window.print(),100);return;}
   if(a==='sysRelease'){e.stopPropagation();allowNativeContextMenu=true;hideUnkMenu();toast('Tarayıcı sağ tıkı serbest bırakıldı; şimdi sağ tıklayabilirsiniz.');return;}
   if(a==='hlSetColor'){
     e.stopPropagation();const pop=$('#hlPopover');
-    if(pop?._hl){pop._hl.color=el.dataset.color;setLastHlColor(el.dataset.color);stampQ(currentState,pop._qid);save();render();hideHlPopover();toast('Vurgu rengi güncellendi.');}
+    if(pop?._hl&&pop._ctx){pop._hl.color=el.dataset.color;setLastHlColor(el.dataset.color);hideHlPopover();saveHlChange(pop._ctx);toast('Vurgu rengi güncellendi.');}
     return;
   }
   if(a==='hlSetStyle'){
     e.stopPropagation();const pop=$('#hlPopover');
-    if(pop?._hl){pop._hl.style=el.dataset.style;setLastHlStyle(el.dataset.style);stampQ(currentState,pop._qid);save();render();hideHlPopover();toast(el.dataset.style==='underline'?'Alt çizgiye dönüştürüldü.':'Vurgu stiline dönüştürüldü.');}
+    if(pop?._hl&&pop._ctx){pop._hl.style=el.dataset.style;setLastHlStyle(el.dataset.style);hideHlPopover();saveHlChange(pop._ctx);toast(el.dataset.style==='underline'?'Alt çizgiye dönüştürüldü.':'Vurgu stiline dönüştürüldü.');}
     return;
   }
   if(a==='hlDel'){
     e.stopPropagation();const pop=$('#hlPopover');
-    if(pop?._hl){
-      const s=currentState,qid=pop._qid,hlid=pop._hl.id;
-      const l=marksOf(s,'hl',qid)||[],idx=l.findIndex(x=>x.id===hlid);
-      if(idx>=0)l.splice(idx,1);
-      if(l.length)s.hl[qid]=l;else delete s.hl[qid];
-      stampQ(s,qid);save();render();hideHlPopover();toast('Vurgu kaldırıldı.');
+    if(pop?._hl&&pop._ctx){
+      const ctx=pop._ctx,hlid=pop._hl.id;
+      if(ctx.scope==='edu'){
+        const e2=ensureEduState(state),k=ctx.cid+'/'+ctx.sid;
+        if(Array.isArray(e2.hl[k]))e2.hl[k]=e2.hl[k].filter(x=>x.id!==hlid);
+        hideHlPopover();saveHlChange(ctx);toast('Vurgu kaldırıldı.');
+      } else {
+        const s=currentState,qid=ctx.qid,l=marksOf(s,'hl',qid)||[],idx=l.findIndex(x=>x.id===hlid);
+        if(idx>=0)l.splice(idx,1);
+        if(l.length)s.hl[qid]=l;else delete s.hl[qid];
+        hideHlPopover();saveHlChange(ctx);toast('Vurgu kaldırıldı.');
+      }
     }
     return;
   }
   if(a==='hlChipClick'){
     e.stopPropagation();const s=currentState,q=currentTest.questions[s.index],hlid=el.dataset.hlId;
     const l=marksOf(s,'hl',q.id)||[],hl=l.find(x=>x.id===hlid);
-    if(hl)showHlPopover(hl,q.id,el);
+    if(hl)showHlPopover(hl,{scope:'study',qid:q.id},el);
     return;
   }
-  if(a==='unkMenuCopy'){e.stopPropagation();navigator.clipboard?.writeText($('#unkMenu')?._info?.t||'').catch(()=>{});hideUnkMenu();return;}
+  if(a==='eduHlChipClick'){
+    e.stopPropagation();const cid=el.dataset.cid,sid=el.dataset.sid,hlid=el.dataset.hlId;
+    const l=ensureEduState(state).hl?.[cid+'/'+sid]||[],hl=l.find(x=>x.id===hlid);
+    if(hl)showHlPopover(hl,{scope:'edu',cid,sid},el);
+    return;
+  }
+  if(a==='unkMenuCopy'){e.stopPropagation();copyTextFallback($('#unkMenu')?._info?.t||'');hideUnkMenu();return;}
   if(a==='unk'){e.stopPropagation();toggleUnk(el.dataset.id);return;}
   if(a==='oops'){e.stopPropagation();toggleOops();return;}
   if(a==='unkTextDel'){e.stopPropagation();const s=currentState,q=currentTest.questions[s.index],l=marksOf(s,'unkText',q.id)||[];l.splice(Number(el.dataset.index),1);if(l.length)s.unkText[q.id]=l;else delete s.unkText[q.id];stampQ(s,q.id);save();render();return;}
@@ -1201,7 +1331,7 @@ function guideHTML(){return `<article class="guide-article"><h3>Kullanım kılav
 <tr><td><b>2. dokunuş</b></td><td>Şıkkı <b>eler</b> (kırmızı kesik çerçeve, üstü çizili): “bu değil” demek.</td></tr>
 <tr><td><b>3. dokunuş</b></td><td>Şıkkı temizler.</td></tr>
 <tr><td><span class="unk-btn on">?</span></td><td><b>Bu şıkkı bilmiyorum.</b> Şıkta ne kastedildiğini bilmediğini beyan edersin; cevabını etkilemez.</td></tr>
-<tr><td><b>Metin seç → sağ tık → ❓</b><br><small>Telefonda: seç → ?</small></td><td><b>Bu ifadeyi bilmiyorum.</b> Soru metninde, parçada, şıkta ya da açıklamada geçen bir kavramı işaretler. Sorunun altında listelenir; × ile kaldırılır.</td></tr>
+<tr><td><b>Metin seç → sağ tık → ❓</b></td><td><b>Bu ifadeyi bilmiyorum / Kelime Havuzuna Ekle.</b> Soru metninde, parçada, şıkta, açıklamada veya konu anlatımında geçen bir kavramı işaretler.</td></tr>
 <tr><td><b>Metin seç → sağ tık → 🖍️ Vurgula</b></td><td><b>Vurgulama.</b> Seçili ifadeyi son kullanılan renkle hafifçe vurgular. Vurgunun üzerine tıklayarak rengini değiştirebilir, alt çizgiye dönüştürebilir veya silebilirsin.</td></tr>
 <tr><td><b>Metin seç → sağ tık → ⋯ Sistem menüsü</b></td><td><b>İşletim sistemi / tarayıcı araçları.</b> Kopyalama, Google'da arama, sesli okuma, yazdırma gibi sistem menüsü işlevlerini sunar.</td></tr>
 <tr><td><span class="oops-sample">🤦</span></td><td><b>Dikkatsizlik.</b> Kontrolden sonra (ya da tek soru kontrolünde) bildiğin hâlde sehven yanlış yaptığın soruyu işaretlersin.</td></tr>
@@ -1214,8 +1344,59 @@ function guideHTML(){return `<article class="guide-article"><h3>Kullanım kılav
 </tbody></table>
 <p>Bütün bu işaretler (cevap, elenen şıklar, seçim sırası, ?, ❓ ifadeler, 🖍️ vurgular, 🤦, not, süre) profiline kaydedilir, cihazlar arasında eşitlenir ve “✦ YZ analizi” paketiyle yapay zekâya verilir: doğru cevapladığın sorulardaki işaret ve notlar da değerlendirilir.</p></article>`;}
 
+// DOM içinde metin eşleştirme ve <mark> sarmalama yardımcısı (hem soru hem konu anlatımı için)
+function applyTextMark(root,text,makeMark){
+  if(!root||!text)return;
+  const kel=text.split(/\s+/).filter(Boolean).map(k=>k.replace(/[.*+?^${}()|[\]\\]/g,'\\$&'));
+  if(!kel.length)return;
+  const nodes=[];
+  const tw=document.createTreeWalker(root,NodeFilter.SHOW_TEXT);
+  let full='',n,prevBlock=null;
+  while((n=tw.nextNode())){
+    if(n.parentElement.closest('.ta-hl,.unk-mark,button.tts-btn,svg,script,style'))continue;
+    const blk=n.parentElement.closest('p,li,div,td,th,h1,h2,h3,h4,h5,h6,blockquote');
+    if(prevBlock&&blk!==prevBlock&&full&&!/\s$/.test(full))full+=' ';
+    prevBlock=blk;
+    nodes.push({n,at:full.length});
+    full+=n.nodeValue;
+  }
+  const m=new RegExp(kel.join('\\s+'),'i').exec(full);
+  if(!m)return;
+  const bas=m.index,son=m.index+m[0].length;
+  for(const {n:tn,at} of nodes.slice().reverse()){
+    const a=Math.max(bas,at),b=Math.min(son,at+tn.nodeValue.length);
+    if(a>=b)continue;
+    try{
+      const r=document.createRange();
+      r.setStart(tn,a-at);
+      r.setEnd(tn,b-at);
+      r.surroundContents(makeMark());
+    }catch(e){}
+  }
+}
+
 // Bilinmeyen ifadeleri turkuaz alt çizgiyle, vurguları ise hafif renk tonu veya alt çizgiyle göster.
 function markUnk(){
+  if(view==='course'){
+    const art=document.querySelector('.course-article');
+    if(!art)return;
+    const cid=art.dataset.cid,sid=art.dataset.sid;
+    const hlList=ensureEduState(state).hl?.[cid+'/'+sid]||[];
+    for(const x of hlList){
+      applyTextMark(art,x.t,()=>{
+        const mk=document.createElement('mark');
+        mk.className='ta-hl'+(x.style==='underline'?' is-underline':'');
+        mk.dataset.hlId=x.id;
+        mk.dataset.hlScope='edu';
+        mk.dataset.hlCid=cid;
+        mk.dataset.hlSid=sid;
+        mk.style.setProperty('--hl-c',x.color);
+        mk.title='Vurgu (rengi/stili değiştirmek veya silmek için tıkla)';
+        return mk;
+      });
+    }
+    return;
+  }
   if(view!=='study'||!currentTest)return;
   const s=currentState,q=currentTest.questions[s.index];
   const unkList=s.unkText?.[q.id]||[];
@@ -1225,39 +1406,27 @@ function markUnk(){
 
   // 1. Vurguları işaretle
   for(const x of hlList){
-    const root=document.querySelector(yer(x.w));if(!root)continue;
-    const nodes=[];const tw=document.createTreeWalker(root,NodeFilter.SHOW_TEXT);let full='',n;
-    while((n=tw.nextNode())){if(n.parentElement.closest('.ta-hl,.unk-mark,button.tts-btn'))continue;nodes.push({n,at:full.length});full+=n.nodeValue;}
-    const kel=x.t.split(/\s+/).filter(Boolean).map(k=>k.replace(/[.*+?^${}()|[\]\\]/g,'\\$&'));if(!kel.length)continue;
-    const m=new RegExp(kel.join('\\s+'),'i').exec(full);if(!m)continue;
-    const bas=m.index,son=m.index+m[0].length;
-    for(const {n:tn,at} of nodes.slice().reverse()){
-      const a=Math.max(bas,at),b=Math.min(son,at+tn.nodeValue.length);if(a>=b)continue;
-      const r=document.createRange();r.setStart(tn,a-at);r.setEnd(tn,b-at);
+    const root=document.querySelector(yer(x.w));
+    applyTextMark(root,x.t,()=>{
       const mk=document.createElement('mark');
       mk.className='ta-hl'+(x.style==='underline'?' is-underline':'');
       mk.dataset.hlId=x.id;
       mk.dataset.hlQid=q.id;
       mk.style.setProperty('--hl-c',x.color);
       mk.title='Vurgu (rengi/stili değiştirmek veya silmek için tıkla)';
-      r.surroundContents(mk);
-    }
+      return mk;
+    });
   }
 
   // 2. Bilinmeyen ifadeleri işaretle
   for(const x of unkList){
-    const root=document.querySelector(yer(x.w));if(!root)continue;
-    const nodes=[];const tw=document.createTreeWalker(root,NodeFilter.SHOW_TEXT);let full='',n;
-    while((n=tw.nextNode())){if(n.parentElement.closest('.unk-mark,button.tts-btn'))continue;nodes.push({n,at:full.length});full+=n.nodeValue;}
-    const kel=x.t.split(/\s+/).filter(Boolean).map(k=>k.replace(/[.*+?^${}()|[\]\\]/g,'\\$&'));if(!kel.length)continue;
-    const m=new RegExp(kel.join('\\s+'),'i').exec(full);if(!m)continue;
-    const bas=m.index,son=m.index+m[0].length;
-    for(const {n:tn,at} of nodes.slice().reverse()){
-      const a=Math.max(bas,at),b=Math.min(son,at+tn.nodeValue.length);if(a>=b)continue;
-      const r=document.createRange();r.setStart(tn,a-at);r.setEnd(tn,b-at);
-      const mk=document.createElement('mark');mk.className='unk-mark';mk.title='Bilmediğin ifade';
-      r.surroundContents(mk);
-    }
+    const root=document.querySelector(yer(x.w));
+    applyTextMark(root,x.t,()=>{
+      const mk=document.createElement('mark');
+      mk.className='unk-mark';
+      mk.title='Bilmediğin ifade';
+      return mk;
+    });
   }
 }
 
@@ -1381,7 +1550,7 @@ async function aiAccept(text,automatic=true){
 async function aiReadClipboard(automatic=false){const w=aiWizard;if(!w||!aiSetupCurrent(w)||aiSetupBusy||aiRequestBusy)return;try{const text=await navigator.clipboard.readText();if(aiSetupCurrent(w))await aiAccept(text,automatic);}catch(e){if(aiSetupCurrent(w)){aiStatus('Tarayıcı panoyu okuyamadı. Anahtar kutusuna basıp Ctrl+V veya Yapıştır kullanın.');if(!automatic)$('#aiKeyInput')?.focus();}}}
 async function aiUnlock(){if(aiSetupBusy||locked)return;const w=aiWizard,p=activeProfile(),box=p.state.aiKeyBox,pass=$('#aiUnlock')?.value.trim().toLowerCase();if(!pass){aiStatus('İlk cihazınızdaki Taşıma Kodunu yazın.');return;}aiSetupLock(true);try{const key=await aiDecrypt(p.id,box,pass);if(!aiSetupCurrent(w))return;if(JSON.stringify(box)!==JSON.stringify(p.state.aiKeyBox))throw Error('Anahtar başka cihazda değişti. Güncel Taşıma Kodunu kullanın.');aiStoreLocal(p,key,pass,box);aiSettings();aiStatus('✓ Anahtarın kilidi açıldı ve bu cihazda kaydedildi.');}catch(e){if(aiSetupCurrent(w))aiStatus(e.message);}finally{aiSetupLock(false);}}
 async function aiTest(){if(aiSetupBusy||aiRequestBusy||locked)return;const raw=$('#aiKeyInput')?.value.trim()||'',key=aiExtract(raw);if(key){await aiAccept(key,false);return;}if(raw){aiStatus('Yapıştırdığınız metinde tam bir Google anahtarı tanınamadı. AQ.… veya AIza… ile başlayan kodun tamamını kopyalayın.');return;}const w=aiWizard,p=activeProfile(),saved=aiLocalKey(p);if(!saved){aiStatus('Önce anahtarı yapıştırın veya Taşıma Koduyla kilidi açın.');return;}aiSetupLock(true);aiStatus('Anahtar test ediliyor…');try{await aiGenerate(saved,aiChosenModel(),'Yalnız OK yaz.',[{role:'user',parts:[{text:'Merhaba'}]}],16);if(aiSetupCurrent(w))aiStatus('✓ API anahtarı çalışıyor!');}catch(e){if(aiSetupCurrent(w))aiStatus(e.message);}finally{aiSetupLock(false);}}
-const AI_HELP_SYSTEM=`Sen Test Atölyesi uygulamasının Türkçe yardım asistanısın. Kısa, anlaşılır yanıt ver; bilinmeyen özelliği uydurma. Şıkta 1. dokunuş işaretler, 2. dokunuş eler, 3. dokunuş temizler. ? şıkkı bilmiyorum; metin seçip ❓ ifadeyi bilmiyorum; 🤦 kontrol sonrası dikkatsizlik. K tek soru kontrolü, R sesli okuma; 1–5 cevap, oklar önceki/sonraki, boşluk süreyi durdurur. Doğru mavi, yanlış kırmızı. Notlar yazdıkça kaydedilir. Odak sesleri 🎧 menüsünde cihazda üretilir. Kütüphaneler profile özeldir; kitap eklerken kütüphane seçilir, favoriler ve son kullanılanlar vardır. Kitaplar ortak, ilerleme profile özeldir. Drive/ortak senkron cevapları ve notları birleştirir. YZ için internete ve kişinin Gemini anahtarına ihtiyaç var. Ayarlar sihirbazı aistudio.google.com/apikey açar; giriş, Create API key, Copy, uygulamaya yapıştır. Anahtar önce test edilir. Anahtar cihazda tutulur; yalnız AES-GCM şifreli aiKeyBox profil ile eşitlenir. Diğer cihazda ilk cihazın ayarlarından Taşıma Kodu alınır, bir kez kilit açılır. Profil adı değişse bile kod geçerlidir. Yeni anahtar kaydı yeni kod üretir, test geçmişine dokunmaz. Kota modele/projeye bağlıdır; 429 olursa bekle ve AI Studio kotasını incele. 404 olursa özel model adını güncelle. Kullanıcıdan API anahtarı veya Taşıma Kodunu sohbete yazmasını ASLA isteme. Uygulama içinden PDF kitap dönüştürülmez; harici YZ ile JSON hazırlanıp içe aktarılır. HTML, JSON yedeği ve Android kayıt seçenekleri vardır. Yanıtların tavsiyedir; uygulama ayarlarını kendin değiştiremezsin.`;
+const AI_HELP_SYSTEM=`Sen Eğitim Atölyesi uygulamasının Türkçe yardım asistanısın. Kısa, anlaşılır yanıt ver; bilinmeyen özelliği uydurma. Şıkta 1. dokunuş işaretler, 2. dokunuş eler, 3. dokunuş temizler. ? şıkkı bilmiyorum; metin seçip ❓ ifadeyi bilmiyorum; 🤦 kontrol sonrası dikkatsizlik. K tek soru kontrolü, R sesli okuma; 1–5 cevap, oklar önceki/sonraki, boşluk süreyi durdurur. Doğru mavi, yanlış kırmızı. Notlar yazdıkça kaydedilir. Odak sesleri 🎧 menüsünde cihazda üretilir. Kütüphaneler profile özeldir; kitap eklerken kütüphane seçilir, favoriler ve son kullanılanlar vardır. Kitaplar ortak, ilerleme profile özeldir. Drive/ortak senkron cevapları ve notları birleştirir. YZ için internete ve kişinin Gemini anahtarına ihtiyaç var. Ayarlar sihirbazı aistudio.google.com/apikey açar; giriş, Create API key, Copy, uygulamaya yapıştır. Anahtar önce test edilir. Anahtar cihazda tutulur; yalnız AES-GCM şifreli aiKeyBox profil ile eşitlenir. Diğer cihazda ilk cihazın ayarlarından Taşıma Kodu alınır, bir kez kilit açılır. Profil adı değişse bile kod geçerlidir. Yeni anahtar kaydı yeni kod üretir, test geçmişine dokunmaz. Kota modele/projeye bağlıdır; 429 olursa bekle ve AI Studio kotasını incele. 404 olursa özel model adını güncelle. Kullanıcıdan API anahtarı veya Taşıma Kodunu sohbete yazmasını ASLA isteme. Uygulama içinden PDF kitap dönüştürülmez; harici YZ ile JSON hazırlanıp içe aktarılır. HTML, JSON yedeği ve Android kayıt seçenekleri vardır. Yanıtların tavsiyedir; uygulama ayarlarını kendin değiştiremezsin.`;
 function aiChat(kind){const pid=activeProfile().id;if(kind==='help'){if(aiHelpChat?.pid!==pid)aiHelpChat={pid,history:[],busy:false,error:''};return aiHelpChat;}if(kind==='course'){const c=typeof currentCourse==='function'?currentCourse():null,s=typeof currentCourseSection==='function'?currentCourseSection(c):null,id=[pid,c?.id||'',s?.id||''].join('|');if(aiCourseChat?.id!==id)aiCourseChat={pid,id,history:[],busy:false,error:'',open:false};return aiCourseChat;}const q=currentTest.questions[currentState.index],id=[pid,currentBook.id,currentTest.id,q.id,!!(currentState.checked||peekOpen(currentState,q))].join('|');if(aiQuestionChat?.id!==id)aiQuestionChat={pid,id,history:[],busy:false,error:'',open:false};return aiQuestionChat;}
 function aiChatHTML(kind){const c=aiChat(kind),after=kind==='question'&&(currentState.checked||peekOpen(currentState,currentTest.questions[currentState.index])),chips=kind==='help'?['Şıkları nasıl elerim?','Anahtarımı telefona nasıl taşırım?']:kind==='course'?['Bu bölümü 3 maddede özetle','Yeni bir örnek cümleyle pekiştir','Sınavda en sık hangi tuzak çıkar?']:after?['Neden doğru/yanlış?','Seçtiğim şık neden yanıltıcı?','Bilmediğim kavramları açıkla']:['İpucu ver (cevabı söyleme)','Soru kökünü basitleştir','Bilmediğim kavramları açıkla'];return `<div class="ai-chat" data-ai-kind="${kind}"><div class="ai-messages" aria-live="polite">${c.history.map(m=>`<div class="ai-message ${m.role}"><b>${m.role==='user'?'Siz':'Asistan'}</b><div>${esc(m.parts[0].text)}</div></div>`).join('')}</div><div class="ai-chips">${chips.map(t=>`<button class="small" data-act="aiChip" data-kind="${kind}" data-text="${esc(t)}" ${c.busy||aiRequestBusy||aiSetupBusy||locked?'disabled':''}>${esc(t)}</button>`).join('')}</div><label for="aiMessage-${kind}">Mesajınız</label><textarea id="aiMessage-${kind}" rows="2" maxlength="4000" placeholder="Sorunuzu yazın…" ${c.busy||locked?'disabled':''}></textarea><div class="row"><button class="primary" data-act="aiSend" data-kind="${kind}" ${c.busy||aiRequestBusy||aiSetupBusy||locked?'disabled':''}>${c.busy?'Yanıt hazırlanıyor…':'Gönder'}</button><button data-act="aiClear" data-kind="${kind}" ${c.busy?'disabled':''}>Sohbeti Temizle</button><button data-act="aiSettings">YZ Ayarları</button></div><p class="file-help">Sohbet geçicidir. Yanıtları kaynaklarınızla kontrol edin. Soru ve mesajlar Google’a gönderilir; API anahtarınızı sohbete yazmayın.</p><p class="ai-error" role="status">${esc(c.error)}</p></div>`;}
 function aiQuestionPanel(){const c=aiChat('question');return `<section class="ai-question"><button data-act="aiToggle" data-kind="question" aria-expanded="${c.open}">🤖 YZ’ye Sor</button>${c.open?aiChatHTML('question'):''}</section>`;}
@@ -1809,9 +1978,9 @@ function courseView() {
     `<div class="course-toc-list">${filteredSecs.map(x => `<button class="toc-test ${x.id === s.id ? 'active' : ''} ${isSecDone(c.id, x.id) ? 'done' : ''}" data-act="openCourse" data-cid="${esc(c.id)}" data-sid="${esc(x.id)}"><span>${isSecDone(c.id, x.id) ? '✓ ' : '○ '}<b>${esc(x.dayTag)}</b></span><small>${esc(x.title)}</small></button>`).join('') || '<p class="file-help">Eşleşen bölüm yok.</p>'}</div>` +
     `<div class="row" style="margin-top:12px"><button class="small" data-act="nav" data-view="tracker">🎯 Program & Takip</button><button class="small" data-act="nav" data-view="notebook">📝 Notlar</button></div></div></aside>`;
 
-  const hlHTML = hlList.length ? `<div class="hl-chips" style="margin-top:12px"><span>🖍️ Bölüm Vurguları:</span>${hlList.map(h => `<button class="hl-chip ${h.style === 'underline' ? 'is-underline' : ''}" style="--hl-c:${h.color}" data-act="eduHlDel" data-cid="${esc(c.id)}" data-sid="${esc(s.id)}" data-hl-id="${esc(h.id)}" title="Vurguyu kaldır">${esc(h.t.slice(0, 48))} ×</button>`).join('')}</div>` : '';
+  const hlHTML = hlList.length ? `<div class="hl-chips" style="margin-top:12px"><span>🖍️ Bölüm Vurguları:</span>${hlList.map(h => `<button class="hl-chip ${h.style === 'underline' ? 'is-underline' : ''}" style="--hl-c:${h.color}" data-act="eduHlChipClick" data-cid="${esc(c.id)}" data-sid="${esc(s.id)}" data-hl-id="${esc(h.id)}" title="Rengi / stili değiştir veya kaldır">${esc(h.t.slice(0, 48))} <small>${h.style === 'underline' ? 'alt çizgi' : 'vurgu'}</small> ×</button>`).join('')}</div>` : '';
 
-  const pairedCta = s.pairedTestId ? `<section class="edu-paired-cta"><div><div class="eyebrow">UYGULAMA ADIMI · TEST ATÖLYESİ</div><strong>${esc(tm?.test?.title || ('Modül: ' + s.pairedTestId))}</strong>` +
+  const pairedCta = s.pairedTestId ? `<section class="edu-paired-cta"><div><div class="eyebrow">UYGULAMA ADIMI · EĞİTİM ATÖLYESİ</div><strong>${esc(tm?.test?.title || ('Modül: ' + s.pairedTestId))}</strong>` +
     `<p>${tm ? (tm.done ? `Durum: Tamamlandı (${tm.answered}/${tm.qTotal || '?'} soru${tm.outcome ? ' · %' + tm.outcome.successPercent + ' başarı' : ''})` : `İlerleme: ${tm.answered} / ${tm.qTotal || '?'} soru · Önerilen süre: ${s.estMin || 25} dk`) : `Önerilen süre: ${s.estMin || 25} dk · Eşlikçi test modülüne geç`}</p></div>` +
     `<button class="primary" data-act="eduOpenTest" data-book="${esc(s.pairedBookId)}" data-test="${esc(s.pairedTestId)}">⚡ Eşlikçi Testi Çöz →</button></section>` : '';
 
@@ -1859,7 +2028,7 @@ function trackerView() {
     return `<tr><td><b>${esc(cl.code)} · ${esc(cl.title)}</b><br><small>${esc(cl.baseline)}</small></td><td>${esc(cl.rule)}</td><td>${secDone ? '✓ Konu Tamam' : '○ Konu Bekliyor'}<br>${liveStat}</td><td><div class="row"><button class="small" data-act="openCourse" data-cid="${esc(NAYAS_YDS_COURSE.id)}" data-sid="${esc(cl.secId)}">Konu</button><button class="small" data-act="eduOpenTest" data-book="yds-telafi-programi-2026" data-test="${esc(cl.testId)}">Test</button></div></td></tr>`;
   }).join('');
 
-  return `<section class="intro"><div><div class="eyebrow">PROGRAM & İLERLEME TAKİBİ</div><h1>7 Günlük YDS Telafi Kampı ve Görevlerin.</h1><p>Konu anlatımındaki tamamlanan bölümler ile Test Atölyesindeki gerçek soru/net verilerin tek panelde birleşir.</p></div>` +
+  return `<section class="intro"><div><div class="eyebrow">PROGRAM & İLERLEME TAKİBİ</div><h1>7 Günlük YDS Telafi Kampı ve Görevlerin.</h1><p>Konu anlatımındaki tamamlanan bölümler ile Eğitim Atölyesindeki gerçek soru/net verilerin tek panelde birleşir.</p></div>` +
     `<div class="row"><button data-act="openCourse" data-cid="${esc(NAYAS_YDS_COURSE.id)}" data-sid="sec-0-genel-bakis">📘 Genel Karne & Plan</button><button class="primary" data-act="nav" data-view="notebook">📝 Notlar & Kelime Defteri</button></div></section>` +
     `<section class="stats"><div class="stat"><small>Eğitim Bölümleri</small><strong>${sm.doneSecs} / ${sm.totalSecs}</strong></div>` +
     `<div class="stat"><small>Telafi Sorusu</small><strong>${sm.totalAns} / ${sm.totalQ || 120}</strong></div>` +
@@ -2058,33 +2227,10 @@ if (typeof window.__hostBack === 'function') {
   };
 }
 
-// Course text selection menu (🖍️ Vurgula & ❓ Kelime Havuzuna Ekle)
-document.addEventListener('contextmenu', e => {
-  if (view !== 'course') return;
-  const sel = window.getSelection();
-  if (!sel || sel.isCollapsed) return;
-  const t = sel.toString().replace(/\s+/g, ' ').trim();
-  if (t.length < 2 || t.length > 260) return;
-  const node = sel.anchorNode?.nodeType === 1 ? sel.anchorNode : sel.anchorNode?.parentElement;
-  const art = node?.closest?.('.course-article');
-  if (!art) return;
-  e.preventDefault();
-  $('#eduSelMenu')?.remove();
-  const m = document.createElement('div');
-  m.id = 'eduSelMenu';
-  m.className = 'unk-menu';
-  m.innerHTML = `<button type="button" data-act="eduSelVocab">❓ Kelime Havuzuna Ekle</button>` +
-    `<button type="button" data-act="eduSelHl">🖍️ Vurgula</button>` +
-    `<button type="button" data-act="eduSelSpeak">🔊 Dinle (EN)</button>`;
-  m.style.left = Math.max(8, Math.min(innerWidth - 220, e.clientX)) + 'px';
-  m.style.top = Math.max(8, Math.min(innerHeight - 140, e.clientY)) + 'px';
-  m._info = { t, cid: art.dataset.cid, sid: art.dataset.sid };
-  document.body.append(m);
-});
+// Course text selection menu & highlights are handled uniformly by marks.js (#unkMenu & #hlPopover)
 
 // Event delegation for Education / Tracker / Notebook interactions
 document.addEventListener('click', async e => {
-  if (!e.target.closest('#eduSelMenu')) $('#eduSelMenu')?.remove();
   const el = e.target.closest('[data-act]');
   if (!el || el.disabled) return;
   const a = el.dataset.act;
@@ -2211,35 +2357,6 @@ document.addEventListener('click', async e => {
       break;
     }
     case 'eduSpeakWord': eduSpeakText(el.dataset.word || '', 'en', 'vocab:' + (el.dataset.word || '')); break;
-    case 'eduSelVocab': {
-      const info = $('#eduSelMenu')?._info; $('#eduSelMenu')?.remove();
-      if (!info) break;
-      const now = Date.now();
-      ensureEduState(state).vocab.push({ id: 'vc-' + now.toString(36) + Math.random().toString(36).slice(2, 5), word: info.t, meaning: 'Ders notundan eklendi', note: info.sid, source: 'Konu Anlatımı', mastered: false, createdAt: now, updatedAt: now });
-      window.getSelection()?.removeAllRanges();
-      eduTouch(true);
-      toast('“' + info.t.slice(0, 35) + '” Kelime Havuzuna eklendi.');
-      break;
-    }
-    case 'eduSelHl': {
-      const info = $('#eduSelMenu')?._info; $('#eduSelMenu')?.remove();
-      if (!info) break;
-      const e2 = ensureEduState(state), k = info.cid + '/' + info.sid;
-      e2.hl[k] = e2.hl[k] || [];
-      const color = typeof getLastHlColor === 'function' ? getLastHlColor() : '#fff59d';
-      const style = typeof getLastHlStyle === 'function' ? getLastHlStyle() : 'highlight';
-      e2.hl[k].push({ id: 'ehl-' + Date.now() + '-' + Math.random().toString(36).slice(2, 6), t: info.t, color, style, at: Date.now() });
-      window.getSelection()?.removeAllRanges();
-      eduTouch(true);
-      render();
-      toast('Ders metni vurgulandı.');
-      break;
-    }
-    case 'eduSelSpeak': {
-      const info = $('#eduSelMenu')?._info; $('#eduSelMenu')?.remove();
-      if (info) eduSpeakText(info.t, 'en', 'sel');
-      break;
-    }
     case 'eduHlDel': {
       const e2 = ensureEduState(state), k = el.dataset.cid + '/' + el.dataset.sid;
       if (Array.isArray(e2.hl[k])) e2.hl[k] = e2.hl[k].filter(x => x.id !== el.dataset.hlId);
@@ -2762,7 +2879,7 @@ let queued=false;new MutationObserver(()=>{if(!queued){queued=true;queueMicrotas
 refresh();
 })();
 
-document.addEventListener('click',async e=>{const el=e.target.closest('[data-act]');if(!el||el.disabled)return;const act=el.dataset.act;if(act==='openCourse'||act.startsWith('edu'))return;const allowed=['nav','menu','contents','book','test','resume','backup','exportBackup','portable','htmlFile','close','prompt','format','history','zoomQ','zoomSolution','solution','figure','takeover','tts','ttsSettings','ttsTest','analysis','exportAnalysis','copyAiPrompt','aiGuide'];if(locked&&!allowed.includes(act)){toast('Önce bu sekmede devam etmeyi seç.');return;}const s=currentState,q=view==='study'?currentTest.questions[s.index]:null;switch(act){case'cloud':cloudDialog();break;case'cloudIn':await cloudSync(true);break;case'cloudSync':await cloudSync(false);break;case'cloudOut':await cloudSignOut();break;case'cloudMode':cloudSetMode(el.dataset.mode);break;case'cloudNagClose':$('#cloudNag')?.remove();break;case'profiles':profileDialog();break;case'contentsView':setContentsView(el.dataset.view);break;case'switchProfile':switchProfile(el.dataset.id);break;case'renameProfile':renameProfileDialog(el.dataset.id);break;case'deleteProfile':deleteProfile(el.dataset.id);break;case'addProfile':addProfile();break;case'tts':ttsRun(el.dataset.tts);break;case'ttsSettings':ttsDialog();break;case'ttsTest':ttsToggle('test:',()=>speechChunks('Merhaba. Bu, Test Atölyesi sesli okuma denemesidir. Okuma hızı '+ttsSettings().rate.toFixed(2).replace('.',',')+'.'));break;case'peek':togglePeek();break;case'analysis':analysisDialog();break;case'exportAnalysis':{pulse();save();const scope=$('#analysisScope')?.value||'',pkg=analysisPackage(scope);if(!pkg.books.length){toast('Bu kapsamda çözülmüş test yok.');break;}download('Test-Atolyesi-YZ-analiz-'+activeProfile().name.replace(/[^\p{L}\p{N}]+/gu,'-')+'-'+new Date().toISOString().slice(0,10)+'.json',JSON.stringify(pkg,null,1));toast('Analiz paketi indirildi. Şimdi istem metnini kopyalayıp yapay zekâya ver.');}break;case'copyAiPrompt':{const txt=aiPromptText(activeProfile().name);try{await navigator.clipboard.writeText(txt);toast('İstem metni panoya kopyalandı.');}catch(err){dialog('İstem metni',`<textarea rows="8" readonly>${esc(txt)}</textarea><p class="file-help">Metni seçip kopyala.</p>`);}}break;case'aiGuide':download('Test-Atolyesi-YZ-analiz-yonergesi.md',aiGuideText(),'text/markdown;charset=utf-8');break;case'htmlFile':htmlFileDialog();break;case'chooseHTML':await chooseHTMLFile();break;case'resumeHTML':await resumeHTMLFile();break;case'disconnectHTML':await disconnectHTMLFile();break;case'appearance':appearanceDialog();break;case'resetAppearance':{const now=Date.now();state.appearance=normalizeAppearance({updatedAt:now});activeProfile().updatedAt=now;applyAppearance();save();syncSettingsSoon();appearanceDialog();}break;case'figure':{const figures=el.dataset.kind==='question'?q.figures:q.explanationFigures;const f=figures?.[Number(el.dataset.index)];if(f){dialog(f.alt||'Kitaptaki şekil',`<img src="${f.src}" alt="${esc(f.alt||'Kitaptaki şekil')}">`);$('#modal .dialog').classList.add('image-view');}}break;case'nav':nav(el.dataset.view);break;case'menu':$('#sidebar').classList.toggle('open');break;case'contents':openBook(bookId);break;case'book':openBook(el.dataset.id);break;case'test':openTest(el.dataset.book,el.dataset.test);break;case'resume':resume();break;case'pause':toggleRun();break;case'prev':jump(s.index-1);break;case'next':jump(s.index+1);break;case'jump':jump(Number(el.dataset.index));break;case'answer':if(String(window.getSelection()||'').trim())break;answer(el.dataset.id);break;case'clearAnswer':delete s.answers[q.id];stampQ(s,q.id);save();render();break;case'flag':s.flags[q.id]=!s.flags[q.id];stampQ(s,q.id);save();render();break;case'check':check();break;case'uncheck':s.checked=false;stampT(s);showSolution=false;save();render();break;case'solution':showSolution=!showSolution;render();break;case'settings':settings();break;case'resetQuestionTime':confirmAction('Soru süresini sıfırla','Yalnız bu sorunun süresi sıfırlanır. Testin toplam çalışma süresi korunur.',()=>{s.times[q.id]=0;});break;case'resetTestTime':confirmAction('Test sürelerini sıfırla','Bu testin toplam ve soru bazlı tüm süreleri sıfırlanır. Seçimlerin ve notların korunur.',()=>{s.elapsed=0;s.times={};});break;case'clearTestAnswers':confirmAction('Tüm seçimleri sil','Bu testteki tüm cevap seçimleri silinir. Süreler, notlar ve kontrol geçmişi korunur.',()=>{s.answers={};s.elims={};s.checked=false;stampT(s);showSolution=false;});break;case'resetTest':confirmAction('Testi tamamen sıfırla','Bu testin seçimleri, süreleri, notları, işaretleri, sınırları ve kontrol geçmişi silinecek. Cevap anahtarı düzeltmeleri korunacak.',()=>{const keys=s.keyOverrides||{};delete state.tests[currentBook.id+'/'+currentTest.id];currentState=getState(currentBook,currentTest);currentState.keyOverrides=keys;stampT(currentState);showSolution=false;});break;case'close':closeDialog();break;case'backup':backupDialog();break;case'exportBackup':pulse();save();download('Test-Atolyesi-yedek-'+new Date().toISOString().slice(0,10)+'.json',JSON.stringify({format:'test-atolyesi-backup',version:2,createdAt:new Date().toISOString(),store,books:imported}));toast('Yedek indirildi.');break;case'restore':inputMode='backup';$('#file').click();break;case'import':libPickDialog(null);break;case'portable':await portable();break;case'prompt':download('AI-kitap-donusturme-yonergesi.txt',prompt,'text/plain;charset=utf-8');break;case'format':download('Test-Atolyesi-format-ornegi.json',JSON.stringify(sample,null,2));break;case'history':dialog('Kontrol geçmişi',s.history.length?s.history.slice().reverse().map(h=>`<p><b>${esc(new Date(h.at).toLocaleString('tr-TR'))}</b><br>${h.correct} doğru · ${h.wrong} yanlış · ${h.blank} boş · ${duration(h.elapsed)}</p>`).join(''):'<p>Bu test henüz kontrol edilmedi.</p>');break;case'zoomQ':case'zoomSolution':dialog(act==='zoomQ'?'Soru görüntüsü':'Kitaptaki çözüm',`<img src="${act==='zoomQ'?q.image:q.explanationImage}" alt="Büyük görüntü">`);$('#modal .dialog').classList.add('image-view');break;case'editKey':dialog('Cevap anahtarını düzelt','<p>Kitabın kaynak çözümünü inceledikten sonra doğru harfi seç. Bu değişiklik kişisel kaydına işlenir.</p><select id="keyAnswer"><option value="">Anahtar bilinmiyor</option>'+q.options.map((o,i)=>{const k=String.fromCharCode(65+i);return `<option ${q.answer===k?'selected':''}>${k}</option>`;}).join('')+'</select>','<button class="primary" id="saveKey">Kaydet</button>');$('#saveKey').onclick=()=>{rememberKey(q);q.answer=$('#keyAnswer').value||null;s.keyOverrides=s.keyOverrides||{};s.keyOverrides[q.id]=q.answer;stampQ(s,q.id);save();closeDialog();render();};break;case'removeBook':confirmAction('Kitabı kaldır','Yalnız indirilen kitap içeriği cihazdan kaldırılır. Cevaplar, notlar, süreler ve profil kayıtları korunur. Kitap katalogdan yeniden indirilebilir.',async()=>{try{await idb('delete',el.dataset.id);imported=imported.filter(b=>b.id!==el.dataset.id);books=[...baseBooks(),...imported];bookId=books[0]?.id||null;save();render();}catch(e){toast('Kitap kaldırılamadı.');}});break;case'takeover':claim(true);try{const latest=normalizeStore(JSON.parse(localStorage.getItem(STORE_KEY)||'null'));if(latest){store=latest;state=activeProfile().state;if(typeof ensureEduState==='function')ensureEduState(state);}}catch(e){}if(view==='study')currentState=getState(currentBook,currentTest);applyKeyOverrides();render();toast('Çalışma bu sekmeye alındı.');break;}});
+document.addEventListener('click',async e=>{const el=e.target.closest('[data-act]');if(!el||el.disabled)return;const act=el.dataset.act;if(act==='openCourse'||act.startsWith('edu'))return;const allowed=['nav','menu','contents','book','test','resume','backup','exportBackup','portable','htmlFile','close','prompt','format','history','zoomQ','zoomSolution','solution','figure','takeover','tts','ttsSettings','ttsTest','analysis','exportAnalysis','copyAiPrompt','aiGuide'];if(locked&&!allowed.includes(act)){toast('Önce bu sekmede devam etmeyi seç.');return;}const s=currentState,q=view==='study'?currentTest.questions[s.index]:null;switch(act){case'cloud':cloudDialog();break;case'cloudIn':await cloudSync(true);break;case'cloudSync':await cloudSync(false);break;case'cloudOut':await cloudSignOut();break;case'cloudMode':cloudSetMode(el.dataset.mode);break;case'cloudNagClose':$('#cloudNag')?.remove();break;case'profiles':profileDialog();break;case'contentsView':setContentsView(el.dataset.view);break;case'switchProfile':switchProfile(el.dataset.id);break;case'renameProfile':renameProfileDialog(el.dataset.id);break;case'deleteProfile':deleteProfile(el.dataset.id);break;case'addProfile':addProfile();break;case'tts':ttsRun(el.dataset.tts);break;case'ttsSettings':ttsDialog();break;case'ttsTest':ttsToggle('test:',()=>speechChunks('Merhaba. Bu, Eğitim Atölyesi sesli okuma denemesidir. Okuma hızı '+ttsSettings().rate.toFixed(2).replace('.',',')+'.'));break;case'peek':togglePeek();break;case'analysis':analysisDialog();break;case'exportAnalysis':{pulse();save();const scope=$('#analysisScope')?.value||'',pkg=analysisPackage(scope);if(!pkg.books.length){toast('Bu kapsamda çözülmüş test yok.');break;}download('Egitim-Atolyesi-YZ-analiz-'+activeProfile().name.replace(/[^\p{L}\p{N}]+/gu,'-')+'-'+new Date().toISOString().slice(0,10)+'.json',JSON.stringify(pkg,null,1));toast('Analiz paketi indirildi. Şimdi istem metnini kopyalayıp yapay zekâya ver.');}break;case'copyAiPrompt':{const txt=aiPromptText(activeProfile().name);try{await navigator.clipboard.writeText(txt);toast('İstem metni panoya kopyalandı.');}catch(err){dialog('İstem metni',`<textarea rows="8" readonly>${esc(txt)}</textarea><p class="file-help">Metni seçip kopyala.</p>`);}}break;case'aiGuide':download('Egitim-Atolyesi-YZ-analiz-yonergesi.md',aiGuideText(),'text/markdown;charset=utf-8');break;case'htmlFile':htmlFileDialog();break;case'chooseHTML':await chooseHTMLFile();break;case'resumeHTML':await resumeHTMLFile();break;case'disconnectHTML':await disconnectHTMLFile();break;case'appearance':appearanceDialog();break;case'resetAppearance':{const now=Date.now();state.appearance=normalizeAppearance({updatedAt:now});activeProfile().updatedAt=now;applyAppearance();save();syncSettingsSoon();appearanceDialog();}break;case'figure':{const figures=el.dataset.kind==='question'?q.figures:q.explanationFigures;const f=figures?.[Number(el.dataset.index)];if(f){dialog(f.alt||'Kitaptaki şekil',`<img src="${f.src}" alt="${esc(f.alt||'Kitaptaki şekil')}">`);$('#modal .dialog').classList.add('image-view');}}break;case'nav':nav(el.dataset.view);break;case'menu':$('#sidebar').classList.toggle('open');break;case'contents':openBook(bookId);break;case'book':openBook(el.dataset.id);break;case'test':openTest(el.dataset.book,el.dataset.test);break;case'resume':resume();break;case'pause':toggleRun();break;case'prev':jump(s.index-1);break;case'next':jump(s.index+1);break;case'jump':jump(Number(el.dataset.index));break;case'answer':if(String(window.getSelection()||'').trim())break;answer(el.dataset.id);break;case'clearAnswer':delete s.answers[q.id];stampQ(s,q.id);save();render();break;case'flag':s.flags[q.id]=!s.flags[q.id];stampQ(s,q.id);save();render();break;case'check':check();break;case'uncheck':s.checked=false;stampT(s);showSolution=false;save();render();break;case'solution':showSolution=!showSolution;render();break;case'settings':settings();break;case'resetQuestionTime':confirmAction('Soru süresini sıfırla','Yalnız bu sorunun süresi sıfırlanır. Testin toplam çalışma süresi korunur.',()=>{s.times[q.id]=0;});break;case'resetTestTime':confirmAction('Test sürelerini sıfırla','Bu testin toplam ve soru bazlı tüm süreleri sıfırlanır. Seçimlerin ve notların korunur.',()=>{s.elapsed=0;s.times={};});break;case'clearTestAnswers':confirmAction('Tüm seçimleri sil','Bu testteki tüm cevap seçimleri silinir. Süreler, notlar ve kontrol geçmişi korunur.',()=>{s.answers={};s.elims={};s.checked=false;stampT(s);showSolution=false;});break;case'resetTest':confirmAction('Testi tamamen sıfırla','Bu testin seçimleri, süreleri, notları, işaretleri, sınırları ve kontrol geçmişi silinecek. Cevap anahtarı düzeltmeleri korunacak.',()=>{const keys=s.keyOverrides||{};delete state.tests[currentBook.id+'/'+currentTest.id];currentState=getState(currentBook,currentTest);currentState.keyOverrides=keys;stampT(currentState);showSolution=false;});break;case'close':closeDialog();break;case'backup':backupDialog();break;case'exportBackup':pulse();save();download('Egitim-Atolyesi-yedek-'+new Date().toISOString().slice(0,10)+'.json',JSON.stringify({format:'test-atolyesi-backup',version:2,createdAt:new Date().toISOString(),store,books:imported}));toast('Yedek indirildi.');break;case'restore':inputMode='backup';$('#file').click();break;case'import':libPickDialog(null);break;case'portable':await portable();break;case'prompt':download('AI-kitap-donusturme-yonergesi.txt',prompt,'text/plain;charset=utf-8');break;case'format':download('Egitim-Atolyesi-format-ornegi.json',JSON.stringify(sample,null,2));break;case'history':dialog('Kontrol geçmişi',s.history.length?s.history.slice().reverse().map(h=>`<p><b>${esc(new Date(h.at).toLocaleString('tr-TR'))}</b><br>${h.correct} doğru · ${h.wrong} yanlış · ${h.blank} boş · ${duration(h.elapsed)}</p>`).join(''):'<p>Bu test henüz kontrol edilmedi.</p>');break;case'zoomQ':case'zoomSolution':dialog(act==='zoomQ'?'Soru görüntüsü':'Kitaptaki çözüm',`<img src="${act==='zoomQ'?q.image:q.explanationImage}" alt="Büyük görüntü">`);$('#modal .dialog').classList.add('image-view');break;case'editKey':dialog('Cevap anahtarını düzelt','<p>Kitabın kaynak çözümünü inceledikten sonra doğru harfi seç. Bu değişiklik kişisel kaydına işlenir.</p><select id="keyAnswer"><option value="">Anahtar bilinmiyor</option>'+q.options.map((o,i)=>{const k=String.fromCharCode(65+i);return `<option ${q.answer===k?'selected':''}>${k}</option>`;}).join('')+'</select>','<button class="primary" id="saveKey">Kaydet</button>');$('#saveKey').onclick=()=>{rememberKey(q);q.answer=$('#keyAnswer').value||null;s.keyOverrides=s.keyOverrides||{};s.keyOverrides[q.id]=q.answer;stampQ(s,q.id);save();closeDialog();render();};break;case'removeBook':confirmAction('Kitabı kaldır','Yalnız indirilen kitap içeriği cihazdan kaldırılır. Cevaplar, notlar, süreler ve profil kayıtları korunur. Kitap katalogdan yeniden indirilebilir.',async()=>{try{await idb('delete',el.dataset.id);imported=imported.filter(b=>b.id!==el.dataset.id);books=[...baseBooks(),...imported];bookId=books[0]?.id||null;save();render();}catch(e){toast('Kitap kaldırılamadı.');}});break;case'takeover':claim(true);try{const latest=normalizeStore(JSON.parse(localStorage.getItem(STORE_KEY)||'null'));if(latest){store=latest;state=activeProfile().state;if(typeof ensureEduState==='function')ensureEduState(state);}}catch(e){}if(view==='study')currentState=getState(currentBook,currentTest);applyKeyOverrides();render();toast('Çalışma bu sekmeye alındı.');break;}});
 document.addEventListener('input',e=>{if(['ttsRate','ttsPitch'].includes(e.target.id)){if(!locked)ttsInput(e);return;}if(['fontSize','lineHeight','backgroundColor','paperColor','textColor','accentColor','iconColor','noteColor'].includes(e.target.id)){if(!locked)appearanceInput(e);return;}if(e.target.id==='search'){filter=e.target.value;$('#testList').innerHTML=testCards(books.find(b=>b.id===bookId)||books[0]);}if(e.target.id==='qNote'&&!locked){currentState.notes[currentTest.questions[currentState.index].id]=e.target.value;stampQ(currentState,currentTest.questions[currentState.index].id);save();}});
 document.addEventListener('change',e=>{if(['ttsVoice','ttsArabicVoice','ttsArabic','ttsAnnounce'].includes(e.target.id)){if(!locked)ttsInput(e);return;}if(['themeChoice','readingFont','iconColorMode','noteColorMode'].includes(e.target.id)){if(!locked)appearanceInput(e);return;}if(e.target.id==='sectionFilter'){sectionFilter=e.target.value;$('#testList').innerHTML=testCards(books.find(b=>b.id===bookId)||books[0]);}if(e.target.id==='file'){if(e.target.files[0])importFile(e.target.files[0]);e.target.value='';}});
 document.addEventListener('keydown',e=>{if(e.key==='Escape'){closeDialog();$('#sidebar')?.classList.remove('open');return;}if(view!=='study'||$('#modal').children.length||/INPUT|TEXTAREA|SELECT/.test(e.target.tagName)||e.ctrlKey||e.metaKey||e.altKey)return;if(e.key==='ArrowRight'){e.preventDefault();jump(currentState.index+1);}else if(e.key==='ArrowLeft'){e.preventDefault();jump(currentState.index-1);}else if(e.code==='Space'){e.preventDefault();toggleRun();}else if(e.key==='k'||e.key==='K'){e.preventDefault();togglePeek();}else if(e.key==='r'||e.key==='R'){e.preventDefault();if(!currentTest.questions[currentState.index].image)ttsRun('q');}else if(/^[1-8]$/.test(e.key)){const i=Number(e.key)-1;if(i<currentTest.questions[currentState.index].options.length)answer(String.fromCharCode(65+i));}});
