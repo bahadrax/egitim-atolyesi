@@ -565,6 +565,32 @@ button:hover{border-color:color-mix(in srgb,var(--green) 42%,var(--line))}
 .edu-note-box,.nb-item,.aside-card:has(#qNote){border-left:3.5px solid var(--note-accent,var(--green));background:color-mix(in srgb,var(--note-accent,var(--green)) 5%,var(--paper))}
 .edu-note-box h3,.nb-item h4,.aside-card:has(#qNote) h3{color:var(--note-accent,var(--green))}
 .edu-note-box textarea:focus,#qNote:focus,.nb-composer textarea:focus{outline:2px solid color-mix(in srgb,var(--note-accent,var(--green)) 45%,transparent);border-color:var(--note-accent,var(--green))}
+
+/* === Flashcards (Bilmediğim Şeyleri Öğren) & Kategori Çubuğu === */
+.fc-cat-bar{display:flex;flex-wrap:wrap;gap:6px;align-items:center;margin-bottom:12px}
+.fc-prog{display:inline-flex;align-items:center;gap:6px;font-size:12px;font-weight:700;padding:4px 10px;border-radius:999px;background:var(--light);border:1px solid var(--line)}
+.fc-prog.done{background:#e7f6ec;color:#1b6640;border-color:#a5d6b7}
+.fc-prog.err{background:#faece8;color:#ae493e;border-color:#e5b2a8}
+.fc-prog-bar{width:64px;height:7px;border-radius:999px;background:var(--line);overflow:hidden;display:inline-block}
+.fc-prog-bar i{display:block;height:100%;background:var(--green);transition:width .25s}
+.fc-stats-line{display:flex;justify-content:space-between;align-items:center;margin-bottom:10px;font-size:13px;color:var(--muted)}
+.fc-card{padding:24px;text-align:center;max-width:680px;margin:0 auto}
+.fc-badge-row{display:flex;justify-content:space-between;align-items:center;margin-bottom:14px}
+.fc-word{font-size:24px;margin:10px 0 14px;color:var(--ink)}
+.fc-hr{border:0;border-top:1px solid var(--line);margin:18px 0}
+.fc-meaning{font-size:16px;line-height:1.55;margin:0 0 8px}
+.fc-flip-wrap{margin-top:18px}
+.fc-rate-row{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:8px;margin-top:16px}
+.fc-rate{display:flex;flex-direction:column;align-items:center;gap:2px;padding:10px 6px;border-radius:10px;border:1px solid var(--line);background:var(--bg);cursor:pointer}
+.fc-rate:hover{filter:brightness(.96)}
+.fc-rate.again{border-color:#e09b92;color:#a12828}
+.fc-rate.hard{border-color:#e6c082;color:#9a5d00}
+.fc-rate.good{border-color:#93c5a6;color:#1b6640}
+.fc-rate.easy{border-color:#8eb8e5;color:#1b4f91}
+.fc-rate small{font-size:11px;opacity:.85}
+.fc-cat-select{font-size:12px;padding:4px 8px;border-radius:8px;border:1px solid var(--line);background:var(--bg);color:var(--ink);max-width:170px}
+.fc-done-card{text-align:center;padding:28px 20px}
+@media(max-width:600px){.fc-rate-row{grid-template-columns:repeat(2,minmax(0,1fr))}}
 </style>
 </head>
 <body>
@@ -1105,6 +1131,7 @@ function addEduVocab(info){
   window.getSelection()?.removeAllRanges();
   hideUnkMenu();
   eduTouch(true);
+  render();
   toast('“'+info.t.slice(0,35)+'” Kelime Havuzuna eklendi.');
 }
 
@@ -1381,7 +1408,8 @@ function markUnk(){
     const art=document.querySelector('.course-article');
     if(!art)return;
     const cid=art.dataset.cid,sid=art.dataset.sid;
-    const hlList=ensureEduState(state).hl?.[cid+'/'+sid]||[];
+    const e2=ensureEduState(state);
+    const hlList=e2.hl?.[cid+'/'+sid]||[];
     for(const x of hlList){
       applyTextMark(art,x.t,()=>{
         const mk=document.createElement('mark');
@@ -1392,6 +1420,15 @@ function markUnk(){
         mk.dataset.hlSid=sid;
         mk.style.setProperty('--hl-c',x.color);
         mk.title='Vurgu (rengi/stili değiştirmek veya silmek için tıkla)';
+        return mk;
+      });
+    }
+    const unkVocab=(e2.vocab||[]).filter(v=>!v.deleted&&v.word&&v.word.length>=2);
+    for(const v of unkVocab){
+      applyTextMark(art,v.word,()=>{
+        const mk=document.createElement('mark');
+        mk.className='unk-mark';
+        mk.title='Bilmediğin ifade (Kelime Havuzu)';
         return mk;
       });
     }
@@ -1641,6 +1678,7 @@ function ensureEduState(st) {
   if (!e.activeCourseId) e.activeCourseId = 'nayas-yds-akademik-telafi-2026';
   if (!e.activeSecId) e.activeSecId = 'sec-0-genel-bakis';
   if (!e.notebookTab) e.notebookTab = 'notes';
+  if (eduReady && typeof fcEnsureCats === 'function') fcEnsureCats(e);
   // One-time starter seed of Nayas Tam Tanı [?] words for p-nayas profile (guards against TDZ during early store bootstrap)
   if (eduReady) {
     const profId = typeof activeProfile === 'function' ? activeProfile()?.id : '';
@@ -1710,6 +1748,11 @@ function mergeEduState(rawA, rawB) {
     activeSecId: newer.activeSecId || 'sec-0-genel-bakis',
     notebookTab: newer.notebookTab || 'notes',
     vocabSeeded: !!(a.vocabSeeded || b.vocabSeeded),
+    fcCats: eduMergeArrayById(a.fcCats, b.fcCats),
+    fcCards: eduMergeStampMap(a.fcCards, b.fcCards),
+    fcDaily: newer.fcDaily || a.fcDaily || b.fcDaily,
+    hlCats: eduMergeArrayById(a.hlCats, b.hlCats),
+    hlCatMap: eduMergeStampMap(a.hlCatMap, b.hlCatMap),
     stamp: Math.max(sa, sb)
   };
 }
@@ -2152,58 +2195,20 @@ function notebookView() {
     const filtered = freeNotes.filter(x => !q || (x.title + ' ' + x.tag + ' ' + x.body).toLocaleLowerCase('tr').includes(q));
     body = `<section class="aside-card nb-composer"><h3>＋ Yeni Çalışma Notu Ekle</h3><div class="row" style="margin-bottom:8px"><input id="nbFreeTitle" class="grow" placeholder="Başlık (ör. Edat Eşdizim İstisnaları)" maxlength="120"><select id="nbFreeTag"><option>İngilizce</option><option>ALES</option><option>DHBT</option><option>Genel</option></select></div><textarea id="nbFreeBody" rows="3" placeholder="Not içeriği…"></textarea><div class="row" style="margin-top:8px"><button class="primary" data-act="eduAddFreeNote">Notu Kaydet</button></div></section>` +
       (filtered.length ? `<div class="nb-list">${filtered.map(n => `<article class="aside-card nb-item"><div class="row" style="justify-content:space-between"><div><span class="tag">${esc(n.tag || 'Genel')}</span> <strong>${esc(n.title)}</strong></div><button class="small danger" data-act="eduDelFreeNote" data-id="${esc(n.id)}">Sil</button></div><p class="nb-text">${esc(n.body)}</p><small class="muted">${new Date(n.updatedAt || n.createdAt || Date.now()).toLocaleDateString('tr-TR')}</small></article>`).join('')}</div>` : '<div class="empty">Henüz serbest çalışma notu eklenmedi.</div>');
-  } else if (tab === 'vocab') {
-    const filtered = vocabAll.filter(v => (!q || (v.word + ' ' + v.meaning + ' ' + v.note + ' ' + v.source).toLocaleLowerCase('tr').includes(q)) && (nbFilter === 'unmastered' ? !v.mastered : nbFilter === 'mastered' ? v.mastered : true));
-    body = `<section class="aside-card nb-composer"><h3>＋ Kelime / İfade Kartı Ekle</h3><div class="edu-vocab-form"><input id="nbVocabWord" placeholder="Kelime veya ifade (ör. inhibit, stem from)" maxlength="120"><input id="nbVocabMeaning" placeholder="Türkçe karşılık / sınav ipucu" maxlength="200"><input id="nbVocabNote" placeholder="Kaynak / cümle notu (isteğe bağlı)" maxlength="200"><button class="primary" data-act="eduAddVocab">＋ Ekle</button></div></section>` +
-      `<div class="row" style="margin-bottom:14px"><button class="small ${nbFilter === '' ? 'primary' : ''}" data-act="eduNbFilter" data-f="">Tümü (${vocabAll.length})</button><button class="small ${nbFilter === 'unmastered' ? 'primary' : ''}" data-act="eduNbFilter" data-f="unmastered">Tekrar Edilecek (${vocabAll.filter(x => !x.mastered).length})</button><button class="small ${nbFilter === 'mastered' ? 'primary' : ''}" data-act="eduNbFilter" data-f="mastered">Öğrendiklerim (${vocabAll.filter(x => x.mastered).length})</button><button class="small" data-act="eduSeedVocab">📥 YDS Çekirdek Kelimeleri Ekle</button></div>` +
-      (filtered.length ? `<div class="vocab-grid">${filtered.map(v => `<article class="vocab-card ${v.mastered ? 'mastered' : ''}"><div class="vocab-top"><strong>${esc(v.word)}</strong><div class="row"><button class="small" data-act="eduSpeakWord" data-word="${esc(v.word)}" title="İngilizce telaffuzu dinle">🔊</button><button class="small ${v.mastered ? 'primary' : ''}" data-act="eduToggleVocab" data-kind="${esc(v.kind)}" data-id="${esc(v.id)}">${v.mastered ? '✓ Öğrendim' : 'Öğrenildi'}</button>${v.kind === 'custom' ? `<button class="small danger" data-act="eduDelVocab" data-id="${esc(v.id)}">×</button>` : ''}</div></div><p>${esc(v.meaning)}</p>${v.note ? `<small class="vocab-note">${esc(v.note)}</small>` : ''}<small class="vocab-src">${esc(v.source)}</small></article>`).join('')}</div>` : '<div class="empty">Bu filtrede kelime bulunamadı. Test çözerken bilmediğin ifadeleri ❓ / ? ile işaretlediğinde otomatik olarak buraya düşer.</div>');
+  } else if (tab === 'learn' || tab === 'vocab') {
+    body = typeof fcLearnView === 'function' ? fcLearnView(vocabAll, q) : '';
   } else {
-    const filtered = hls.filter(h => !q || (h.t + ' ' + h.title).toLocaleLowerCase('tr').includes(q));
-    body = filtered.length ? `<div class="nb-list">${filtered.map(h => `<article class="aside-card nb-item"><div class="row" style="justify-content:space-between"><div><span class="hl-chip ${h.style === 'underline' ? 'is-underline' : ''}" style="--hl-c:${esc(h.color)}">${esc(h.t)}</span></div>` +
-      (h.kind === 'course' ? `<button class="small" data-act="openCourse" data-cid="${esc(h.cid)}" data-sid="${esc(h.sid)}">Bölüme Git →</button>` : `<button class="small" data-act="eduJumpQuestion" data-book="${esc(h.bookId)}" data-test="${esc(h.testId)}" data-index="${h.qIndex}">Soruya Git →</button>`) +
-      `</div><small class="vocab-src">${esc(h.title)}${h.where ? ' · ' + esc(h.where) : ''}</small></article>`).join('')}</div>` : '<div class="empty">Henüz vurgulanmış (🖍️) metin bulunmuyor. Testlerde veya konu anlatımında metin seçip sağ tıklayarak vurgulayabilirsin.</div>';
+    body = typeof hlCategoryView === 'function' ? hlCategoryView(hls, q) : '';
   }
 
-  return `<section class="intro"><div><div class="eyebrow">ÇALIŞMA DEFTERİ & KELİME HAVUZU</div><h1>Notların, bilinmeyen kelimelerin ve vurguların.</h1><p>Test sorularında ve eğitim bölümlerinde aldığın tüm notlar, ❓/? bilinmeyen ifadeler ve 🖍️ vurgular tek defterde.</p></div></section>` +
-    `<div class="notebook-tabs" role="tablist">${tabBtn('notes', '📝 Soru & Ders Notları', qNotes.length)}${tabBtn('free', '🗒️ Serbest Notlar', freeNotes.length)}${tabBtn('vocab', '❓ Kelime Havuzu', vocabAll.length)}${tabBtn('highlights', '🖍️ Vurgularım', hls.length)}</div>` +
+  return `<section class="intro"><div><div class="eyebrow">ÇALIŞMA DEFTERİ &amp; ÖĞRENME</div><h1>Notların, bilinmeyen ifadelerin ve vurguların.</h1><p>Test sorularında ve eğitim bölümlerinde aldığın tüm notlar, ❓/? bilinmeyen ifadeler (Anki flashcard) ve 🖍️ vurgular tek defterde.</p></div></section>` +
+    `<div class="notebook-tabs" role="tablist">${tabBtn('notes', '📝 Soru & Ders Notları', qNotes.length)}${tabBtn('free', '🗒️ Serbest Notlar', freeNotes.length)}${tabBtn('learn', '🧠 Bilmediğim Şeyleri Öğren', vocabAll.length)}${tabBtn('highlights', '🖍️ Vurgularım', hls.length)}</div>` +
     `<div class="filter"><input id="nbSearchInput" type="search" value="${esc(nbSearch)}" placeholder="Defterde ara…"></div>` + body;
 }
 
 function eduAfterRender() {
   if (view !== 'course') return;
   eduMountExercises();
-  const art = $('.course-article');
-  if (!art) return;
-  const cid = art.dataset.cid, sid = art.dataset.sid;
-  const list = ensureEduState(state).hl[cid + '/' + sid] || [];
-  if (!list.length) return;
-  for (const x of list) {
-    const nodes = [];
-    const tw = document.createTreeWalker(art, NodeFilter.SHOW_TEXT);
-    let full = '', n;
-    while ((n = tw.nextNode())) {
-      if (n.parentElement.closest('svg,.ta-hl,button')) continue;
-      nodes.push({ n, at: full.length });
-      full += n.nodeValue;
-    }
-    const kel = String(x.t || '').split(/\s+/).filter(Boolean).map(k => k.replace(/[.*+?^${}()|[\]\\]/g, '\\$&'));
-    if (!kel.length) continue;
-    const m = new RegExp(kel.join('\\s+'), 'i').exec(full);
-    if (!m) continue;
-    const bas = m.index, son = m.index + m[0].length;
-    for (const { n: tn, at } of nodes.slice().reverse()) {
-      const a = Math.max(bas, at), b = Math.min(son, at + tn.nodeValue.length);
-      if (a >= b) continue;
-      try {
-        const r = document.createRange();
-        r.setStart(tn, a - at); r.setEnd(tn, b - at);
-        const mk = document.createElement('mark');
-        mk.className = 'ta-hl' + (x.style === 'underline' ? ' is-underline' : '');
-        mk.style.setProperty('--hl-c', x.color || '#fff59d');
-        r.surroundContents(mk);
-      } catch (err) { /* span crosses block element */ }
-    }
-  }
 }
 
 // Hook render() cleanly (preserving features.js wrapper as well)
@@ -2675,8 +2680,11 @@ const eduExWork = {};
 function eduExInitWork(exId) {
   const ex = EDU_EXERCISES[exId];
   if (!ex) return null;
+  const savedWork = typeof state !== 'undefined' ? ensureEduState(state).exercises?.[exId]?.work : null;
   if (!eduExWork[exId]) {
-    if (ex.kind === 'chip-fill') eduExWork[exId] = { slots: Array(ex.items.length).fill(null), selChip: null, checked: false };
+    if (savedWork && typeof savedWork === 'object') {
+      eduExWork[exId] = JSON.parse(JSON.stringify(savedWork));
+    } else if (ex.kind === 'chip-fill') eduExWork[exId] = { slots: Array(ex.items.length).fill(null), selChip: null, checked: false };
     else if (ex.kind === 'match-pair') {
       const rightOrder = ex.pairs.map((p, i) => i);
       for (let i = rightOrder.length - 1; i > 0; i--) { const j = (i * 7 + exId.length) % (i + 1); [rightOrder[i], rightOrder[j]] = [rightOrder[j], rightOrder[i]]; }
@@ -2687,6 +2695,15 @@ function eduExInitWork(exId) {
     else if (ex.kind === 'spot-fix') eduExWork[exId] = { picks: Array(ex.items.length).fill(null), checked: false };
   }
   return eduExWork[exId];
+}
+
+function eduExPersist(exId, immediateSync = false) {
+  const w = eduExWork[exId];
+  if (!w || typeof state === 'undefined') return;
+  const exMap = ensureEduState(state).exercises;
+  const prev = exMap[exId] || {};
+  exMap[exId] = { ...prev, work: JSON.parse(JSON.stringify(w)), at: Date.now() };
+  eduTouch(immediateSync);
 }
 
 function eduExScore(exId) {
@@ -2767,7 +2784,8 @@ function eduMountExercises() {
   });
 }
 
-function eduRefreshEx(exId) {
+function eduRefreshEx(exId, persist = true) {
+  if (persist) eduExPersist(exId, false);
   const slot = document.querySelector('.edu-ex-slot[data-ex-id="' + exId + '"]');
   if (slot) slot.innerHTML = eduExHTML(exId);
 }
@@ -2827,13 +2845,15 @@ document.addEventListener('click', e => {
   } else if (a === 'exCheck') {
     w.checked = true;
     const sc = eduExScore(exId);
-    ensureEduState(state).exercises[exId] = { done: sc.ok === sc.total, score: sc.ok, total: sc.total, at: Date.now() };
+    ensureEduState(state).exercises[exId] = { done: sc.ok === sc.total, score: sc.ok, total: sc.total, work: JSON.parse(JSON.stringify(w)), at: Date.now() };
     eduTouch(true);
-    eduRefreshEx(exId);
+    eduRefreshEx(exId, false);
     toast(sc.ok === sc.total ? '✓ Harika! Alıştırma tam puan (' + sc.ok + '/' + sc.total + ').' : 'Alıştırma kontrol edildi: ' + sc.ok + '/' + sc.total);
   } else if (a === 'exReset') {
     delete eduExWork[exId];
-    eduRefreshEx(exId);
+    delete ensureEduState(state).exercises[exId];
+    eduTouch(true);
+    eduRefreshEx(exId, false);
   }
 });
 
@@ -2841,7 +2861,493 @@ document.addEventListener('input', e => {
   if (e.target.classList?.contains('ex-type-input')) {
     const exId = e.target.dataset.ex, idx = Number(e.target.dataset.idx);
     const w = eduExInitWork(exId);
-    if (w) { w.vals[idx] = e.target.value; w.checked = false; }
+    if (w) { w.vals[idx] = e.target.value; w.checked = false; eduExPersist(exId, false); }
+  }
+});
+// ── Bilmediğim Şeyleri Öğren (Anki Flashcards + Kategoriler + AI Kategorizasyon) & Vurgu Kategorileri ──
+
+function fcDefaultSettings() {
+  return {
+    newPerDay: 20,
+    revPerDay: 100,
+    startEase: 2.5,
+    stepsMin: '10,1440',
+    order: 'due-first',
+    autoSpeak: false,
+    speakLang: 'en'
+  };
+}
+
+function fcEnsureCats(e) {
+  if (!Array.isArray(e.fcCats)) e.fcCats = [];
+  if (!e.fcCats.some(c => c.id === 'other')) {
+    e.fcCats.unshift({
+      id: 'other',
+      name: 'Diğer',
+      desc: 'Eğitim veya test sırasında yeni eklenen, henüz kategorize edilmemiş ifadeler',
+      settings: fcDefaultSettings(),
+      updatedAt: 1
+    });
+  }
+  for (const c of e.fcCats) {
+    c.settings = { ...fcDefaultSettings(), ...(c.settings || {}) };
+  }
+  if (!e.fcCards || typeof e.fcCards !== 'object' || Array.isArray(e.fcCards)) e.fcCards = {};
+  if (!e.fcDaily || typeof e.fcDaily !== 'object') e.fcDaily = { date: '', newCount: {}, revCount: {} };
+  const today = new Date().toISOString().slice(0, 10);
+  if (e.fcDaily.date !== today) e.fcDaily = { date: today, newCount: {}, revCount: {} };
+
+  if (!Array.isArray(e.hlCats)) e.hlCats = [];
+  if (!e.hlCats.some(c => c.id === 'other')) {
+    e.hlCats.unshift({
+      id: 'other',
+      name: 'Diğer',
+      desc: 'Henüz konusuna göre kategorize edilmemiş vurgular',
+      updatedAt: 1
+    });
+  }
+  if (!e.hlCatMap || typeof e.hlCatMap !== 'object' || Array.isArray(e.hlCatMap)) e.hlCatMap = {};
+  return e;
+}
+
+let fcSubMode = 'study'; // 'study' | 'list'
+let fcActiveCat = 'all';
+let fcFlipped = false;
+let fcCurrentId = null;
+let fcAutoProgress = { fc: null, hl: null }; // null | { pct: 0..100, done: false, err: '' }
+let hlActiveCat = 'all';
+
+function fcCardState(e, id) {
+  fcEnsureCats(e);
+  const c = e.fcCards[id];
+  if (c && typeof c === 'object') {
+    if (!c.catId || !e.fcCats.some(x => x.id === c.catId)) c.catId = 'other';
+    return c;
+  }
+  return { catId: 'other', reps: 0, interval: 0, ease: 2.5, lapses: 0, due: 0, lastReview: 0, updatedAt: 0 };
+}
+
+function fcCatOf(e, catId) {
+  fcEnsureCats(e);
+  return e.fcCats.find(c => c.id === catId) || e.fcCats[0];
+}
+
+function fcNextInterval(card, rating, settings) {
+  const s = { ...fcDefaultSettings(), ...(settings || {}) };
+  const startEase = Math.max(1.3, Math.min(3.5, Number(s.startEase) || 2.5));
+  let ease = Number(card.ease) || startEase;
+  let reps = Number(card.reps) || 0;
+  let interval = Number(card.interval) || 0;
+  let lapses = Number(card.lapses) || 0;
+  const steps = String(s.stepsMin || '10,1440').split(',').map(x => Math.max(1, Number(x.trim()) || 10));
+  const firstStepDays = (steps[0] || 10) / 1440;
+  const gradDays = Math.max(1, Math.round((steps[1] || 1440) / 1440));
+
+  if (rating === 'again') {
+    reps = 0;
+    lapses += 1;
+    ease = Math.max(1.3, ease - 0.2);
+    interval = firstStepDays;
+  } else if (rating === 'hard') {
+    if (reps === 0) interval = Math.max(firstStepDays * 1.5, 0.5);
+    else interval = Math.max(1, interval * 1.2);
+    ease = Math.max(1.3, ease - 0.15);
+    reps += 1;
+  } else if (rating === 'good') {
+    if (reps === 0) interval = gradDays;
+    else if (reps === 1) interval = Math.max(gradDays * 2, 3);
+    else interval = Math.round(interval * ease);
+    reps += 1;
+  } else if (rating === 'easy') {
+    if (reps === 0) interval = Math.max(gradDays * 2, 4);
+    else interval = Math.round(interval * ease * 1.3);
+    ease = Math.min(3.5, ease + 0.15);
+    reps += 1;
+  }
+  return { interval, ease, reps, lapses, due: Date.now() + interval * 86400000 };
+}
+
+function fcFormatInterval(days) {
+  if (days < 1 / 24) return Math.max(1, Math.round(days * 1440)) + ' dk';
+  if (days < 1) return Math.max(1, Math.round(days * 24)) + ' sa';
+  if (days < 30) return Math.round(days) + ' gün';
+  if (days < 365) return (days / 30).toFixed(1).replace('.', ',') + ' ay';
+  return (days / 365).toFixed(1).replace('.', ',') + ' yıl';
+}
+
+function fcBuildQueue(e, vocabAll, catFilter) {
+  fcEnsureCats(e);
+  const now = Date.now();
+  const dueList = [];
+  const newList = [];
+  for (const v of vocabAll) {
+    if (v.mastered) continue;
+    const cs = fcCardState(e, v.id);
+    if (catFilter !== 'all' && cs.catId !== catFilter) continue;
+    const cat = fcCatOf(e, cs.catId);
+    const limNew = Number(cat.settings?.newPerDay) || 20;
+    const limRev = Number(cat.settings?.revPerDay) || 100;
+    const usedNew = Number(e.fcDaily.newCount?.[cat.id]) || 0;
+    const usedRev = Number(e.fcDaily.revCount?.[cat.id]) || 0;
+
+    if (cs.reps === 0 && cs.due === 0) {
+      if (usedNew < limNew) newList.push({ v, cs, isNew: true });
+    } else if (cs.due <= now) {
+      if (usedRev < limRev) dueList.push({ v, cs, isNew: false });
+    }
+  }
+  const activeCatObj = catFilter !== 'all' ? fcCatOf(e, catFilter) : null;
+  const order = activeCatObj?.settings?.order || 'due-first';
+  let q = order === 'new-first' ? [...newList, ...dueList] : [...dueList, ...newList];
+  if (order === 'random') {
+    q = q.slice().sort((a, b) => ((a.v.id.charCodeAt(0) * 31) % 97) - ((b.v.id.charCodeAt(0) * 31) % 97));
+  }
+  return { queue: q, dueCount: dueList.length, newCount: newList.length };
+}
+
+function fcProgressBadgeHTML(kind) {
+  const st = fcAutoProgress[kind];
+  if (!st) return '';
+  if (st.err) return `<span class="fc-prog err" title="${esc(st.err)}">⚠ ${esc(st.err)}</span>`;
+  if (st.done) return `<span class="fc-prog done" title="Kategorizasyon tamamlandı">✓ %100</span>`;
+  return `<span class="fc-prog busy"><span class="fc-prog-bar"><i style="width:${st.pct}%"></i></span> %${st.pct}</span>`;
+}
+
+function fcLearnView(vocabAll, q) {
+  const e = fcEnsureCats(ensureEduState(state));
+  const activeCat = fcActiveCat === 'all' || e.fcCats.some(c => c.id === fcActiveCat) ? fcActiveCat : 'all';
+  fcActiveCat = activeCat;
+
+  const filteredVocab = vocabAll.filter(v => {
+    const cs = fcCardState(e, v.id);
+    if (activeCat !== 'all' && cs.catId !== activeCat) return false;
+    if (q && !(v.word + ' ' + (cs.customMeaning || v.meaning) + ' ' + v.note + ' ' + v.source).toLocaleLowerCase('tr').includes(q)) return false;
+    if (fcSubMode === 'list') {
+      if (nbFilter === 'unmastered') return !v.mastered;
+      if (nbFilter === 'mastered') return v.mastered;
+    }
+    return true;
+  });
+
+  const catCounts = {};
+  for (const c of e.fcCats) catCounts[c.id] = 0;
+  for (const v of vocabAll) {
+    const cs = fcCardState(e, v.id);
+    catCounts[cs.catId] = (catCounts[cs.catId] || 0) + 1;
+  }
+
+  const catBar = `<div class="fc-cat-bar">` +
+    `<button class="small ${activeCat === 'all' ? 'primary' : ''}" data-act="fcSelectCat" data-cat="all">Tümü (${vocabAll.length})</button>` +
+    e.fcCats.map(c => `<button class="small ${activeCat === c.id ? 'primary' : ''}" data-act="fcSelectCat" data-cat="${esc(c.id)}" title="${esc(c.desc || '')}">${esc(c.name)} (${catCounts[c.id] || 0})</button>`).join('') +
+    `<button class="small" data-act="fcNewCatModal">＋ Kategori Aç</button>` +
+    `<button class="small" data-act="fcAutoCat" ${fcAutoProgress.fc && !fcAutoProgress.fc.done && !fcAutoProgress.fc.err ? 'disabled' : ''}>✨ Yeni eklenenleri kategorize et</button>` +
+    fcProgressBadgeHTML('fc') +
+    (activeCat !== 'all' ? `<button class="small" data-act="fcCatSettings" data-cat="${esc(activeCat)}">⚙️ Kategori Ayarları</button>` : `<button class="small" data-act="fcCatSettings" data-cat="other">⚙️ Ayarlar</button>`) +
+    `</div>`;
+
+  const modeBar = `<div class="row" style="margin-bottom:14px;justify-content:space-between">` +
+    `<div class="row"><button class="small ${fcSubMode === 'study' ? 'primary' : ''}" data-act="fcSetMode" data-mode="study">🎴 Flashcard Çalış (Anki)</button>` +
+    `<button class="small ${fcSubMode === 'list' ? 'primary' : ''}" data-act="fcSetMode" data-mode="list">📋 Liste &amp; Kart Ekle</button></div>` +
+    `<button class="small" data-act="eduSeedVocab">📥 YDS Çekirdek Kelimeleri Ekle</button></div>`;
+
+  if (fcSubMode === 'study') {
+    const { queue, dueCount, newCount } = fcBuildQueue(e, vocabAll, activeCat);
+    const currentItem = queue.find(x => x.v.id === fcCurrentId) || queue[0] || null;
+    if (currentItem) fcCurrentId = currentItem.v.id;
+    else fcCurrentId = null;
+
+    let cardHTML = '';
+    if (!currentItem) {
+      cardHTML = `<div class="aside-card fc-done-card"><h3>🎉 Tebrikler!</h3><p>Bu kategoride bugün için tekrar edilecek veya yeni kart kalmadı.</p>` +
+        `<div class="row" style="justify-content:center;margin-top:10px"><button class="small" data-act="fcSetMode" data-mode="list">📋 Kart Listesini Gör</button></div></div>`;
+    } else {
+      const { v, cs, isNew } = currentItem;
+      const cat = fcCatOf(e, cs.catId);
+      const meaning = cs.customMeaning || v.meaning || '';
+      const rAgain = fcNextInterval(cs, 'again', cat.settings);
+      const rHard = fcNextInterval(cs, 'hard', cat.settings);
+      const rGood = fcNextInterval(cs, 'good', cat.settings);
+      const rEasy = fcNextInterval(cs, 'easy', cat.settings);
+      cardHTML = `<div class="fc-stats-line"><span>Bekleyen: <b>${dueCount}</b> tekrar · <b>${newCount}</b> yeni</span><span class="tag">${esc(cat.name)}</span></div>` +
+        `<article class="aside-card fc-card">` +
+        `<div class="fc-front"><div class="fc-badge-row"><span class="tag">${isNew ? 'Yeni Kart' : 'Tekrar'}</span><small class="muted">${esc(v.source)}</small></div>` +
+        `<h2 class="fc-word">${esc(v.word)}</h2>` +
+        `<div class="row" style="justify-content:center"><button class="small" data-act="eduSpeakWord" data-word="${esc(v.word)}">🔊 Dinle</button></div></div>` +
+        (fcFlipped
+          ? `<div class="fc-back"><hr class="fc-hr"><p class="fc-meaning">${esc(meaning)}</p>${v.note ? `<small class="vocab-note">${esc(v.note)}</small>` : ''}` +
+            `<div class="row" style="justify-content:center;margin-top:10px"><button class="small" data-act="fcAiExplain" data-id="${esc(v.id)}">🤖 AI ile Anlam / Örnek Üret</button><button class="small" data-act="eduToggleVocab" data-kind="${esc(v.kind)}" data-id="${esc(v.id)}">✓ Öğrendim (Arşivle)</button></div>` +
+            `<div class="fc-rate-row">` +
+            `<button class="fc-rate again" data-act="fcRate" data-id="${esc(v.id)}" data-rate="again"><b>Tekrar</b><small>${fcFormatInterval(rAgain.interval)}</small></button>` +
+            `<button class="fc-rate hard" data-act="fcRate" data-id="${esc(v.id)}" data-rate="hard"><b>Zor</b><small>${fcFormatInterval(rHard.interval)}</small></button>` +
+            `<button class="fc-rate good" data-act="fcRate" data-id="${esc(v.id)}" data-rate="good"><b>İyi</b><small>${fcFormatInterval(rGood.interval)}</small></button>` +
+            `<button class="fc-rate easy" data-act="fcRate" data-id="${esc(v.id)}" data-rate="easy"><b>Kolay</b><small>${fcFormatInterval(rEasy.interval)}</small></button>` +
+            `</div></div>`
+          : `<div class="fc-flip-wrap"><button class="primary" data-act="fcFlip">Cevabı Göster</button></div>`) +
+        `</article>`;
+    }
+    return catBar + modeBar + cardHTML;
+  }
+
+  // List & Card Composer mode
+  const catOptions = (curId) => e.fcCats.map(c => `<option value="${esc(c.id)}" ${curId === c.id ? 'selected' : ''}>${esc(c.name)}</option>`).join('');
+  return catBar + modeBar +
+    `<section class="aside-card nb-composer"><h3>＋ Kelime / İfade Kartı Ekle</h3><div class="edu-vocab-form"><input id="nbVocabWord" placeholder="Kelime veya ifade (ör. inhibit, stem from)" maxlength="120"><input id="nbVocabMeaning" placeholder="Türkçe karşılık / sınav ipucu" maxlength="200"><input id="nbVocabNote" placeholder="Kaynak / cümle notu (isteğe bağlı)" maxlength="200"><button class="primary" data-act="eduAddVocab">＋ Ekle</button></div></section>` +
+    `<div class="row" style="margin-bottom:14px"><button class="small ${nbFilter === '' ? 'primary' : ''}" data-act="eduNbFilter" data-f="">Tümü (${vocabAll.length})</button><button class="small ${nbFilter === 'unmastered' ? 'primary' : ''}" data-act="eduNbFilter" data-f="unmastered">Tekrar Edilecek (${vocabAll.filter(x => !x.mastered).length})</button><button class="small ${nbFilter === 'mastered' ? 'primary' : ''}" data-act="eduNbFilter" data-f="mastered">Öğrendiklerim (${vocabAll.filter(x => x.mastered).length})</button></div>` +
+    (filteredVocab.length ? `<div class="vocab-grid">${filteredVocab.map(v => {
+      const cs = fcCardState(e, v.id);
+      const meaning = cs.customMeaning || v.meaning;
+      return `<article class="vocab-card ${v.mastered ? 'mastered' : ''}"><div class="vocab-top"><strong>${esc(v.word)}</strong><div class="row"><button class="small" data-act="eduSpeakWord" data-word="${esc(v.word)}" title="Telaffuzu dinle">🔊</button><button class="small ${v.mastered ? 'primary' : ''}" data-act="eduToggleVocab" data-kind="${esc(v.kind)}" data-id="${esc(v.id)}">${v.mastered ? '✓ Öğrendim' : 'Öğrenildi'}</button>${v.kind === 'custom' ? `<button class="small danger" data-act="eduDelVocab" data-id="${esc(v.id)}">×</button>` : ''}</div></div><p>${esc(meaning)}</p>${v.note ? `<small class="vocab-note">${esc(v.note)}</small>` : ''}<div class="row" style="justify-content:space-between;margin-top:6px"><small class="vocab-src">${esc(v.source)}</small><select class="fc-cat-select" data-fc-card="${esc(v.id)}" aria-label="Kategori">${catOptions(cs.catId)}</select></div></article>`;
+    }).join('')}</div>` : '<div class="empty">Bu filtrede ifade bulunamadı. Testlerde veya konu anlatımında bilmediğin ifadeleri ❓ ile işaretlediğinde otomatik olarak buraya (Diğer) düşer.</div>');
+}
+
+function hlCategoryView(hls, q) {
+  const e = fcEnsureCats(ensureEduState(state));
+  const activeCat = hlActiveCat === 'all' || e.hlCats.some(c => c.id === hlActiveCat) ? hlActiveCat : 'all';
+  hlActiveCat = activeCat;
+  const getCatId = h => {
+    const k = h.kind + ':' + h.id;
+    const cid = e.hlCatMap[k]?.catId || 'other';
+    return e.hlCats.some(c => c.id === cid) ? cid : 'other';
+  };
+  const counts = {};
+  for (const c of e.hlCats) counts[c.id] = 0;
+  for (const h of hls) { const cid = getCatId(h); counts[cid] = (counts[cid] || 0) + 1; }
+
+  const catBar = `<div class="fc-cat-bar">` +
+    `<button class="small ${activeCat === 'all' ? 'primary' : ''}" data-act="hlSelectCat" data-cat="all">Tümü (${hls.length})</button>` +
+    e.hlCats.map(c => `<button class="small ${activeCat === c.id ? 'primary' : ''}" data-act="hlSelectCat" data-cat="${esc(c.id)}" title="${esc(c.desc || '')}">${esc(c.name)} (${counts[c.id] || 0})</button>`).join('') +
+    `<button class="small" data-act="hlNewCatModal">＋ Kategori Aç</button>` +
+    `<button class="small" data-act="hlAutoCat" ${fcAutoProgress.hl && !fcAutoProgress.hl.done && !fcAutoProgress.hl.err ? 'disabled' : ''}>✨ Vurguları kategorize et</button>` +
+    fcProgressBadgeHTML('hl') +
+    `</div>`;
+
+  const filtered = hls.filter(h => {
+    if (activeCat !== 'all' && getCatId(h) !== activeCat) return false;
+    if (q && !(h.t + ' ' + h.title).toLocaleLowerCase('tr').includes(q)) return false;
+    return true;
+  });
+  const catOptions = (curId) => e.hlCats.map(c => `<option value="${esc(c.id)}" ${curId === c.id ? 'selected' : ''}>${esc(c.name)}</option>`).join('');
+
+  return catBar + (filtered.length ? `<div class="nb-list">${filtered.map(h => {
+    const key = h.kind + ':' + h.id;
+    const cid = getCatId(h);
+    return `<article class="aside-card nb-item"><div class="row" style="justify-content:space-between"><div><span class="hl-chip ${h.style === 'underline' ? 'is-underline' : ''}" style="--hl-c:${esc(h.color)}">${esc(h.t)}</span></div>` +
+      `<div class="row"><select class="fc-cat-select" data-hl-key="${esc(key)}" aria-label="Vurgu kategorisi">${catOptions(cid)}</select>` +
+      (h.kind === 'course' ? `<button class="small" data-act="openCourse" data-cid="${esc(h.cid)}" data-sid="${esc(h.sid)}">Bölüme Git →</button>` : `<button class="small" data-act="eduJumpQuestion" data-book="${esc(h.bookId)}" data-test="${esc(h.testId)}" data-index="${h.qIndex}">Soruya Git →</button>`) +
+      `</div></div><small class="vocab-src">${esc(h.title)}${h.where ? ' · ' + esc(h.where) : ''}</small></article>`;
+  }).join('')}</div>` : '<div class="empty">Bu kategoride vurgulanmış (🖍️) metin bulunmuyor.</div>');
+}
+
+function fcOpenNewCatModal(kind) {
+  const title = kind === 'hl' ? 'Yeni Vurgu Kategorisi Aç' : 'Yeni Öğrenme Kategorisi Aç';
+  dialog(title, `<label for="fcCatName">Kategori Adı</label><input id="fcCatName" placeholder="ör. İngilizce Akademik Kelimeler" maxlength="60">` +
+    `<label for="fcCatDesc">Kategori Tanımı (Yapay zekâ bu tanıma göre ayırır)</label><textarea id="fcCatDesc" rows="3" placeholder="ör. YDS/YÖKDİL İngilizce kelimeler, phrasal verblar ve edat kalıpları" maxlength="300"></textarea>`,
+    `<button class="primary" data-act="fcSaveNewCat" data-kind="${kind}">Kaydet</button>`);
+}
+
+function fcOpenCatSettingsModal(catId) {
+  const e = fcEnsureCats(ensureEduState(state));
+  const cat = fcCatOf(e, catId);
+  const s = cat.settings || fcDefaultSettings();
+  dialog(`⚙️ ${cat.name} · Kategori Ayarları`,
+    `<p class="file-help">${esc(cat.desc || 'Bu kategoriye özel Anki tekrar ayarları.')}</p>` +
+    `<label for="fcSetNew">Günlük yeni kart limiti</label><input id="fcSetNew" type="number" min="1" max="500" value="${s.newPerDay}">` +
+    `<label for="fcSetRev">Günlük tekrar limiti</label><input id="fcSetRev" type="number" min="1" max="1000" value="${s.revPerDay}">` +
+    `<label for="fcSetSteps">Öğrenme adımları (dakika, virgülle: ör. 10,1440)</label><input id="fcSetSteps" value="${esc(s.stepsMin)}">` +
+    `<label for="fcSetEase">Başlangıç kolaylık çarpanı (1.3 – 3.5)</label><input id="fcSetEase" type="number" step="0.1" min="1.3" max="3.5" value="${s.startEase}">` +
+    `<label for="fcSetOrder">Kart sırası</label><select id="fcSetOrder"><option value="due-first" ${s.order === 'due-first' ? 'selected' : ''}>Önce tekrarlar</option><option value="new-first" ${s.order === 'new-first' ? 'selected' : ''}>Önce yeni kartlar</option><option value="random" ${s.order === 'random' ? 'selected' : ''}>Karışık</option></select>` +
+    `<label><input id="fcSetSpeak" type="checkbox" ${s.autoSpeak ? 'checked' : ''}> Kart açılınca otomatik sesli oku</label>`,
+    (cat.id !== 'other' ? `<button class="danger" data-act="fcDelCat" data-cat="${esc(cat.id)}">Kategoriyi Sil</button>` : '') +
+    `<button class="primary" data-act="fcSaveCatSettings" data-cat="${esc(cat.id)}">Ayarları Kaydet</button>`);
+}
+
+async function fcRunAutoCategorize(kind) {
+  if (locked) return;
+  const p = activeProfile();
+  const key = typeof aiLocalKey === 'function' ? aiLocalKey(p) : '';
+  if (!key) {
+    toast('Önce YZ Ayarları’ndan Gemini API anahtarını ekle.');
+    if (typeof aiSettings === 'function') aiSettings();
+    return;
+  }
+  const e = fcEnsureCats(ensureEduState(state));
+  const cats = (kind === 'hl' ? e.hlCats : e.fcCats).filter(c => c.id !== 'other');
+  if (!cats.length) {
+    toast('Önce en az bir özel kategori açmalısın.');
+    fcOpenNewCatModal(kind);
+    return;
+  }
+
+  let items = [];
+  if (kind === 'hl') {
+    items = eduAllHighlights().filter(h => (e.hlCatMap[h.kind + ':' + h.id]?.catId || 'other') === 'other')
+      .map(h => ({ id: h.kind + ':' + h.id, text: h.t, source: h.title }));
+  } else {
+    items = eduAllVocabItems().filter(v => fcCardState(e, v.id).catId === 'other')
+      .map(v => ({ id: v.id, text: v.word, source: v.source }));
+  }
+
+  if (!items.length) {
+    fcAutoProgress[kind] = { pct: 100, done: true, err: '' };
+    render();
+    toast('Diğer kategorisinde bekleyen yeni öğe yok.');
+    return;
+  }
+
+  fcAutoProgress[kind] = { pct: 5, done: false, err: '' };
+  render();
+
+  const catPrompt = cats.map(c => `- id="${c.id}" | ad="${c.name}" | tanım="${c.desc || c.name}"`).join('\n');
+  const validIds = new Set(cats.map(c => c.id));
+  const batchSize = 15;
+  let doneCount = 0;
+
+  try {
+    for (let i = 0; i < items.length; i += batchSize) {
+      const batch = items.slice(i, i + batchSize);
+      const sys = 'Sen bir sınıflandırma asistanısın. Verilen öğeleri yalnızca verilen kategori id’lerine ayır. Uygun değilse "other" bırak. Yalnızca geçerli JSON dizisi döndür: [{"id":"...","catId":"..."}]';
+      const msg = `Kategoriler:\n${catPrompt}\n\nÖğeler:\n${JSON.stringify(batch)}`;
+      const raw = await aiGenerate(key, aiModel(p), sys, [{ role: 'user', parts: [{ text: msg }] }], 2048);
+      const m = raw.match(/\[[\s\S]*\]/);
+      if (m) {
+        const arr = JSON.parse(m[0]);
+        for (const r of arr) {
+          if (!r || typeof r.id !== 'string' || !validIds.has(r.catId)) continue;
+          if (kind === 'hl') {
+            e.hlCatMap[r.id] = { catId: r.catId, updatedAt: Date.now() };
+          } else {
+            const cur = fcCardState(e, r.id);
+            e.fcCards[r.id] = { ...cur, catId: r.catId, updatedAt: Date.now() };
+          }
+        }
+      }
+      doneCount += batch.length;
+      fcAutoProgress[kind] = { pct: Math.min(99, Math.round((doneCount / items.length) * 100)), done: false, err: '' };
+      render();
+    }
+    fcAutoProgress[kind] = { pct: 100, done: true, err: '' };
+    eduTouch(true);
+    render();
+    toast('✓ Kategorizasyon tamamlandı!');
+  } catch (err) {
+    fcAutoProgress[kind] = { pct: 0, done: false, err: err.message || 'Hata' };
+    render();
+    toast('Kategorizasyon hatası: ' + (err.message || err));
+  }
+}
+
+document.addEventListener('click', async e => {
+  const el = e.target.closest('[data-act^="fc"],[data-act^="hlSelect"],[data-act^="hlNewCat"],[data-act^="hlAutoCat"]');
+  if (!el || el.disabled) return;
+  const a = el.dataset.act;
+  if (locked && ['fcRate', 'fcSaveNewCat', 'fcSaveCatSettings', 'fcDelCat', 'fcAutoCat', 'hlAutoCat', 'fcAiExplain'].includes(a)) {
+    toast('Önce bu sekmede devam etmeyi seç.');
+    return;
+  }
+  const edu = fcEnsureCats(ensureEduState(state));
+
+  if (a === 'fcSelectCat') { fcActiveCat = el.dataset.cat; fcFlipped = false; fcCurrentId = null; render(); }
+  else if (a === 'hlSelectCat') { hlActiveCat = el.dataset.cat; render(); }
+  else if (a === 'fcSetMode') { fcSubMode = el.dataset.mode; fcFlipped = false; render(); }
+  else if (a === 'fcFlip') { fcFlipped = true; render(); }
+  else if (a === 'fcNewCatModal') fcOpenNewCatModal('fc');
+  else if (a === 'hlNewCatModal') fcOpenNewCatModal('hl');
+  else if (a === 'fcCatSettings') fcOpenCatSettingsModal(el.dataset.cat);
+  else if (a === 'fcAutoCat') await fcRunAutoCategorize('fc');
+  else if (a === 'hlAutoCat') await fcRunAutoCategorize('hl');
+  else if (a === 'fcSaveNewCat') {
+    const kind = el.dataset.kind;
+    const name = ($('#fcCatName')?.value || '').trim();
+    const desc = ($('#fcCatDesc')?.value || '').trim();
+    if (!name) { toast('Kategori adı yaz.'); return; }
+    const id = 'cat-' + Date.now().toString(36) + Math.random().toString(36).slice(2, 5);
+    if (kind === 'hl') {
+      edu.hlCats.push({ id, name, desc, updatedAt: Date.now() });
+      hlActiveCat = id;
+    } else {
+      edu.fcCats.push({ id, name, desc, settings: fcDefaultSettings(), updatedAt: Date.now() });
+      fcActiveCat = id;
+    }
+    eduTouch(true);
+    closeDialog();
+    render();
+    toast('Kategori eklendi: ' + name);
+  } else if (a === 'fcSaveCatSettings') {
+    const cat = fcCatOf(edu, el.dataset.cat);
+    cat.settings = {
+      newPerDay: Math.max(1, Number($('#fcSetNew')?.value) || 20),
+      revPerDay: Math.max(1, Number($('#fcSetRev')?.value) || 100),
+      stepsMin: ($('#fcSetSteps')?.value || '10,1440').trim(),
+      startEase: Math.max(1.3, Math.min(3.5, Number($('#fcSetEase')?.value) || 2.5)),
+      order: $('#fcSetOrder')?.value || 'due-first',
+      autoSpeak: !!$('#fcSetSpeak')?.checked,
+      speakLang: 'en'
+    };
+    cat.updatedAt = Date.now();
+    eduTouch(true);
+    closeDialog();
+    render();
+    toast('Kategori ayarları kaydedildi.');
+  } else if (a === 'fcDelCat') {
+    const cid = el.dataset.cat;
+    if (cid === 'other') return;
+    edu.fcCats = edu.fcCats.filter(c => c.id !== cid);
+    for (const cs of Object.values(edu.fcCards)) if (cs.catId === cid) cs.catId = 'other';
+    if (fcActiveCat === cid) fcActiveCat = 'all';
+    eduTouch(true);
+    closeDialog();
+    render();
+    toast('Kategori silindi; kartlar Diğer kategorisine aktarıldı.');
+  } else if (a === 'fcRate') {
+    const id = el.dataset.id, rate = el.dataset.rate;
+    const prev = fcCardState(edu, id);
+    const cat = fcCatOf(edu, prev.catId);
+    const isNew = prev.reps === 0 && prev.due === 0;
+    const next = fcNextInterval(prev, rate, cat.settings);
+    edu.fcCards[id] = { ...prev, ...next, lastReview: Date.now(), updatedAt: Date.now() };
+    if (isNew) edu.fcDaily.newCount[cat.id] = (edu.fcDaily.newCount[cat.id] || 0) + 1;
+    else edu.fcDaily.revCount[cat.id] = (edu.fcDaily.revCount[cat.id] || 0) + 1;
+    fcFlipped = false;
+    fcCurrentId = null;
+    eduTouch(true);
+    render();
+  } else if (a === 'fcAiExplain') {
+    const id = el.dataset.id;
+    const p = activeProfile();
+    const key = typeof aiLocalKey === 'function' ? aiLocalKey(p) : '';
+    if (!key) { toast('Önce YZ Ayarları’ndan Gemini API anahtarını ekle.'); return; }
+    const item = eduAllVocabItems().find(x => x.id === id);
+    if (!item) return;
+    el.disabled = true; el.textContent = 'Hazırlanıyor…';
+    try {
+      const txt = await aiGenerate(key, aiModel(p), 'Kısa ve net Türkçe kelime/ifade kartı açıklaması yaz (en fazla 2 cümle: Türkçe anlam + 1 kısa örnek).', [{ role: 'user', parts: [{ text: `İfade: "${item.word}"\nKaynak: ${item.source}` }] }], 256);
+      const prev = fcCardState(edu, id);
+      edu.fcCards[id] = { ...prev, customMeaning: txt, updatedAt: Date.now() };
+      eduTouch(true);
+      render();
+    } catch (err) {
+      toast('AI açıklaması alınamadı: ' + (err.message || err));
+      render();
+    }
+  }
+});
+
+document.addEventListener('change', e => {
+  if (e.target.matches('select[data-fc-card]')) {
+    if (locked) return;
+    const id = e.target.dataset.fcCard;
+    const edu = fcEnsureCats(ensureEduState(state));
+    const prev = fcCardState(edu, id);
+    edu.fcCards[id] = { ...prev, catId: e.target.value, updatedAt: Date.now() };
+    eduTouch(true);
+    toast('Kart kategorisi güncellendi.');
+  } else if (e.target.matches('select[data-hl-key]')) {
+    if (locked) return;
+    const key = e.target.dataset.hlKey;
+    const edu = fcEnsureCats(ensureEduState(state));
+    edu.hlCatMap[key] = { catId: e.target.value, updatedAt: Date.now() };
+    eduTouch(true);
+    toast('Vurgu kategorisi güncellendi.');
   }
 });
 // UI decorations use currentColor; question text and user content remain intact.
