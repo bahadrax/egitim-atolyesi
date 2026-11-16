@@ -292,7 +292,11 @@ html[data-theme="love"] .bar i{background:linear-gradient(90deg,#e48ab5,#a978d3)
 .ta-hl.is-underline{background:transparent!important;text-decoration:underline!important;text-decoration-color:var(--hl-c,#fff59d)!important;text-decoration-thickness:2.5px!important;text-underline-offset:3px!important;text-decoration-skip-ink:none!important;padding:0!important;outline:none!important;box-shadow:none!important}
 .ta-hl.is-underline:hover{text-decoration-thickness:3.5px!important}
 
-.hl-popover{position:fixed;z-index:210;display:flex;flex-wrap:wrap;align-items:center;gap:6px;max-width:calc(100vw - 16px);padding:6px 10px;background:var(--paper,#fff);border:1px solid var(--line,#ddd);border-radius:12px;box-shadow:0 8px 24px #0003}
+.hl-popover{position:fixed;z-index:210;display:flex;flex-direction:column;gap:6px;max-width:calc(100vw - 16px);padding:7px 10px;background:var(--paper,#fff);border:1px solid var(--line,#ddd);border-radius:12px;box-shadow:0 8px 24px #0003}
+.hl-pop-row{display:flex;flex-wrap:wrap;align-items:center;gap:6px}
+.hl-note-box{display:flex;flex-direction:column;gap:6px;padding-top:6px;border-top:1px solid var(--line)}
+.hl-note-box textarea{width:100%;font-size:12px;padding:6px 8px;border:1px solid var(--line);border-radius:8px;background:var(--bg);color:var(--ink)}
+.hl-note-preview{margin:6px 0 4px;font-size:13px;color:var(--ink);background:var(--light);padding:6px 10px;border-radius:8px}
 .hl-pop-colors{display:flex;gap:5px;align-items:center}
 .hl-color-btn{width:20px;height:20px;min-width:20px;padding:0;border-radius:50%;border:2px solid var(--paper,#fff);cursor:pointer;outline:1px solid var(--line,#ccc);transition:transform .12s}
 .hl-color-btn:hover{transform:scale(1.15)}
@@ -1243,7 +1247,7 @@ document.addEventListener('input',e=>{if(e.target.id==='focusVol')focusSetVol(Nu
 //   st.hl[soru]      → vurgulanan ifadeler [{id, t:'metin', w, color:'#fff59d', style:'highlight'|'underline', at:1731500000000}]
 //   st.oops[soru]    → true: kontrol sonrası "dikkatsizlik / sehven hata" beyanı
 //   st.trail[soru]   → soruda sırayla seçilen şıklar (ör. ['B','D','B']); kararsızlığı gösterir
-const APP_VERSION='6.8';
+const APP_VERSION='6.9';
 const HL_THEME='color-mix(in srgb,var(--note-accent,var(--green)) 32%,transparent)';
 const HL_COLORS=[HL_THEME,'#fff59d','#c8e6c9','#bbdefb','#ffe0b2','#f8bbd0'];
 function getLastHlColor(){try{return localStorage.getItem('test-atolyesi:lastHlColor')||HL_COLORS[0];}catch(e){return HL_COLORS[0];}}
@@ -1259,7 +1263,7 @@ function trailPush(s,qid,a){if(!a)return;const t=marksOf(s,'trail',qid)||[];if(t
 function oopsButton(s,q){if(!q.answer)return '';const on=!!marksOf(s,'oops',q.id);return `<button class="oops-btn ${on?'on':''}" data-act="oops" aria-pressed="${on}" title="Normalde yapmayacağın bir dikkatsizlik/sehven hata olarak işaretle">🤦 ${on?'Dikkatsizlik işaretli':'Dikkatsizlik'}</button>`;}
 
 function unkTextChips(s,q){const list=marksOf(s,'unkText',q.id)||[];if(!list.length)return '';return `<div class="unk-chips" aria-label="Bilmediğin ifadeler"><span>❓ Bilmediğin ifadeler:</span>${list.map((x,i)=>`<button class="unk-chip" data-act="unkTextDel" data-index="${i}" title="Kaldır">${esc(x.t)}<small>${esc(x.w)}</small> ×</button>`).join('')}</div>`;}
-function hlChips(s,q){const list=marksOf(s,'hl',q.id)||[];if(!list.length)return '';return `<div class="hl-chips" aria-label="Vurgulanan ifadeler"><span>🖍️ Vurgular:</span>${list.map((h)=>`<button class="hl-chip ${h.style==='underline'?'is-underline':''}" style="--hl-c:${h.color}" data-act="hlChipClick" data-hl-id="${h.id}" title="Rengi / stili değiştir veya kaldır">${esc(h.t)} <small>${esc(h.w)} · ${h.style==='underline'?'alt çizgi':'vurgu'}</small> ×</button>`).join('')}</div>`;}
+function hlChips(s,q){const list=marksOf(s,'hl',q.id)||[];if(!list.length)return '';return `<div class="hl-chips" aria-label="Vurgulanan ifadeler"><span>🖍️ Vurgular:</span>${list.map((h)=>`<button class="hl-chip ${h.style==='underline'?'is-underline':''}" style="--hl-c:${h.color}" data-act="hlChipClick" data-hl-id="${h.id}" title="${esc(h.note?('Not: '+h.note+' · Düzenlemek için tıkla'):'Rengi / stili / notu düzenle veya kaldır')}">${esc(h.t)}${h.note?' 📝':''} <small>${esc(h.w)} · ${h.style==='underline'?'alt çizgi':'vurgu'}</small> ×</button>`).join('')}</div>`;}
 
 // İfade seçimi: hem soru alanındaki (.question-body) hem konu anlatımındaki (.course-article) seçili metni yakalar.
 function selInfo(){
@@ -1493,14 +1497,16 @@ function showHlPopover(hl,ctx,targetEl){
   p._hl=hl;
   p._ctx=ctx;
   const colorBtns=HL_COLORS.map(c=>`<button type="button" class="hl-color-btn ${hl.color===c?'selected':''}" data-act="hlSetColor" data-color="${esc(c)}" style="background:${c===HL_THEME?'var(--note-accent,var(--green))':c}" title="${c===HL_THEME?'Tema rengiyle uyumlu':'Bu rengi seç'}" aria-label="${c===HL_THEME?'Tema rengi':'Renk'}"></button>`).join('');
-  p.innerHTML=`<div class="hl-pop-colors">${colorBtns}</div>
+  p.innerHTML=`<div class="hl-pop-row"><div class="hl-pop-colors">${colorBtns}</div>
   <div class="hl-pop-divider"></div>
   <div class="hl-pop-modes">
     <button type="button" class="hl-mode-btn ${hl.style==='highlight'?'active':''}" data-act="hlSetStyle" data-style="highlight" title="Hafif renk tonuyla vurgula">🎨 Vurgu</button>
     <button type="button" class="hl-mode-btn ${hl.style==='underline'?'active':''}" data-act="hlSetStyle" data-style="underline" title="Altı çizili yap">̲ Alt çizgi</button>
   </div>
   <div class="hl-pop-divider"></div>
-  <button type="button" class="hl-del-btn" data-act="hlDel" title="Vurguyu sil">× Kaldır</button>`;
+  <button type="button" class="hl-mode-btn ${hl.note?'active':''}" data-act="hlToggleNote" title="Vurguya not ekle / düzenle">📝${hl.note?' Not ✓':' Not'}</button>
+  <button type="button" class="hl-del-btn" data-act="hlDel" title="Vurguyu sil">× Kaldır</button></div>
+  <div class="hl-note-box ${hl.note?'':'hidden'}" id="hlNoteBox"><textarea id="hlNoteInput" rows="2" maxlength="1000" placeholder="Bu vurguya not ekle (sınav ipucu, kural, hatırlatma)…">${esc(hl.note||'')}</textarea><button type="button" class="small primary" data-act="hlSaveNote">Notu Kaydet</button></div>`;
   document.body.append(p);
   const r=targetEl.getBoundingClientRect();
   const pw=p.offsetWidth||280,ph=p.offsetHeight||44;
@@ -1570,6 +1576,20 @@ document.addEventListener('click',e=>{
   if(a==='sysSpeak'){e.stopPropagation();const t=$('#unkMenu')?._info?.t||'';if(t){if(window.ttsSpeak)ttsSpeak(t);else{const u=new SpeechSynthesisUtterance(t);u.lang='tr-TR';window.speechSynthesis?.speak(u);}}hideUnkMenu();return;}
   if(a==='sysShare'){e.stopPropagation();const t=$('#unkMenu')?._info?.t||'';hideUnkMenu();if(t&&navigator.share)navigator.share({text:t}).catch(()=>{});return;}
   if(a==='sysPrint'){e.stopPropagation();hideUnkMenu();setTimeout(()=>window.print(),100);return;}
+  if(a==='hlToggleNote'){
+    e.stopPropagation();const box=$('#hlNoteBox');
+    if(box){box.classList.toggle('hidden');if(!box.classList.contains('hidden'))$('#hlNoteInput')?.focus();}
+    return;
+  }
+  if(a==='hlSaveNote'){
+    e.stopPropagation();const pop=$('#hlPopover');
+    if(pop?._hl&&pop._ctx){
+      const val=($('#hlNoteInput')?.value||'').trim();
+      if(val)pop._hl.note=val;else delete pop._hl.note;
+      hideHlPopover();saveHlChange(pop._ctx);toast(val?'Vurgu notu kaydedildi.':'Vurgu notu temizlendi.');
+    }
+    return;
+  }
   if(a==='hlSetColor'){
     e.stopPropagation();const pop=$('#hlPopover');
     if(pop?._hl&&pop._ctx){pop._hl.color=el.dataset.color;setLastHlColor(el.dataset.color);hideHlPopover();saveHlChange(pop._ctx);toast('Vurgu rengi güncellendi.');}
@@ -1688,7 +1708,7 @@ function markUnk(){
         mk.dataset.hlCid=cid;
         mk.dataset.hlSid=sid;
         mk.style.setProperty('--hl-c',x.color);
-        mk.title='Vurgu (rengi/stili değiştirmek veya silmek için tıkla)';
+        mk.title=x.note?('Not: '+x.note+' (düzenlemek için tıkla)'):'Vurgu (rengi/stili/notu düzenlemek veya silmek için tıkla)';
         return mk;
       });
     }
@@ -1719,7 +1739,7 @@ function markUnk(){
       mk.dataset.hlId=x.id;
       mk.dataset.hlQid=q.id;
       mk.style.setProperty('--hl-c',x.color);
-      mk.title='Vurgu (rengi/stili değiştirmek veya silmek için tıkla)';
+      mk.title=x.note?('Not: '+x.note+' (düzenlemek için tıkla)'):'Vurgu (rengi/stili/notu düzenlemek veya silmek için tıkla)';
       return mk;
     });
   }
@@ -1861,9 +1881,9 @@ function aiChat(kind){const pid=activeProfile().id;if(kind==='help'){if(aiHelpCh
 function aiChatHTML(kind){const c=aiChat(kind),after=kind==='question'&&(currentState.checked||peekOpen(currentState,currentTest.questions[currentState.index])),chips=kind==='help'?['Şıkları nasıl elerim?','Anahtarımı telefona nasıl taşırım?']:kind==='course'?['Bu bölümü 3 maddede özetle','Yeni bir örnek cümleyle pekiştir','Sınavda en sık hangi tuzak çıkar?']:after?['Neden doğru/yanlış?','Seçtiğim şık neden yanıltıcı?','Bilmediğim kavramları açıkla']:['İpucu ver (cevabı söyleme)','Soru kökünü basitleştir','Bilmediğim kavramları açıkla'];return `<div class="ai-chat" data-ai-kind="${kind}"><div class="ai-messages" aria-live="polite">${c.history.map(m=>`<div class="ai-message ${m.role}"><b>${m.role==='user'?'Siz':'Asistan'}</b><div>${esc(m.parts[0].text)}</div></div>`).join('')}</div><div class="ai-chips">${chips.map(t=>`<button class="small" data-act="aiChip" data-kind="${kind}" data-text="${esc(t)}" ${c.busy||aiRequestBusy||aiSetupBusy||locked?'disabled':''}>${esc(t)}</button>`).join('')}</div><label for="aiMessage-${kind}">Mesajınız</label><textarea id="aiMessage-${kind}" rows="2" maxlength="4000" placeholder="Sorunuzu yazın…" ${c.busy||locked?'disabled':''}></textarea><div class="row"><button class="primary" data-act="aiSend" data-kind="${kind}" ${c.busy||aiRequestBusy||aiSetupBusy||locked?'disabled':''}>${c.busy?'Yanıt hazırlanıyor…':'Gönder'}</button><button data-act="aiClear" data-kind="${kind}" ${c.busy?'disabled':''}>Sohbeti Temizle</button><button data-act="aiSettings">YZ Ayarları</button></div><p class="file-help">Sohbet geçicidir. Yanıtları kaynaklarınızla kontrol edin. Soru ve mesajlar Google’a gönderilir; API anahtarınızı sohbete yazmayın.</p><p class="ai-error" role="status">${esc(c.error)}</p></div>`;}
 function aiQuestionPanel(){const c=aiChat('question');return `<section class="ai-question"><button data-act="aiToggle" data-kind="question" aria-expanded="${c.open}">🤖 YZ’ye Sor</button>${c.open?aiChatHTML('question'):''}</section>`;}
 function aiCoursePanel(){const c=aiChat('course');return `<section class="ai-question ai-course"><button data-act="aiToggle" data-kind="course" aria-expanded="${c.open}">🤖 Bu Bölüm Hakkında YZ’ye Sor</button>${c.open?aiChatHTML('course'):''}</section>`;}
-function aiCourseContext(){const c=typeof currentCourse==='function'?currentCourse():null,s=typeof currentCourseSection==='function'?currentCourseSection(c):null,e=typeof ensureEduState==='function'?ensureEduState(state):{},k=(c?.id||'')+'/'+(s?.id||''),noteObj=e.notes?.[k];return{course:c?.title,dayTag:s?.dayTag,sectionTitle:s?.title,subtitle:s?.subtitle,pairedTestId:s?.pairedTestId,userNote:typeof noteObj==='string'?noteObj:(noteObj?.text||''),highlights:(e.hl?.[k]||[]).map(h=>h.t),excerpt:(s?.searchText||'').slice(0,6500)};}
+function aiCourseContext(){const c=typeof currentCourse==='function'?currentCourse():null,s=typeof currentCourseSection==='function'?currentCourseSection(c):null,e=typeof ensureEduState==='function'?ensureEduState(state):{},k=(c?.id||'')+'/'+(s?.id||''),noteObj=e.notes?.[k];return{course:c?.title,dayTag:s?.dayTag,sectionTitle:s?.title,subtitle:s?.subtitle,pairedTestId:s?.pairedTestId,userNote:typeof noteObj==='string'?noteObj:(noteObj?.text||''),highlights:(e.hl?.[k]||[]).map(h=>h.note?{text:h.t,note:h.note}:h.t),excerpt:(s?.searchText||'').slice(0,6500)};}
 function aiRefreshChat(kind){const el=document.querySelector('.ai-chat[data-ai-kind="'+kind+'"]');if(el){const draft=el.querySelector('textarea')?.value||'';el.outerHTML=aiChatHTML(kind);$('#aiMessage-'+kind).value=draft;}}
-function aiQuestionContext(reveal){const q=currentTest.questions[currentState.index],s=currentState,st=splitStem(q),ctx={book:currentBook.title,test:currentTest.title,topic:q.topic,concepts:q.concepts,level:q.level,passage:q.passage,context:st.context||q.context,stem:st.stem||q.stem||q.text,blocks:q.blocks,figures:(q.figures||[]).map(f=>({alt:f.alt,caption:f.caption})),options:q.options.map((o,i)=>typeof o==='string'?{id:String.fromCharCode(65+i),text:o}:{id:o.id,text:o.text,blocks:o.blocks}),selected:s.answers[q.id],eliminated:s.elims?.[q.id],unknown:s.unk?.[q.id],unknownText:s.unkText?.[q.id]?.filter(x=>reveal||x.w!=='açıklama'),highlights:s.hl?.[q.id]?.filter(x=>reveal||x.w!=='açıklama').map(h=>({text:h.t,where:h.w,style:h.style}))};if(reveal)Object.assign(ctx,{answer:q.answer,explanation:q.explanation,explanationBlocks:q.explanationBlocks,diagnosis:q.options.map(o=>o.diagnosis),keyDoubt:q.keyDoubt,oops:s.oops?.[q.id]});return ctx;}
+function aiQuestionContext(reveal){const q=currentTest.questions[currentState.index],s=currentState,st=splitStem(q),ctx={book:currentBook.title,test:currentTest.title,topic:q.topic,concepts:q.concepts,level:q.level,passage:q.passage,context:st.context||q.context,stem:st.stem||q.stem||q.text,blocks:q.blocks,figures:(q.figures||[]).map(f=>({alt:f.alt,caption:f.caption})),options:q.options.map((o,i)=>typeof o==='string'?{id:String.fromCharCode(65+i),text:o}:{id:o.id,text:o.text,blocks:o.blocks}),selected:s.answers[q.id],eliminated:s.elims?.[q.id],unknown:s.unk?.[q.id],unknownText:s.unkText?.[q.id]?.filter(x=>reveal||x.w!=='açıklama'),highlights:s.hl?.[q.id]?.filter(x=>reveal||x.w!=='açıklama').map(h=>({text:h.t,where:h.w,style:h.style,...(h.note?{note:h.note}:{})}))};if(reveal)Object.assign(ctx,{answer:q.answer,explanation:q.explanation,explanationBlocks:q.explanationBlocks,diagnosis:q.options.map(o=>o.diagnosis),keyDoubt:q.keyDoubt,oops:s.oops?.[q.id]});return ctx;}
 async function aiSend(kind,text){const c=aiChat(kind),p=activeProfile();text=(text||$('#aiMessage-'+kind)?.value||'').trim().slice(0,4000);if(!text||locked||c.busy||aiRequestBusy||aiSetupBusy)return;if(aiExtract(text)||text.includes(aiLocal(p,'aiPass'))&&aiLocal(p,'aiPass')){c.error='API anahtarını veya Taşıma Kodunu sohbete yazmayın. Anahtar için YZ Ayarları’nı kullanın.';aiRefreshChat(kind);return;}const key=aiLocalKey(p);if(!key){c.error='Önce YZ Ayarları’ndan API anahtarını girin veya Taşıma Koduyla kilidi açın.';aiRefreshChat(kind);return;}
  c.error='';c.busy=true;aiRequestBusy=true;const input=$('#aiMessage-'+kind);if(input)input.value='';aiRefreshChat(kind);
  const message={role:'user',parts:[{text}]},history=c.history.slice(-16);let system=AI_HELP_SYSTEM,context=[];
@@ -2612,7 +2632,7 @@ function courseView() {
     `<div class="course-toc-list">${filteredSecs.map(x => `<button class="toc-test ${x.id === s.id ? 'active' : ''} ${isSecDone(c.id, x.id) ? 'done' : ''}" data-act="openCourse" data-cid="${esc(c.id)}" data-sid="${esc(x.id)}"><span>${isSecDone(c.id, x.id) ? '✓ ' : '○ '}<b>${esc(x.dayTag)}</b></span><small>${esc(x.title)}</small></button>`).join('') || '<p class="file-help">Eşleşen bölüm yok.</p>'}</div>` +
     `<div class="row" style="margin-top:12px"><button class="small" data-act="nav" data-view="tracker">🎯 Program & Takip</button><button class="small" data-act="nav" data-view="notebook">📝 Notlar</button></div></div></aside>`;
 
-  const hlHTML = hlList.length ? `<div class="hl-chips" style="margin-top:12px"><span>🖍️ Bölüm Vurguları:</span>${hlList.map(h => `<button class="hl-chip ${h.style === 'underline' ? 'is-underline' : ''}" style="--hl-c:${h.color}" data-act="eduHlChipClick" data-cid="${esc(c.id)}" data-sid="${esc(s.id)}" data-hl-id="${esc(h.id)}" title="Rengi / stili değiştir veya kaldır">${esc(h.t.slice(0, 48))} <small>${h.style === 'underline' ? 'alt çizgi' : 'vurgu'}</small> ×</button>`).join('')}</div>` : '';
+  const hlHTML = hlList.length ? `<div class="hl-chips" style="margin-top:12px"><span>🖍️ Bölüm Vurguları:</span>${hlList.map(h => `<button class="hl-chip ${h.style === 'underline' ? 'is-underline' : ''}" style="--hl-c:${h.color}" data-act="eduHlChipClick" data-cid="${esc(c.id)}" data-sid="${esc(s.id)}" data-hl-id="${esc(h.id)}" title="${esc(h.note ? ('Not: ' + h.note + ' · Düzenlemek için tıkla') : 'Rengi / stili / notu düzenle veya kaldır')}">${esc(h.t.slice(0, 48))}${h.note ? ' 📝' : ''} <small>${h.style === 'underline' ? 'alt çizgi' : 'vurgu'}</small> ×</button>`).join('')}</div>` : '';
 
   const pairedCta = s.pairedTestId ? `<section class="edu-paired-cta"><div><div class="eyebrow">UYGULAMA ADIMI · EĞİTİM ATÖLYESİ</div><strong>${esc(tm?.test?.title || ('Modül: ' + s.pairedTestId))}</strong>` +
     `<p>${tm ? (tm.done ? `Durum: Tamamlandı (${tm.answered}/${tm.qTotal || '?'} soru${tm.outcome ? ' · %' + tm.outcome.successPercent + ' başarı' : ''})` : `İlerleme: ${tm.answered} / ${tm.qTotal || '?'} soru · Önerilen süre: ${s.estMin || 25} dk`) : `Önerilen süre: ${s.estMin || 25} dk · Eşlikçi test modülüne geç`}</p></div>` +
@@ -2746,7 +2766,7 @@ function eduAllHighlights() {
   for (const c of allCourses()) {
     for (const s of c.sections) {
       for (const h of (e.hl[c.id + '/' + s.id] || [])) {
-        out.push({ kind: 'course', id: h.id, t: h.t, color: h.color, style: h.style, at: h.at || 0, title: c.shortTitle + ' › ' + s.dayTag, cid: c.id, sid: s.id });
+        out.push({ kind: 'course', id: h.id, t: h.t, color: h.color, style: h.style, note: h.note || '', at: h.at || 0, title: c.shortTitle + ' › ' + s.dayTag, cid: c.id, sid: s.id });
       }
     }
   }
@@ -2757,7 +2777,7 @@ function eduAllHighlights() {
       for (const [qid, list] of Object.entries(s.hl)) {
         const qi = t.questions ? t.questions.findIndex(x => x.id === qid) : -1;
         for (const h of list || []) {
-          out.push({ kind: 'question', id: h.id, t: h.t, color: h.color, style: h.style, where: h.w, at: h.at || 0, title: b.title + ' › ' + t.title + (qi >= 0 ? ' · S' + (qi + 1) : ''), bookId: b.id, testId: t.id, qid, qIndex: qi >= 0 ? qi : 0 });
+          out.push({ kind: 'question', id: h.id, t: h.t, color: h.color, style: h.style, note: h.note || '', where: h.w, at: h.at || 0, title: b.title + ' › ' + t.title + (qi >= 0 ? ' · S' + (qi + 1) : ''), bookId: b.id, testId: t.id, qid, qIndex: qi >= 0 ? qi : 0 });
         }
       }
     }
@@ -5928,7 +5948,7 @@ function hlCategoryView(hls, q) {
 
   const filtered = hls.filter(h => {
     if (activeCat !== 'all' && getCatId(h) !== activeCat) return false;
-    if (q && !(h.t + ' ' + h.title).toLocaleLowerCase('tr').includes(q)) return false;
+    if (q && !(h.t + ' ' + (h.note || '') + ' ' + h.title).toLocaleLowerCase('tr').includes(q)) return false;
     return true;
   });
   const catOptions = (curId) => e.hlCats.map(c => `<option value="${esc(c.id)}" ${curId === c.id ? 'selected' : ''}>${esc(c.name)}</option>`).join('');
@@ -5939,7 +5959,7 @@ function hlCategoryView(hls, q) {
     return `<article class="aside-card nb-item"><div class="row" style="justify-content:space-between"><div><span class="hl-chip ${h.style === 'underline' ? 'is-underline' : ''}" style="--hl-c:${esc(h.color)}">${esc(h.t)}</span></div>` +
       `<div class="row"><select class="fc-cat-select" data-hl-key="${esc(key)}" aria-label="Vurgu kategorisi">${catOptions(cid)}</select>` +
       (h.kind === 'course' ? `<button class="small" data-act="openCourse" data-cid="${esc(h.cid)}" data-sid="${esc(h.sid)}">Bölüme Git →</button>` : `<button class="small" data-act="eduJumpQuestion" data-book="${esc(h.bookId)}" data-test="${esc(h.testId)}" data-index="${h.qIndex}">Soruya Git →</button>`) +
-      `</div></div><small class="vocab-src">${esc(h.title)}${h.where ? ' · ' + esc(h.where) : ''}</small></article>`;
+      `</div></div>${h.note ? `<p class="hl-note-preview">📝 ${esc(h.note)}</p>` : ''}<small class="vocab-src">${esc(h.title)}${h.where ? ' · ' + esc(h.where) : ''}</small></article>`;
   }).join('')}</div>` : '<div class="empty">Bu kategoride vurgulanmış (🖍️) metin bulunmuyor.</div>');
 }
 
